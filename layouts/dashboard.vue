@@ -1,0 +1,10 @@
+<template>
+    <section>
+        <aside>
+            Messenger
+        </aside>
+        <main>
+            <slot></slot>
+        </main>
+    </section>
+</template>
