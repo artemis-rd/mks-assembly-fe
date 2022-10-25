@@ -2,13 +2,13 @@
 
 </script>
 <template>
-    <section class="sign-in-container container p-20 min-h-screen min-w-full">
+    <section class="sign-in-container flex items-center container px-20 py-10 min-h-screen min-w-full">
         <div class="sign-in-form w-96">
-            <img src="~/assets/img/mks-logo.png" alt="" srcset="">
-            <h4 class="text-3xl font-bold">Sign in to your operator account</h4>
+            <img src="~/assets/img/mks-logo.png" class="my-5" alt="" srcset="">
+            <h4 class="text-3xl font-bold my-8">Sign in to your operator account</h4>
             <LabelInput type="text" placeholder="johndoe.official@email.com" label="Enter your email address or username" />
             <LabelInput type="password" placeholder="Your secret password" label="Enter your Password" />
-            <div class="flex gap-10 align-middle justify-between">
+            <div class="flex gap-10 align-middle justify-between my-4">
                 <div class="remember-me-container flex gap-2 align-baseline">
                     <input type="checkbox" name="remember" id="remember">
                     <label for="remember" class="text-sm">Remember Me</label>
