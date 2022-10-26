@@ -9,7 +9,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Quicksand', 'sans-serif']
+        sans: ['Quicksand', 'sans-serif'],
+        display: ['Lexend', 'sans-serif']
+      },
+      colors: {
+        orange: {
+          500: "#FF7057",
+          200: '#FFF9F8',
+          100: '#FFF1EF'
+        }
       }
     },
   },
