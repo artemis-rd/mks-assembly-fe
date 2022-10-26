@@ -1,3 +1,5 @@
 <template>
-    <h5>Messenger</h5>
+    <section>
+        <h2>Messenger</h2>
+    </section>
 </template>

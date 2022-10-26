@@ -1,10 +1,11 @@
-<script lang="ts">
+<script lang="ts" setup>
 
 </script>
-
 <template>
-    <section>
-        <NuxtLink to="/dashboard/messenger">Messenger</NuxtLink>
-        <NuxtPage />
-    </section>
+    <NuxtLayout name="dashboard">
+        <div class="chats-list"></div>
+        <main>
+            <NuxtPage />
+        </main>
+    </NuxtLayout>
 </template>
