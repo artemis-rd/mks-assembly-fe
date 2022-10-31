@@ -1,5 +1,7 @@
 <template>
-    <section>
-        <h2>Messenger</h2>
-    </section>
+   <NuxtLayout name="messenger">
+    <main>
+        <NuxtPage/>
+    </main>
+   </NuxtLayout>
 </template>
