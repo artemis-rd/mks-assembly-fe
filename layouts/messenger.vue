@@ -11,13 +11,13 @@
             <div class="my-1 text-sm">
                 <p class="my-5 font-bold text-xs">Direct Messages</p>
                 <div class="flex gap-2">
-                    <img src="@/assets/img/profile.png" alt="loading">
+                    <img class=" w-30" src="@/assets/img/profile.png" alt="loading">
                     <div class="flex-col">
                         <div class="flex justify-between">
-                            <p>Baraka sean</p>
-                            <p>4.14 p.m</p>
+                            <p class=" text-black font-bold">Baraka sean</p>
+                            <p class="text-sm font-semibold">4.14 p.m</p>
                         </div>
-                        <p class=" text-xs">Lorem ipsum dolor sit amet consectetur adipisicing elit....</p>
+                        <p class=" text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit....</p>
                     </div>
                 </div>
 
