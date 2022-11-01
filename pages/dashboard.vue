@@ -4,7 +4,7 @@
 <template>
     <NuxtLayout name="dashboard">
         <div class="chats-list"></div>
-        <main>
+        <main class=" flex-1">
             <NuxtPage />
         </main>
     </NuxtLayout>
