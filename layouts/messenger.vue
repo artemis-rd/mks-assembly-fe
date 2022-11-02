@@ -42,7 +42,7 @@ async function getThreads() {
                     </div>
                 </div>
                 <!-- thread two -->
-                <div class="flex gap-2">
+                <div class="flex gap-2 active:bg-slate-300">
                     <img class="" src="@/assets/img/profile.png" alt="loading">
                     <div class="flex-col">
                         <div class="flex justify-between">
@@ -79,29 +79,51 @@ async function getThreads() {
                 <p class="text-gray-200 text-center font-semibold my-5 text-sm">The start of your conversation with Paul
                 </p>
                 <div class="flex-col gap-2 mx-3">
-                    <div class="p-4">
-                        <p class="text-xs font-semibold text-gray-400 mb-1">04.22 p.m</p>
-                        <p class="text-xs font-semibold w-3/4">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                            Dolorum rem dolore quod.
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor pariatur rem voluptatibus
-                            laborum, nostrum perspiciatis.
-                            Consequatur voluptates quod, commodi molestias nostrum suscipit veniam, facilis animi
-                            doloremque eaque, maiores omnis nesciunt.
+                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
+                    <div class="p-4 rounded-bl-none rounded-2xl">
+                        <p class="text-xs w-3/4 font-medium">Justo, ac lectus eu vitae. Sed urna metus, amet arcu
+                            justo, in tortor massa. Ut donec purus tristique risus mauris. Diam fermentum, iaculis vitae
+                            pellentesque sociis diam nulla. Quam nunc tristique ut lacus enim aliquet tempus feugiat
+                            senectus. Fermentum nunc pharetra arcu mi,
                         </p>
                     </div>
-                    <div class="flex"> 
+                    <div class="flex">
                         <div class="w-1/2"></div>
-                        <div class="p-4 rounded-lg border-r-0 text-cyan-50 bg-red-400">
-                           
-                            <p class="text-xs font-semibold flex justify-end">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Ipsa
-                                beatae repellat voluptatem!
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Est ab assumenda sunt
-                                voluptates
-                                provident animi
-                                ipsa repudiandae eius commodi libero rem modi quis a nostrum, quidem quam inventore
-                                porro
-                                magnam!
+                        <div class="p-4 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
+
+                            <p class="text-xs font-semibold flex justify-end">
+                                Leo sed venenatis vestibulum a. Mauris libero vel odio semper. Dictum tempus tellus
+                                iaculis est varius hac ultrices. Et amet, lectus vulputate viverra urna sagittis faucib
+                            </p>
+
+
+                        </div>
+                    </div>
+                    <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
+                        <p>sent</p>
+                        <p>04.22 p.m</p>
+                    </div>
+                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
+                    <div class="p-4 rounded-bl-none rounded-2xl">
+                        <p class="text-xs font-semibold w-3/4">Aenean in at amet luctus condimentum vitae cras viverra
+                            eget. Vestibulum, tincidunt scelerisque libero e, imperdiet augue orci diam.
+                        </p>
+                    </div>
+                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
+                    <div class="p-4 rounded-bl-none rounded-2xl">
+                        <p class="text-xs font-semibold w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
+                            facilisis. Condimentum ut morbi a gravida purus fames ac facilisis. Facilisi aliquet mauris
+                            a scelerisque a sem. Ut adipiscing a, tempor ornare mi, molestie quis scelerisque vulputate.
+                            Quisque erat amet, donec sed fermentum est.
+                        </p>
+                    </div>
+                    <div class="flex">
+                        <div class="w-1/2"></div>
+                        <div class="p-4 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
+
+                            <p class="text-xs font-semibold flex justify-end">
+                                Leo sed venenatis vestibulum a. Mauris libero vel odio semper. Dictum tempus tellus
+                                iaculis est varius hac ultrices. Et amet, lectus vulputate viverra urna sagittis faucib
                             </p>
 
 
