@@ -37,19 +37,86 @@ async function getThreads() {
                             <p class=" text-black font-bold">Baraka sean</p>
                             <p class="text-sm font-semibold">4.14 p.m</p>
                         </div>
-                        <p class=" text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit....
+                        <p class=" text-xs text-gray-400">Hello, can you check whether everything is okay...
                         </p>
                     </div>
                 </div>
                 <!-- thread two -->
-                <div class="flex gap-2 active:bg-slate-300">
-                    <img class="" src="@/assets/img/profile.png" alt="loading">
+                <div class="flex gap-2 active:bg-slate-300 my-4">
+                    <img class="" src="@/assets/img/user2.png" alt="loading">
                     <div class="flex-col">
                         <div class="flex justify-between">
-                            <p class=" text-black font-bold">Baraka sean</p>
+                            <p class=" text-black font-bold">Paul Davidson</p>
+                            <p class="text-sm font-semibold">3.10 p.m</p>
+                        </div>
+                        <p class=" text-xs text-gray-400">I think we have a problem with the drainage....
+                        </p>
+                    </div>
+                </div>
+                <!-- thread three -->
+                <div class="flex gap-2 active:bg-slate-300">
+                    <img class="" src="@/assets/img/user3.png" alt="loading">
+                    <div class="flex-col">
+                        <div class="flex justify-between">
+                            <p class=" text-black font-bold">ICT Office</p>
+                            <p class="text-sm font-semibold">2.49 p.m</p>
+                        </div>
+                        <p class=" text-xs text-gray-400">Can you confirm whether internet services are....
+                        </p>
+                    </div>
+                </div>
+
+
+            </div>
+
+             <!-- group messages -->
+             <div class="my-1 text-sm">
+                <p class="my-5 font-bold text-xs">Group Messages</p>
+                <div class="flex gap-2 my-4">
+                    <img class="" src="@/assets/img/group1.svg" alt="loading">
+                    <div class="flex-col">
+                        <div class="flex justify-between">
+                            <p class=" text-black font-medium">House Business Comm</p>
                             <p class="text-sm font-semibold">4.14 p.m</p>
                         </div>
-                        <p class=" text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit....
+                        <p class=" text-xs text-gray-400">Hello, can you check whether everything is okay...
+                        </p>
+                    </div>
+                </div>
+                <!-- thread two -->
+                <div class="flex gap-2 active:bg-slate-300 my-4">
+                    <img class="" src="@/assets/img/group2.svg" alt="loading">
+                    <div class="flex-col">
+                        <div class="flex justify-between">
+                            <p class=" text-black font-medium">Finance Department</p>
+                            <p class="text-sm font-semibold">3.10 p.m</p>
+                        </div>
+                        <p class=" text-xs text-gray-400">I think we have a problem with the drainage....
+                        </p>
+                    </div>
+                </div>
+                <!-- thread group three -->
+                <div class="flex gap-2 active:bg-slate-300 my-4">
+                    <img class="" src="@/assets/img/group3.svg" alt="loading">
+                    <div class="flex-col">
+                        <div class="flex justify-between">
+                            <p class=" text-black font-medium">ILands And Energy</p>
+                            <p class="text-sm font-semibold">2.49 p.m</p>
+                        </div>
+                        <p class=" text-xs text-gray-400">Can you confirm whether internet services are....
+                        </p>
+                    </div>
+                </div>
+   
+                 <!-- thread group three -->
+                 <div class="flex gap-2 active:bg-slate-300">
+                    <img class="" src="@/assets/img/group4.svg" alt="loading">
+                    <div class="flex-col">
+                        <div class="flex justify-between">
+                            <p class=" text-black font-medium">ICT Directorate</p>
+                            <p class="text-sm font-semibold"> Saturday 2.49 p.m</p>
+                        </div>
+                        <p class=" text-xs text-gray-400">Can you confirm whether internet services are....
                         </p>
                     </div>
                 </div>
@@ -91,7 +158,7 @@ async function getThreads() {
                         <div class="w-1/2"></div>
                         <div class="p-4 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
 
-                            <p class="text-xs font-semibold flex justify-end">
+                            <p class="text-xs font-medium flex justify-end">
                                 Leo sed venenatis vestibulum a. Mauris libero vel odio semper. Dictum tempus tellus
                                 iaculis est varius hac ultrices. Et amet, lectus vulputate viverra urna sagittis faucib
                             </p>
@@ -103,15 +170,15 @@ async function getThreads() {
                         <p>sent</p>
                         <p>04.22 p.m</p>
                     </div>
-                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
+                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
                     <div class="p-4 rounded-bl-none rounded-2xl">
-                        <p class="text-xs font-semibold w-3/4">Aenean in at amet luctus condimentum vitae cras viverra
+                        <p class="text-xs font-medium w-3/4">Aenean in at amet luctus condimentum vitae cras viverra
                             eget. Vestibulum, tincidunt scelerisque libero e, imperdiet augue orci diam.
                         </p>
                     </div>
-                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
+                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
                     <div class="p-4 rounded-bl-none rounded-2xl">
-                        <p class="text-xs font-semibold w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
+                        <p class="text-xs font-medium w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
                             facilisis. Condimentum ut morbi a gravida purus fames ac facilisis. Facilisi aliquet mauris
                             a scelerisque a sem. Ut adipiscing a, tempor ornare mi, molestie quis scelerisque vulputate.
                             Quisque erat amet, donec sed fermentum est.
@@ -121,11 +188,10 @@ async function getThreads() {
                         <div class="w-1/2"></div>
                         <div class="p-4 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
 
-                            <p class="text-xs font-semibold flex justify-end">
-                                Leo sed venenatis vestibulum a. Mauris libero vel odio semper. Dictum tempus tellus
-                                iaculis est varius hac ultrices. Et amet, lectus vulputate viverra urna sagittis faucib
+                            <p class="text-xs font-medium flex justify-end">
+                                Consectetur eget arcu, libero, commodo, cras id hendrerit sagittis. Amet condimentum
+                                orci.
                             </p>
-
 
                         </div>
                     </div>
