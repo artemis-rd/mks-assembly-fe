@@ -29,7 +29,7 @@ async function getThreads() {
 
             <!-- direct messages -->
             <div class="my-1 text-sm">
-                <p class="my-5 font-bold text-xs">Direct Messages</p>
+                <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
                 <div class="flex gap-2 my-4">
                     <img class="" src="@/assets/img/profile.png" alt="loading">
                     <div class="flex-col">
@@ -71,7 +71,7 @@ async function getThreads() {
 
              <!-- group messages -->
              <div class="my-1 text-sm">
-                <p class="my-5 font-bold text-xs">Group Messages</p>
+                <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
                 <div class="flex gap-2 my-4">
                     <img class="" src="@/assets/img/group1.svg" alt="loading">
                     <div class="flex-col">
@@ -201,6 +201,14 @@ async function getThreads() {
                     </div>
                 </div>
             </div>
+            <div class=" flex gap-4 items-center"> 
+                <textarea placeholder="Type something here ...." class="w-3/4 mt-2 outline-none"/>
+                <div class="flex items-center gap-4">
+                    <p  class="text-red-500 text-sm font-medium">Send Message</p>
+                    <img class=" w-4" src="@/assets/img/sent.svg" alt="loading">
+                </div>
+            </div>
+           
         </div>
 
         <slot></slot>
