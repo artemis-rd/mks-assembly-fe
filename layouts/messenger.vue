@@ -69,8 +69,8 @@ async function getThreads() {
 
             </div>
 
-             <!-- group messages -->
-             <div class="my-1 text-sm">
+            <!-- group messages -->
+            <div class="my-1 text-sm">
                 <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
                 <div class="flex gap-2 my-4">
                     <img class="" src="@/assets/img/group1.svg" alt="loading">
@@ -107,9 +107,9 @@ async function getThreads() {
                         </p>
                     </div>
                 </div>
-   
-                 <!-- thread group three -->
-                 <div class="flex gap-2 active:bg-slate-300">
+
+                <!-- thread group three -->
+                <div class="flex gap-2 active:bg-slate-300">
                     <img class="" src="@/assets/img/group4.svg" alt="loading">
                     <div class="flex-col">
                         <div class="flex justify-between">
@@ -122,8 +122,6 @@ async function getThreads() {
                 </div>
 
             </div>
-
-
         </div>
         <div class="w-full ml-2 ">
             <div class="flex justify-between mx-4 my-4">
@@ -145,10 +143,11 @@ async function getThreads() {
             <div class="border-y border-gray-300">
                 <p class="text-gray-200 text-center font-semibold my-5 text-sm">The start of your conversation with Paul
                 </p>
-                <div class="flex-col gap-2 mx-3">
+
+                <div class="flex-col mx-2 gap-3">
                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
-                    <div class="p-3 rounded-bl-none rounded-2xl">
-                        <p class="text-xs w-3/4 font-medium">Justo, ac lectus eu vitae. Sed urna metus, amet arcu
+                    <div class="p-2 rounded-bl-none rounded-2xl bg-red-50 w-3/4">
+                        <p class="text-xs font-semibold ">Justo, ac lectus eu vitae. Sed urna metus, amet arcu
                             justo, in tortor massa. Ut donec purus tristique risus mauris. Diam fermentum, iaculis vitae
                             pellentesque sociis diam nulla. Quam nunc tristique ut lacus enim aliquet tempus feugiat
                             senectus. Fermentum nunc pharetra arcu mi,
@@ -156,14 +155,12 @@ async function getThreads() {
                     </div>
                     <div class="flex">
                         <div class="w-1/2"></div>
-                        <div class="p-3 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
+                        <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
 
-                            <p class="text-xs font-medium flex justify-end">
+                            <p class="text-xs flex justify-end font-semibold">
                                 Leo sed venenatis vestibulum a. Mauris libero vel odio semper. Dictum tempus tellus
                                 iaculis est varius hac ultrices. Et amet, lectus vulputate viverra urna sagittis faucib
                             </p>
-
-
                         </div>
                     </div>
                     <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
@@ -171,14 +168,14 @@ async function getThreads() {
                         <p>04.22 p.m</p>
                     </div>
                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
-                    <div class="p-3 rounded-bl-none rounded-2xl">
-                        <p class="text-xs font-medium w-3/4">Aenean in at amet luctus condimentum vitae cras viverra
+                    <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
+                        <p class="text-xs font-semibold">Aenean in at amet luctus condimentum vitae cras viverra
                             eget. Vestibulum, tincidunt scelerisque libero e, imperdiet augue orci diam.
                         </p>
                     </div>
                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
-                    <div class="p-3 rounded-bl-none rounded-2xl">
-                        <p class="text-xs font-medium w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
+                    <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
+                        <p class="text-xs font-semibold w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
                             facilisis. Condimentum ut morbi a gravida purus fames ac facilisis. Facilisi aliquet mauris
                             a scelerisque a sem. Ut adipiscing a, tempor ornare mi, molestie quis scelerisque vulputate.
                             Quisque erat amet, donec sed fermentum est.
@@ -186,9 +183,9 @@ async function getThreads() {
                     </div>
                     <div class="flex">
                         <div class="w-1/2"></div>
-                        <div class="p-3 rounded-2xl  text-cyan-50 bg-red-400 rounded-br-none">
+                        <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
 
-                            <p class="text-xs font-medium flex justify-end">
+                            <p class="text-xs font-semibold flex justify-end">
                                 Consectetur eget arcu, libero, commodo, cras id hendrerit sagittis. Amet condimentum
                                 orci.
                             </p>
@@ -201,14 +198,14 @@ async function getThreads() {
                     </div>
                 </div>
             </div>
-            <div class=" flex gap-4 items-center"> 
-                <textarea placeholder="Type something here ...." class="w-3/4 mt-2 outline-none"/>
+            <div class=" flex gap-4 items-center mt-3">
+                <textarea placeholder="Type something here ...." class="w-3/4 mt-2 outline-none text-xs" />
                 <div class="flex items-center gap-4">
-                    <p  class="text-red-500 text-sm font-medium">Send Message</p>
+                    <p class="text-red-500 text-medium font-medium">Send Message</p>
                     <img class=" w-4" src="@/assets/img/sent.svg" alt="loading">
                 </div>
             </div>
-           
+
         </div>
 
         <slot></slot>
