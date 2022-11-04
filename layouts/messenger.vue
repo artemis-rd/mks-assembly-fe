@@ -144,7 +144,9 @@ async function getThreads() {
                 <p class="text-gray-200 text-center font-semibold my-5 text-sm">The start of your conversation with Paul
                 </p>
 
-                <div class="flex-col mx-2 gap-3">
+                <div class="flex-col flex mx-2 gap-2">
+                    <!-- conv one -->
+                    <div class="">
                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
                     <div class="p-2 rounded-bl-none rounded-2xl bg-red-50 w-3/4">
                         <p class="text-xs font-semibold ">Justo, ac lectus eu vitae. Sed urna metus, amet arcu
@@ -153,6 +155,9 @@ async function getThreads() {
                             senectus. Fermentum nunc pharetra arcu mi,
                         </p>
                     </div>
+                    </div>
+                  <!-- conv two -->
+                  <div class="">
                     <div class="flex">
                         <div class="w-1/2"></div>
                         <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
@@ -167,13 +172,19 @@ async function getThreads() {
                         <p>sent</p>
                         <p>04.22 p.m</p>
                     </div>
-                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
+                  </div>
+                  <!-- conv three -->
+                  <div class="">
+                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
                     <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
                         <p class="text-xs font-semibold">Aenean in at amet luctus condimentum vitae cras viverra
                             eget. Vestibulum, tincidunt scelerisque libero e, imperdiet augue orci diam.
                         </p>
                     </div>
-                    <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
+                  </div>
+                   <!-- conve four -->
+                   <div class="">
+                     <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
                     <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
                         <p class="text-xs font-semibold w-3/4">Arcu donec adipiscing orci odio consectetur neque gravida
                             facilisis. Condimentum ut morbi a gravida purus fames ac facilisis. Facilisi aliquet mauris
@@ -181,7 +192,10 @@ async function getThreads() {
                             Quisque erat amet, donec sed fermentum est.
                         </p>
                     </div>
-                    <div class="flex">
+                   </div>
+                   <!-- conve five -->
+                   <div class="">
+                      <div class="flex">
                         <div class="w-1/2"></div>
                         <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
 
@@ -196,6 +210,8 @@ async function getThreads() {
                         <p>sent</p>
                         <p>04.22 p.m</p>
                     </div>
+                   </div>
+                  
                 </div>
             </div>
             <div class=" flex gap-4 items-center mt-3">
