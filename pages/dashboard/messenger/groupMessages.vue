@@ -1,8 +1,8 @@
 <template>
-    <div class="ml-2">
+    <div class="ml-2 max-w-2lg">
         <TopBar name="House Bussiness Comm" last-login="27 Members" user="Angel Mwende" />
         <div class="w-full flex flex-col gap-4">
-            <p class="text-center text-gray-400 font-semibold mb-6">
+            <p class="text-center text-gray-400 font-semibold my-2 text-sm">
                 The start of your conversation with House Business Comm
             </p>
             <div class="mx-3">
