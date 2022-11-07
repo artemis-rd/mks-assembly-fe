@@ -1,6 +1,6 @@
 <template>
     <section class="flex">
-        <aside class="">
+        <aside class=" w-1/6">
             <div class="logo flex flex-col p-7">
                 <img src="~/assets/img/mks-logo.png" class="my-5 w-20" alt="" srcset="" />
                 <span class="text-xs font-semibold font-display">By Artemis Systems LTD</span>
@@ -57,6 +57,29 @@
                 <span>Logout</span>
                 </MenuItem>
 
+            </div>
+            <!-- updates threads -->
+            <div class="mx-4">
+                <div class="flex gap-8">
+                    <p class="text-sm text-gray-400">System Updates</p>
+                    <img class="w-4" src="@/assets/img/notification.svg" alt="loading">
+                </div>
+                <p class="font-bold text-xs mt-2">Scheduled Maintenance</p>
+                <ul>
+                    <li class="text-xs justify-center">
+                        There will be a scheduled maintenance operation on the 28th October from 01:00 am to 02:00am.
+                        Kindly
+                        bare with us and appologies for any inconveniences
+                    </li>
+                </ul>
+            </div>
+            <div class="flex justify-center">
+                <button class="p-2 bg-red-100 text-xs font-semibold w-4/5 my-7 rounded-md text-red-500">Dismiss</button>
+            </div>
+
+            <div class="flex items-center ml-3 gap-2">
+                <img src="@/assets/img/logout.svg" alt="loading">
+                <p class="text-sm">Logout</p>
             </div>
         </aside>
         <slot></slot>
