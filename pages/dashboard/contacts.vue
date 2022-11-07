@@ -30,14 +30,8 @@ function changeToggle() {
   <div class="">
     <TopBar />
     <Transition name="slide-fade">
-      <div
-        v-if="addNumber == false"
-        class="flex absolute flex-1 w-10/12 h-full"
-      >
-        <div
-          @click="changeToggle()"
-          class="bg-slate-500 h-full bg-opacity-10 flex-1"
-        ></div>
+      <div v-if="addNumber == false" class="flex absolute flex-1 w-10/12 h-full">
+        <div @click="changeToggle()" class="bg-slate-500 h-full bg-opacity-10 flex-1"></div>
         <div class="bg-white h-full px-10 w-2/6 gap-5 column">
           <div class="">
             <Inputlabel placeholder="johndoe@gmail.com" label="Firstname" />
@@ -49,24 +43,17 @@ function changeToggle() {
             <Inputlabel placeholder="johndoe" label="Operator Lastname" />
           </div>
           <div class="">
-            <!-- <vue-tel-input
-            v-model="phone"
-            @country-changed="countyCode($event.dialCode)"
-            @input="validatePhoneNumber($event.target.value)"
-            @validate="inputValidate($event)"
-          >
-          </vue-tel-input> -->
+            <vue-tel-input v-model="phone" @country-changed="countyCode($event.dialCode)"
+              @input="validatePhoneNumber($event.target.value)" @validate="inputValidate($event)">
+            </vue-tel-input>
           </div>
           <div class="flex gap-10">
             <button
-              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
-            >
+              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
               Save Changes
             </button>
-            <button
-              @click="changeToggle()"
-              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-white"
-            >
+            <button @click="changeToggle()"
+              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-white">
               Cancel
             </button>
           </div>
@@ -76,20 +63,13 @@ function changeToggle() {
 
     <div class="pt-5 px-4">
       <div class="flex justify-between items-center">
-        <div
-          class="flex w-8/12 justify-between border rounded-lg outline-none py-2 px-2"
-        >
-          <input
-            class="outline-none text-sm w-full"
-            type="text"
-            placeholder="Search Contacts By either Name or Phone Number"
-          />
+        <div class="flex w-8/12 justify-between border rounded-lg outline-none py-2 px-2">
+          <input class="outline-none text-sm w-full" type="text"
+            placeholder="Search Contacts By either Name or Phone Number" />
           <img class="" src="@/assets/img/Search.svg" />
         </div>
-        <button
-          @click="changeToggle()"
-          class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
-        >
+        <button @click="changeToggle()"
+          class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
           <img src="@/assets/img/AddUser.svg" alt="" /> Add a New Contact
         </button>
       </div>
