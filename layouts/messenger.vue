@@ -65,8 +65,6 @@ async function getThreads() {
                         </p>
                     </div>
                 </div>
-
-
             </div>
 
             <!-- group messages -->
