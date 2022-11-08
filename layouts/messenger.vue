@@ -19,15 +19,24 @@ async function getThreads() {
 
     }
 }
-
 const showGroups = ref(true);
-const selectContact = ref(true);
-function showGroupChats() {
-    showGroups.value = !showGroups.value
-    console.log(`Value:${showGroups.value}`);
+const createGroups = ref(false);
+const selectContact = ref(false);
+function startConversation() {
+    showGroups.value = false
+    createGroups.value = !createGroups.value
 }
 function showContactToSelect(){
-    selectContact.value = !selectContact.value
+   createGroups.value = false
+   selectContact.value = !selectContact.value
+}
+function goBackToConversation(){  
+    createGroups.value =false
+    showGroups.value = !showGroups.value
+}
+function goBackToStartConv(){
+  selectContact.value = false
+  createGroups.value = !createGroups.value
 }
 </script>
 <template>
@@ -94,7 +103,7 @@ function showContactToSelect(){
             </div>
 
 
-            <div class="my-1 text-sm" v-if="showGroups">
+            <div class="my-1 text-sm">
                 <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
                 <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 my-4">
                     <img class="" src="@/assets/img/group1.svg" alt="loading">
@@ -144,17 +153,15 @@ function showContactToSelect(){
                         </p>
                     </div>
                 </NuxtLink>
-                <button class=" absolute bottom-0" @click="showGroupChats()">
+                <button class=" absolute bottom-0" @click="startConversation()">
                     <img src="@/assets/img/chatIcon.svg" alt="">
                 </button>
 
             </div>
-
-
         </div>
         <!-- start conversation button -->
-        <div class=" my-4 gap-4 flex flex-col w-3/4" v-else>
-            <button class="flex gap-6 items-center" @click="showGroupChats()">
+        <div class=" my-4 gap-4 flex flex-col w-3/4" v-if="createGroups">
+            <button class="flex gap-6 items-center" @click="goBackToConversation()">
                 <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading">
                 <span class="text-md font-bold">Start a new Conversation</span>
             </button>
@@ -165,56 +172,6 @@ function showContactToSelect(){
                 <span class="text-red-500 font-xs font-semibold">Create a new Group</span>
             </button>
             <span class="my-4 text-gray-400 font-bold text-sm">Send Direct Message</span>
-            <!-- starting a conversation screen -->
-            <!-- contact list  -->
-            <div class="flex flex-col" v-if="showContant">
-            <div class="flex flex-col gap-4 w-full">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Baraka Sean</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
-                    </div>
-                </div>
-            </div>
-            <!-- contact two -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Paul Davidson</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
-                    </div>
-                </div>
-            </div>
-            <!-- contact three -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">ICT Office</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
-                    </div>
-                </div>
-            </div>
-            <!-- contact four -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Hon. Speaker</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-            <!-- end of the screen -->
-            <!-- start of group screen -->
-            <!-- group transition  -->   
-        </div>
-
-        <!-- contact to select -->
-        <div class="flex flex-col" v-else >
             <!-- starting a conversation screen -->
             <!-- contact list  -->
             <div class="flex flex-col">
@@ -258,7 +215,66 @@ function showContactToSelect(){
                 </div>
             </div>
         </div>
+            <!-- end of the screen --> 
         </div>
+        <!-- select contact for the group  -->
+        <!-- contact screen -->
+        <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+        <div class=" my-4 gap-4 flex flex-col w-3/4" v-if="selectContact">
+            <button class="flex gap-6 items-center" @click="goBackToStartConv()">
+                <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading">
+                <span class="text-md font-bold">Start a new Conversation</span>
+            </button>
+
+            <SearchInput />
+            
+            <span class="my-4 text-gray-400 font-bold text-sm">Select Group Members</span>
+            <!-- starting a conversation screen -->
+            <!-- contact list  -->
+            <div class="flex flex-col">
+            <div class="flex flex-col gap-4 w-full">
+                <div class="flex gap-4">
+                    <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
+                    <div class="gap-2">
+                        <p class="text-sm font-bold">Baraka Sean</p>
+                        <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
+                    </div>
+                </div>
+            </div>
+            <!-- contact two -->
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-4">
+                    <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
+                    <div class="gap-2">
+                        <p class="text-sm font-bold">Paul Davidson</p>
+                        <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
+                    </div>
+                </div>
+            </div>
+            <!-- contact three -->
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-4">
+                    <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
+                    <div class="gap-2">
+                        <p class="text-sm font-bold">ICT Office</p>
+                        <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
+                    </div>
+                </div>
+            </div>
+            <!-- contact four -->
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-4">
+                    <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
+                    <div class="gap-2">
+                        <p class="text-sm font-bold">Hon. Speaker</p>
+                        <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- end of the screen --> 
+        </div>
+        <!-- message slot  -->
         <slot></slot>
     </div>
 </template>
