@@ -131,13 +131,13 @@ onMounted(() => {
             <LabelInput placeholder="johndoe" label="Operator Lastname" />
           </div>
           <div class="">
-            <!-- <vue-tel-input
-            v-model="phone"
-            @country-changed="countyCode($event.dialCode)"
-            @input="validatePhoneNumber($event.target.value)"
-            @validate="inputValidate($event)"
-          >
-          </vue-tel-input> -->
+            <vue-tel-input
+              v-model="phone"
+              @country-changed="countyCode($event.dialCode)"
+              @input="validatePhoneNumber($event.target.value)"
+              @validate="inputValidate($event)"
+            >
+            </vue-tel-input>
           </div>
           <div class="flex gap-10">
             <button
@@ -164,8 +164,7 @@ onMounted(() => {
           <input
             class="outline-none text-sm w-full"
             type="text"
-            placeholder="Search Contacts By either Name "
-            @input="findContact($event)"
+            placeholder="Search Contacts By either Name or Phone Number"
           />
           <img class="" src="@/assets/img/Search.svg" />
         </div>
