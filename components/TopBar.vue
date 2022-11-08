@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-between py-2 border-b border-neutral-100 px-4">
     <div class="">
-      <h6 class="font-bold">Availlable Contacts</h6>
+      <h6 class="font-bold">Available Contacts</h6>
       <div class="text-xs">278 Contacts</div>
     </div>
     <div class="flex justify-between items-center gap-8 pr-4">
