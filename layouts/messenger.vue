@@ -1,4 +1,5 @@
 <script setup>
+
 const directThreads = ref({})
 const {
     public: { AUTH_SERVICE_URL },
@@ -22,22 +23,33 @@ async function getThreads() {
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
+const selected = ref(false);
+const groupNameScreen = ref(false);
 function startConversation() {
     showGroups.value = false
     createGroups.value = !createGroups.value
 }
-function showContactToSelect(){
-   createGroups.value = false
-   selectContact.value = !selectContact.value
+function showContactToSelect() {
+    createGroups.value = false
+    selectContact.value = !selectContact.value
 }
-function goBackToConversation(){  
-    createGroups.value =false
+function showGroupNameScreen() {
+    selectContact.value = false;
+    groupNameScreen.value = !groupNameScreen.value
+}
+function goBackToConversation() {
+    createGroups.value = false
     showGroups.value = !showGroups.value
 }
-function goBackToStartConv(){
-  selectContact.value = false
-  createGroups.value = !createGroups.value
+function goBackToStartConv() {
+    selectContact.value = false
+    createGroups.value = !createGroups.value
 }
+function goBackToSelectContact(){
+    groupNameScreen.value = false
+    selectContact.value =!selectContact.value
+}
+
 </script>
 <template>
     <div class="flex">
@@ -153,7 +165,7 @@ function goBackToStartConv(){
                         </p>
                     </div>
                 </NuxtLink>
-                <button class=" absolute bottom-0" @click="startConversation()">
+                <button class="flex justify-end w-full -mt-16" @click="startConversation()">
                     <img src="@/assets/img/chatIcon.svg" alt="">
                 </button>
 
@@ -174,48 +186,48 @@ function goBackToStartConv(){
             <span class="my-4 text-gray-400 font-bold text-sm">Send Direct Message</span>
             <!-- starting a conversation screen -->
             <!-- contact list  -->
-            <div class="flex flex-col">
-            <div class="flex flex-col gap-4 w-full">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Baraka Sean</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Baraka Sean</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- contact two -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Paul Davidson</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- contact three -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">ICT Office</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- contact four -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Hon. Speaker</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- contact two -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Paul Davidson</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
-                    </div>
-                </div>
-            </div>
-            <!-- contact three -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">ICT Office</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
-                    </div>
-                </div>
-            </div>
-            <!-- contact four -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Hon. Speaker</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-            <!-- end of the screen --> 
+            <!-- end of the screen -->
         </div>
         <!-- select contact for the group  -->
         <!-- contact screen -->
@@ -227,52 +239,71 @@ function goBackToStartConv(){
             </button>
 
             <SearchInput />
-            
+
             <span class="my-4 text-gray-400 font-bold text-sm">Select Group Members</span>
             <!-- starting a conversation screen -->
             <!-- contact list  -->
-            <div class="flex flex-col">
-            <div class="flex flex-col gap-4 w-full">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Baraka Sean</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Baraka Sean</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- contact two -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Paul Davidson</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
+                <!-- contact two -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/user2.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Paul Davidson</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 710 231 123</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- contact three -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">ICT Office</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
+                <!-- contact three -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/user3.png" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">ICT Office</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 722 345 678</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- contact four -->
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-4">
-                    <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
-                    <div class="gap-2">
-                        <p class="text-sm font-bold">Hon. Speaker</p>
-                        <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
+                <!-- contact four -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex gap-4">
+                        <img class=" w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
+                        <div class="gap-2">
+                            <p class="text-sm font-bold">Hon. Speaker</p>
+                            <span class="text-xs font-semibold text-gray-400">+254 790 345 333</span>
+                        </div>
                     </div>
                 </div>
+                <button class="flex justify-end w-3/4 gap-2 items-center mt-8" @click="showGroupNameScreen()">
+                    <span class="text-sm text-red-500  font-semibold">Next</span>
+                    <img src="@/assets/img/nextIcon.svg" alt="loading">
+                </button>
             </div>
+
+            <!-- end of the screen -->
         </div>
-            <!-- end of the screen --> 
+        <!-- //////////////////////// -->
+
+        <div class="my-4 gap-4 flex flex-col w-3/4" v-if="groupNameScreen">
+            <button class="flex items-center gap-4" @click="goBackToSelectContact()">
+                <img src="@/assets/img/startConvIcon.svg" class="w-4" alt="loading">
+                <span class="font-bold text-lg">Creating a new Group</span>
+            </button>
+            <p class="my-4 text-md">Creating With 33 selected Members</p>
+            <div class="gap-2 flex flex-col">
+                <label class="text-md">Enter the name of the Group</label>
+                <input type="text" name="groupName" class=" border-gray-200 rounded-md border-2 p-2 w-4/5 text-sm outline-none" placeholder="Example: Marketing Department">
+            </div>
+            <button class="w-4/5 bg-red-50 text-red-500 rounded-md py-2 font-semibold text-sm">Save Group Info</button>
         </div>
         <!-- message slot  -->
         <slot></slot>
