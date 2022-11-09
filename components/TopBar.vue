@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { use } from "h3";
-
 defineProps({
   name: String,
   lastLogin: String,

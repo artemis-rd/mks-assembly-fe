@@ -2,9 +2,9 @@
 <template>
   <div class="">
     <div class="top">
-      <TopBar />
+      <TopBar user="Angel Mwende" name="Billing" />
     </div>
-    <div class="main-div flex px-3 pt-6 mr-16">
+    <div class="main-div flex pr-3 pt-4 mr-16 pl-10">
       <div class="left-main flex-1">
         <div class="pt-6 font-bold">Available SMS Balance</div>
         <div class="pt-2 text-sm">
@@ -28,7 +28,7 @@
         <img src="@/assets/img/billingIlustration.svg" alt="" width="450" />
       </div>
     </div>
-    <div class="middle-main">
+    <div class="middle-main pl-10">
       <div class="mb-2">Payment History</div>
       <div class="flex gap-10 items-center">
         <div class="w-2/6">
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div class="table w-full mt-4">
+    <div class="table w-full mt-4 pl-10">
       <table class="w-full">
         <thead>
           <tr class="text-slate-300">
@@ -52,17 +52,23 @@
             <th>Tel</th>
             <th>Amount</th>
             <th>SMS</th>
-            <th>ioo</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr class="hover:bg-slate-100 text-xs font-semibold py-12">
             <td>15/10/2022</td>
             <td>QWE234RE1</td>
             <td>0724xxxxx98</td>
             <td>KES 2500</td>
             <td>3000</td>
-            <td>990</td>
+            <td>
+              <button
+                class="items-center justify-center font-medium rounded-md text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
+              >
+                Details
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -74,7 +80,9 @@
   box-shadow: 0px 1px 10px 2px rgba(0, 0, 0, 0.15);
 }
 th {
-  display: flex;
-  align-self: flex-start;
+  text-align: left;
+}
+td {
+  padding: 0.8em 0;
 }
 </style>
