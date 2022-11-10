@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
+import { createContact } from "~~/services/contacts";
 
 const phone = ref("");
 const countryCode = ref("");
 const userPhoneNumber = ref("");
 const addNumber = ref(true);
 const contacts = ref();
+const operatorEmail = ref();
+const lastName = ref();
+const firstName = ref();
 const filteredContacts = ref([]) as Ref<any[]>;
 const alphabets = ref([
   "A",
@@ -54,7 +58,7 @@ const filteredList = ref([]) as Ref<any[]>;
 
 function validatePhoneNumber(value: any) {
   let pattern = /^[0-9{6,20}]$/;
-  console.log(pattern.test(value));
+  // console.log(pattern.test(value));
 }
 function countyCode(myCode: any) {
   countryCode.value = myCode;
@@ -68,11 +72,9 @@ function inputValidate(e: any) {
 }
 function changeToggle() {
   addNumber.value = !addNumber.value;
-  console.log(addNumber.value, "valuuuuu");
 }
 function sortContacts() {
   for (let i = 0; i < alphabets.value.length; i++) {
-    // console.log(alphabets.value[i]);
     let obj: { header: string; value: any[] } = {
       header: "",
       value: [],
@@ -84,8 +86,6 @@ function sortContacts() {
 
     filteredContacts.value.push(obj);
   }
-
-  console.log(filteredContacts.value, "filtereeee");
 }
 function findContact(e: any) {
   console.log(e.target.value, "logo");
@@ -93,6 +93,16 @@ function findContact(e: any) {
     (x: any) =>
       x.fName.includes(e.target.value) || x.lName.includes(e.target.value)
   );
+}
+async function createNewContact() {
+  let contData = {
+    fName: firstName.value,
+    lName: lastName.value,
+    operatorEmailAddress: operatorEmail.value,
+    tel: phone.value,
+  };
+  let resp = await createContact(contData);
+  console.log(resp.data, "create contact");
 }
 onMounted(() => {
   filteredList.value = allContacts.value;
@@ -115,22 +125,35 @@ onMounted(() => {
         <div class="bg-white h-full px-10 w-2/6 gap-5 column">
           <div class="font-bold pt-5">Add a New Contact</div>
           <div class="">
-            <LabelInput placeholder="johndoe@gmail.com" label="Firstname" />
-          </div>
-          <div class="">
-            <LabelInput placeholder="rainbow" label="Lastname" />
+            <LabelInput
+              placeholder="johndoe@gmail.com"
+              label="Firstname"
+              v-model="firstName"
+            />
           </div>
           <div class="">
             <LabelInput
+              placeholder="rainbow"
+              label="Last Name"
+              v-model="lastName"
+            />
+          </div>
+          <div class="">
+            <LabelInput
+              v-model="phone"
               placeholder="0715565381"
               label="Phone Number"
               type="Number"
             />
           </div>
           <div class="">
-            <LabelInput placeholder="johndoe" label="Operator Lastname" />
+            <LabelInput
+              placeholder="johndoe"
+              label="Operator's Email Address"
+              v-model="operatorEmail"
+            />
           </div>
-          <div class="">
+          <!-- <div class="">
             <vue-tel-input
               v-model="phone"
               @country-changed="countyCode($event.dialCode)"
@@ -138,10 +161,11 @@ onMounted(() => {
               @validate="inputValidate($event)"
             >
             </vue-tel-input>
-          </div>
+          </div> -->
           <div class="flex gap-10">
             <button
               class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
+              @click="createNewContact()"
             >
               Save Changes
             </button>
