@@ -1,4 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const currentPage = ref();
+function onPageChange(page) {
+  currentPage.value = page;
+}
+</script>
 <template>
   <div class="">
     <div class="top">
@@ -72,6 +77,13 @@
           </tr>
         </tbody>
       </table>
+      <pagination
+        style="margin-top: 1rem"
+        :totalPages="10"
+        :perPage="10"
+        :currentPage="currentPage"
+        @pagechanged="onPageChange"
+      />
     </div>
   </div>
 </template>
