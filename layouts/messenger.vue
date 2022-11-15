@@ -1,17 +1,37 @@
 <script setup lang="ts">
+import { Ref } from "vue";
+
 const directThreads = ref({});
+const allContacts: Ref<any> = ref([]);
+
 const {
-  public: { AUTH_SERVICE_URL },
+  public: { AUTH_MAIN_URL },
 } = useRuntimeConfig();
 
 onMounted(async () => {
   await getThreads();
-  let resp = await getContacts();
-  console.log(resp, "create contact");
+  await getContacts();
 });
+async function getContacts() {
+  const { AUTH_MAIN_URL } = useRuntimeConfig();
+  const cookie = useCookie("mks-token");
+  let token = cookie.value;
+  // console.log(AUTH_SERVICE_URL, "url");
+
+  let response = await useFetch<any>(`${AUTH_MAIN_URL}contacts/list`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  allContacts.value = response.data;
+  console.log(allContacts.value, "sesponseee");
+  console.log(response, "sespo");
+}
 async function getThreads() {
   try {
-    const threads = useFetch<any>(`${AUTH_SERVICE_URL}/threads`, {
+    const threads = useFetch<any>(`${AUTH_MAIN_URL}/threads`, {
       method: "GET",
       body: directThreads,
     });

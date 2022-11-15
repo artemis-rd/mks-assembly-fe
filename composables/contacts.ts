@@ -4,7 +4,7 @@ export const useCreateContact = async (contactData: any) => {
   let token = cookie.value;
   console.log(AUTH_SERVICE_URL, "ni mimi");
   return useState("contact", async () => {
-    await useFetch<any>(`${AUTH_SERVICE_URL}`, {
+    await useFetch<any>(`${AUTH_SERVICE_URL}contacts`, {
       method: "POST",
       body: contactData,
       headers: {
@@ -18,9 +18,9 @@ export const getContacts = async () => {
   const { AUTH_SERVICE_URL } = useRuntimeConfig();
   const cookie = useCookie("mks-token");
   let token = cookie.value;
-
+  // console.log(AUTH_SERVICE_URL, "url");
   return useState("contacts", async () => {
-    await useFetch<any>(`${AUTH_SERVICE_URL}/contacts`, {
+    return await useFetch<any>(`${AUTH_SERVICE_URL}contacts/list`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
