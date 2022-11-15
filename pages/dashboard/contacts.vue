@@ -11,6 +11,8 @@ const lastName = ref();
 const firstName = ref();
 const currentPage = ref();
 const filteredContacts = ref([]) as Ref<any[]>;
+const allContacts:Ref<any> = ref([])
+
 const alphabets = ref([
   "A",
   "B",
@@ -40,7 +42,7 @@ const alphabets = ref([
   "Z",
 ]) as Ref<any[]>;
 
-const allContacts = ref([
+const allContact = ref([
   { id: 1, fName: "john", lName: "jacoo" },
   { id: 1, fName: "Edwin", lName: "jacoo" },
   { id: 1, fName: "Lydiah", lName: "jacoo" },
@@ -108,12 +110,27 @@ async function createNewContact() {
 function onPageChanged(page) {
   currentPage.value = page;
 }
-async function getAllContacts() {
-  let resp = await getContacts();
-  console.log(resp, "contee");
+// async function getAllContacts() {
+//   let resp = await getContacts();
+//   console.log(resp, "contee");
+// }
+async function getContacts() {
+  const { AUTH_MAIN_URL } = useRuntimeConfig();
+  const cookie = useCookie("mks-token");
+  let token = cookie.value;
+  // console.log(AUTH_SERVICE_URL, "url");
+
+  let response = await useFetch<any>(`${AUTH_MAIN_URL}contacts/list`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  allContacts.value = response.data;
 }
-onMounted(() => {
-  getAllContacts();
+onMounted(async () => {
+  await getContacts();
   filteredList.value = allContacts.value;
   sortContacts();
 });
