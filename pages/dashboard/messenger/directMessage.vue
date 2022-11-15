@@ -1,3 +1,14 @@
+<script setup lang="ts">
+   import {io}  from "socket.io-client"
+   const {public: { AUTH_SERVICE_URL },} = useRuntimeConfig();
+   const socket = io(`${AUTH_SERVICE_URL}/`);
+   async function sendMessage() {
+   socket.on("connect",() =>{
+    message.value
+   })  
+   }
+const message = ref("")
+</script>
 <template>
     <div class="ml-2">
         <TopBar name="Paul Davidson" lastLogin="4.22pm" user="Angel Mwende" />
@@ -76,11 +87,11 @@
             </div>
         </div>
         <div class=" flex gap-4 items-center mt-3">
-            <textarea placeholder="Type something here ...." class="w-3/4 mt-2 outline-none text-xs" />
-            <div class="flex items-center gap-4">
-                <p class="text-red-500 text-medium font-medium">Send Message</p>
+            <textarea placeholder="Type something here ...." class="w-3/4 mt-2 outline-none text-xs" v-model="message"/>
+            <button class="flex items-center gap-4" @click="sendMessage()">
+                <p class="text-red-500 text-medium font-medium" @click="sendMessage()">Send Message</p>
                 <img class=" w-4" src="@/assets/img/sent.svg" alt="loading">
-            </div>
+            </button>
         </div>
 
     </div>

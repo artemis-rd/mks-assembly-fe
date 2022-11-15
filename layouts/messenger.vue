@@ -10,20 +10,24 @@ onMounted(async () => {
 })
 async function getThreads() {
     try {
-        const threads = useFetch < any > (`${AUTH_SERVICE_URL}/threads`, {
+       const cookie = useCookie("mks-token")
+       let token = cookie.value
+        const threads = await useFetch(`${AUTH_SERVICE_URL}/messaging/threads`, {
             method: 'GET',
-            body: directThreads
+            headers:{
+            Authorization:`Bearer ${token}`
+            }
         });
-        console.log(threads);
+        console.log(threads.data);
     }
-    catch {
-
+    catch(error) {
+        console.log(error);
     }
 }
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
-const selected = ref(false);
+const selected = ref(true);
 const groupNameScreen = ref(false);
 function startConversation() {
     showGroups.value = false
@@ -49,6 +53,9 @@ function goBackToSelectContact(){
     groupNameScreen.value = false
     selectContact.value =!selectContact.value
 }
+function selectContactToAdd(){
+    selected.value
+}
 
 </script>
 <template>
@@ -57,7 +64,7 @@ function goBackToSelectContact(){
             <!-- messeges screen -->
             <div class="">
                 <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
-                <SearchInput />
+                <SearchInput placeholder="Search Messages" />
             </div>
 
             <!-- direct messages -->
@@ -178,7 +185,7 @@ function goBackToSelectContact(){
                 <span class="text-md font-bold">Start a new Conversation</span>
             </button>
 
-            <SearchInput />
+            <SearchInput placeholder="Search" />
             <button class="flex gap-4 items-center" @click="showContactToSelect()">
                 <img class="w-6" src="@/assets/img/createContactIcon.svg" alt="loading">
                 <span class="text-red-500 font-xs font-semibold">Create a new Group</span>
@@ -188,13 +195,13 @@ function goBackToSelectContact(){
             <!-- contact list  -->
             <div class="flex flex-col gap-2">
                 <div class="flex flex-col gap-4 w-full">
-                    <div class="flex gap-4">
+                    <NuxtLink to="/dashboard/messenger/directMessage" class="flex gap-4">
                         <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
                         <div class="gap-2">
                             <p class="text-sm font-bold">Baraka Sean</p>
                             <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
                         </div>
-                    </div>
+                    </NuxtLink>
                 </div>
                 <!-- contact two -->
                 <div class="flex flex-col gap-4">
@@ -238,21 +245,21 @@ function goBackToSelectContact(){
                 <span class="text-md font-bold">Start a new Conversation</span>
             </button>
 
-            <SearchInput />
+            <SearchInput placeholder="Search" />
 
             <span class="my-4 text-gray-400 font-bold text-sm">Select Group Members</span>
             <!-- starting a conversation screen -->
             <!-- contact list  -->
             <div class="flex flex-col gap-2">
-                <div class="flex flex-col gap-4 w-full">
-                    <div class="flex gap-4">
+                <di class="flex flex-col gap-4 w-full">
+                    <button class="flex gap-4 items-center" :class="{ active:select}" >
                         <img class=" w-10" src="@/assets/img/profile.png" alt="loading" />
                         <div class="gap-2">
                             <p class="text-sm font-bold">Baraka Sean</p>
                             <span class="text-xs font-semibold text-gray-400">+254 712 654 234</span>
                         </div>
-                    </div>
-                </div>
+                    </button>
+                </di>
                 <!-- contact two -->
                 <div class="flex flex-col gap-4">
                     <div class="flex gap-4">
