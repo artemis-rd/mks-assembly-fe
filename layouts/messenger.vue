@@ -21,6 +21,8 @@ async function getThreads() {
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
+const selected = ref(true);
+const groupNameScreen = ref(false);
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -29,6 +31,7 @@ function showContactToSelect() {
   createGroups.value = false;
   selectContact.value = !selectContact.value;
 }
+
 function goBackToConversation() {
   createGroups.value = false;
   showGroups.value = !showGroups.value;
@@ -37,9 +40,12 @@ function goBackToStartConv() {
   selectContact.value = false;
   createGroups.value = !createGroups.value;
 }
-async function getAllContacts() {
-  let resp = await getContacts();
-  console.log(resp, "create contact");
+function goBackToSelectContact() {
+  groupNameScreen.value = false;
+  selectContact.value = !selectContact.value;
+}
+function selectContactToAdd() {
+  selected.value;
 }
 </script>
 <template>
