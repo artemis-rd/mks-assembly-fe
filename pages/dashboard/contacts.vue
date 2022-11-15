@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import { createContact } from "~~/services/contacts";
 
 const phone = ref("");
 const countryCode = ref("");
@@ -10,6 +9,7 @@ const contacts = ref();
 const operatorEmail = ref();
 const lastName = ref();
 const firstName = ref();
+const currentPage = ref();
 const filteredContacts = ref([]) as Ref<any[]>;
 const alphabets = ref([
   "A",
@@ -39,6 +39,7 @@ const alphabets = ref([
   "Y",
   "Z",
 ]) as Ref<any[]>;
+
 const allContacts = ref([
   { id: 1, fName: "john", lName: "jacoo" },
   { id: 1, fName: "Edwin", lName: "jacoo" },
@@ -101,10 +102,18 @@ async function createNewContact() {
     operatorEmailAddress: operatorEmail.value,
     tel: phone.value,
   };
-  let resp = await createContact(contData);
-  console.log(resp.data, "create contact");
+  let resp = await useCreateContact(contData);
+  console.log(resp, "create contact");
+}
+function onPageChanged(page) {
+  currentPage.value = page;
+}
+async function getAllContacts() {
+  let resp = await getContacts();
+  console.log(resp, "contee");
 }
 onMounted(() => {
+  getAllContacts();
   filteredList.value = allContacts.value;
   sortContacts();
 });
@@ -180,7 +189,7 @@ onMounted(() => {
       </div>
     </Transition>
 
-    <div class="pt-5 px-4">
+    <div class="pt-5 px-4 ml-6">
       <div class="flex justify-between items-center">
         <div
           class="flex w-8/12 justify-between border rounded-lg outline-none py-2 px-2"
@@ -225,12 +234,6 @@ onMounted(() => {
         </div>
       </div>
     </div>
-
-    <!-- <div class="px-4 grid grid-cols-3 gap-3">
-        <div class="" v-for="contactGroup in group" :key="Object.keys(group)[0]">
-          
-        </div>
-      </div> -->
   </div>
 </template>
 <style scoped>
