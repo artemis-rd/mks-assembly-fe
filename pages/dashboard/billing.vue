@@ -64,7 +64,7 @@
             <td>3000</td>
             <td>
               <button
-                class="items-center justify-center font-medium rounded-md text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
+                class="items-center justify-center font-medium  text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
               >
                 Details
               </button>
