@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Ref } from "vue";
-
+const receiverCont = useState("receiverContact");
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
 
@@ -66,6 +66,9 @@ function goBackToSelectContact() {
 }
 function selectContactToAdd() {
   selected.value;
+}
+function sendContactdata(detail) {
+  receiverCont.value = detail;
 }
 </script>
 <template>
@@ -248,6 +251,7 @@ function selectContactToAdd() {
             <NuxtLink
               to="/dashboard/messenger/directMessage"
               class="flex gap-4"
+              @click="sendContactdata(contact.id)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
