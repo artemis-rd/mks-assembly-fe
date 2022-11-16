@@ -1,29 +1,75 @@
 <script setup lang="ts">
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+const receiverContact = useState("receiverContact");
+
+const cookie = useCookie("mks-token");
+let token = cookie.value;
+const messageData = ref("");
+const participantData = ref();
+const rooomId = ref();
+
 const {
   public: { AUTH_SOCKET_URL },
 } = useRuntimeConfig();
-const socket = io(`${AUTH_SOCKET_URL}`);
-async function sendMessage() {
-  let roomId = 7;
-  let newMessage = "we are making a progress";
+const socket: Socket = io(`${AUTH_SOCKET_URL}`);
+async function startSocket() {
+  let brokenToken = token.split(".")[1];
+  let decoded = JSON.parse(window.atob(brokenToken));
+  // console.log(decoded.id, "decoded token");
+  // console.log(receiverContact.value, "receee");
+  //   let roomId = 7;
+  //   let newMessage = "we are making a progress";
   socket.on("connect", () => {
+    // console.log(token, "matoken");
     let timeStamp = Date.now();
-    console.log(timeStamp, "masaa");
+    let participants = {
+      participants: {
+        sender: decoded.id,
+        receiver: receiverContact.value,
+      },
+    };
+    // console.log(timeStamp, "masaa");
+    socket.emit("createRoom", participants);
+    socket.on("createRoom", (data) => {
+      // console.log(data, "rooom");
+    });
+    socket.on("r-createRoom", (data) => {
+      // console.log(data, "dateee");
+      rooomId.value = data.id;
+      // console.log(JSON.parse(data.participants), "marespondii");
+      participantData.value = JSON.parse(data.participants);
+    });
     // socket.to(roomId).emit("newMessage", newMessage);
-    socket.emit("chat", { data: "hello yoh" }, (data) => console.log(data));
-    socket.on("r-chat", (data) => {
-      console.log(data, "maundu ma nthi");
-    });
-    socket.on("chat", (data) => {
-      console.log(data, "maundu ma nthiiiiiiiiii ta ");
-    });
+    // socket.emit("chat", { data: "hello yoh" }, (data) => console.log(data));
+    // socket.on("r-chat", (data) => {
+    //   console.log(data, "maundu ma nthi");
+    // });
+    // socket.on("chat", (data) => {
+    //   console.log(data, "maundu ma nthiiiiiiiiii ta ");
+    // });
+  });
+}
+async function sendMessage() {
+  let msg = {
+    timeStamp: Date.now(),
+    message: messageData.value,
+    sender: participantData.value.sender,
+    receiver: participantData.value.receiver,
+    roomId: rooomId.value,
+  };
+
+  socket.emit("newMessage", msg);
+  socket.on("r-newMessage", (data) => {
+    console.log(data, "mameemememe");
   });
 }
 onMounted(() => {
-  sendMessage();
+  startSocket();
 });
-const message = ref("");
+watch(receiverContact, (count) => {
+  console.log(count, "watchee");
+  startSocket();
+});
 </script>
 <template>
   <div class="ml-2">
@@ -118,12 +164,10 @@ const message = ref("");
       <textarea
         placeholder="Type something here ...."
         class="w-3/4 mt-2 outline-none text-xs"
-        v-model="message"
+        v-model="messageData"
       />
       <button class="flex items-center gap-4" @click="sendMessage()">
-        <p class="text-red-500 text-medium font-medium" @click="sendMessage()">
-          Send Message
-        </p>
+        <p class="text-red-500 text-medium font-medium">Send Message</p>
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
     </div>
