@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     public: {
       AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL,
       AUTH_MAIN_URL: process.env.AUTH_MAIN_URL,
+      AUTH_SOCKET_URL: process.env.SOCKET_DATA,
     },
   },
   app: {

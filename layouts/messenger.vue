@@ -25,9 +25,9 @@ async function getContacts() {
       Authorization: `Bearer ${token}`,
     },
   });
-  allContacts.value = response.data;
-  console.log(allContacts.value, "sesponseee");
-  console.log(response, "sespo");
+  allContacts.value = response.data.value;
+  // console.log(response.data.value, "sesponseee");
+  // console.log(response, "sespo");
 }
 async function getThreads() {
   try {
@@ -35,7 +35,7 @@ async function getThreads() {
       method: "GET",
       body: directThreads,
     });
-    console.log(threads);
+    // console.log(threads);
   } catch {}
 }
 const showGroups = ref(true);
@@ -238,52 +238,27 @@ function selectContactToAdd() {
       >
       <!-- starting a conversation screen -->
       <!-- contact list  -->
-      <div class="flex flex-col">
-        <div class="flex flex-col gap-4 w-full">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Baraka Sean</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 712 654 234</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact two -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/user2.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Paul Davidson</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 710 231 123</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact three -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/user3.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">ICT Office</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 722 345 678</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact four -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Hon. Speaker</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 790 345 333</span
-              >
-            </div>
+      <div class="">
+        <div
+          class="flex flex-col"
+          v-for="contact in allContacts"
+          :key="contact.id"
+        >
+          <div class="flex flex-col gap-4 w-full pb-2">
+            <NuxtLink
+              to="/dashboard/messenger/directMessage"
+              class="flex gap-4"
+            >
+              <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
+              <div class="gap-2">
+                <p class="text-sm font-bold">
+                  {{ contact.fName }} {{ contact.lName }}
+                </p>
+                <span class="text-xs font-semibold text-gray-400">{{
+                  contact.phoneNumber
+                }}</span>
+              </div>
+            </NuxtLink>
           </div>
         </div>
       </div>
