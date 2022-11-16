@@ -5,9 +5,12 @@ const {
 } = useRuntimeConfig();
 const socket = io(`${AUTH_SOCKET_URL}`);
 async function sendMessage() {
+  let roomId = 7;
+  let newMessage = "we are making a progress";
   socket.on("connect", () => {
-    console.log(message, "log messages");
-
+    let timeStamp = Date.now();
+    console.log(timeStamp, "masaa");
+    // socket.to(roomId).emit("newMessage", newMessage);
     socket.emit("chat", { data: "hello yoh" }, (data) => console.log(data));
     socket.on("r-chat", (data) => {
       console.log(data, "maundu ma nthi");
