@@ -7,7 +7,7 @@ const cookie = useCookie("mks-token");
 let token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
-const createdRooms = ref([]) as Ref<any[]>;
+const existingRoom = ref([]) as Ref<any[]>;
 const rooomId = ref();
 const senderId = ref();
 
@@ -15,49 +15,56 @@ const {
   public: { AUTH_SOCKET_URL },
 } = useRuntimeConfig();
 const socket: Socket = io(`${AUTH_SOCKET_URL}`);
-async function startSocket() {
+
+async function getCreatedRooms() {
   let brokenToken = token.split(".")[1];
   senderId.value = JSON.parse(window.atob(brokenToken)).id;
-  socket.on("connect", () => {
-    // console.log(token, "matoken");
-    let timeStamp = Date.now();
-    let participants = {
-      participants: {
-        sender: senderId.value,
-        receiver: receiverContact.value,
-      },
-    };
-    // console.log(timeStamp, "masaa");
-    socket.emit("createRoom", participants);
-
-    socket.on("r-createRoom", (data) => {
-      // console.log(data, "dateee");
-      rooomId.value = data.split(" ").slice(-1)[0];
-
-      console.log(rooomId.value, "madata");
-    });
-  });
-}
-async function getCreatedRooms() {
   const { AUTH_MAIN_URL } = useRuntimeConfig();
-  let response = await useFetch<any>(`${AUTH_MAIN_URL}/chats/list`, {
+  let { data } = await useFetch<any>(`${AUTH_MAIN_URL}/chats/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
-  createdRooms.value = response.data.value;
-  console.log(createdRooms.value, "malumuuu");
-  for (let i = 0; i < createdRooms.value.length; i++) {
-    // console.log(JSON.parse(createdRooms.value[i].participants), "legee");
-    let dataTaken = JSON.parse(createdRooms.value[i].participants);
-    // console.log(dataTaken.sender);
-    socket.emit("participants", dataTaken);
-    socket.on("r-participants", (data) => {
-      console.log(data.receiver, "mamekam");
-    });
-    // console.log(JSON.parse(dataTaken), "mambbo"gh);
+  if (data.value) {
+    console.log("data", data.value);
+    let createdRooms = data.value;
+    let sender = senderId.value;
+
+    let existingRoom = createdRooms.filter(
+      (x) =>
+        x.participants.sender == sender &&
+        x.participants.receiver == receiverContact.value
+    );
+    console.log(existingRoom, "existing room");
+
+    // openin a socket for connection
+
+    let participants = {
+      participants: {
+        sender: senderId.value,
+        receiver: receiverContact.value,
+      },
+    };
+    console.log(receiverContact.value, "the receiver");
+    console.log();
+    if (receiverContact.value) {
+      if (existingRoom.length < 1) {
+        socket.emit("createRoom", participants);
+        socket.on("r-createRoom", (data) => {
+          // console.log(data, "dateee");
+          rooomId.value = data.split(" ").slice(-1)[0];
+          console.log(rooomId.value, "madata");
+        });
+      } else {
+        socket.emit("getIntoRoom", { roomId: existingRoom.id });
+        console.log(existingRoom, "im here");
+        socket.on(`${existingRoom.id}`, (data) => {
+          console.log(data, "retur ned data");
+        });
+      }
+    }
   }
 }
 function sendMessage() {
@@ -75,11 +82,10 @@ function sendMessage() {
 }
 onMounted(() => {
   getCreatedRooms();
-  startSocket();
 });
-watch(receiverContact, (count) => {
+watch(receiverContact, async (count) => {
   console.log(count, "watchee");
-  startSocket();
+  await getCreatedRooms();
 });
 </script>
 <template>
@@ -177,7 +183,7 @@ watch(receiverContact, (count) => {
         class="w-3/4 mt-2 outline-none text-xs"
         v-model="messageData"
       />
-      <button class="flex items-center gap-4" @click="sendMessage()">
+      <button class="flex items-center gap-4" @click="getCreatedRooms()">
         <p class="text-red-500 text-medium font-medium">Send Message</p>
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
