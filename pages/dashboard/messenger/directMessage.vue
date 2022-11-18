@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { io, Socket } from "socket.io-client";
+import { Ref } from "vue";
 const receiverContact = useState("receiverContact");
 
 const cookie = useCookie("mks-token");
 let token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
+const createdRooms = ref([]) as Ref<any[]>;
 const rooomId = ref();
+const senderId = ref();
 
 const {
   public: { AUTH_SOCKET_URL },
@@ -14,56 +17,64 @@ const {
 const socket: Socket = io(`${AUTH_SOCKET_URL}`);
 async function startSocket() {
   let brokenToken = token.split(".")[1];
-  let decoded = JSON.parse(window.atob(brokenToken));
-  // console.log(decoded.id, "decoded token");
-  // console.log(receiverContact.value, "receee");
-  //   let roomId = 7;
-  //   let newMessage = "we are making a progress";
+  senderId.value = JSON.parse(window.atob(brokenToken)).id;
   socket.on("connect", () => {
     // console.log(token, "matoken");
     let timeStamp = Date.now();
     let participants = {
       participants: {
-        sender: decoded.id,
+        sender: senderId.value,
         receiver: receiverContact.value,
       },
     };
     // console.log(timeStamp, "masaa");
     socket.emit("createRoom", participants);
-    socket.on("createRoom", (data) => {
-      // console.log(data, "rooom");
-    });
+
     socket.on("r-createRoom", (data) => {
       // console.log(data, "dateee");
-      rooomId.value = data.id;
-      // console.log(JSON.parse(data.participants), "marespondii");
-      participantData.value = JSON.parse(data.participants);
+      rooomId.value = data.split(" ").slice(-1)[0];
+
+      console.log(rooomId.value, "madata");
     });
-    // socket.to(roomId).emit("newMessage", newMessage);
-    // socket.emit("chat", { data: "hello yoh" }, (data) => console.log(data));
-    // socket.on("r-chat", (data) => {
-    //   console.log(data, "maundu ma nthi");
-    // });
-    // socket.on("chat", (data) => {
-    //   console.log(data, "maundu ma nthiiiiiiiiii ta ");
-    // });
   });
 }
-async function sendMessage() {
+async function getCreatedRooms() {
+  const { AUTH_MAIN_URL } = useRuntimeConfig();
+  let response = await useFetch<any>(`${AUTH_MAIN_URL}/chats/list`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  createdRooms.value = response.data.value;
+  console.log(createdRooms.value, "malumuuu");
+  for (let i = 0; i < createdRooms.value.length; i++) {
+    // console.log(JSON.parse(createdRooms.value[i].participants), "legee");
+    let dataTaken = JSON.parse(createdRooms.value[i].participants);
+    // console.log(dataTaken.sender);
+    socket.emit("participants", dataTaken);
+    socket.on("r-participants", (data) => {
+      console.log(data.receiver, "mamekam");
+    });
+    // console.log(JSON.parse(dataTaken), "mambbo"gh);
+  }
+}
+function sendMessage() {
   let msg = {
-    timeStamp: Date.now(),
+    timeStamp: Date.now().toString(),
     message: messageData.value,
-    sender: participantData.value.sender,
-    receiver: participantData.value.receiver,
-    roomId: rooomId.value,
+    sender: senderId.value,
+    receiver: receiverContact.value.toString(),
+    roomId: parseInt(rooomId.value),
   };
-
   socket.emit("newMessage", msg);
   socket.on("r-newMessage", (data) => {
     console.log(data, "mameemememe");
   });
 }
 onMounted(() => {
+  getCreatedRooms();
   startSocket();
 });
 watch(receiverContact, (count) => {

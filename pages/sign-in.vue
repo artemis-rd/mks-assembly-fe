@@ -25,7 +25,7 @@ async function loginAttempt() {
   authenticating.value = true;
   try {
     const { data, error } = await useFetch<any>(
-      `${AUTH_SERVICE_URL}auth/login`,
+      `${AUTH_SERVICE_URL}/auth/login`,
       {
         method: "POST",
         body: userInfo,
@@ -46,7 +46,7 @@ async function loginAttempt() {
     // clear the form data
     clearForm();
     authenticating.value = false;
-    router.push("dashboard");
+    router.push("dashboard/messenger");
   } catch (error) {
     authenticating.value = false;
     if (error instanceof FetchError) {
