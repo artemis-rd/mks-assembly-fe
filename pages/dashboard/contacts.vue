@@ -11,7 +11,7 @@ const lastName = ref();
 const firstName = ref();
 const currentPage = ref();
 const filteredContacts = ref([]) as Ref<any[]>;
-const allContacts:Ref<any> = ref([])
+const allContacts: Ref<any> = ref([]);
 
 const alphabets = ref([
   "A",
@@ -120,7 +120,7 @@ async function getContacts() {
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
 
-  let response = await useFetch<any>(`${AUTH_MAIN_URL}contacts/list`, {
+  let response = await useFetch<any>(`${AUTH_MAIN_URL}/contacts/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

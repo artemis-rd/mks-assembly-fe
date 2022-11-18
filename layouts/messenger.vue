@@ -18,7 +18,7 @@ async function getContacts() {
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
 
-  let response = await useFetch<any>(`${AUTH_MAIN_URL}contacts/list`, {
+  let response = await useFetch<any>(`${AUTH_MAIN_URL}/contacts/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
