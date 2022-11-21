@@ -127,11 +127,13 @@ async function getContacts() {
       Authorization: `Bearer ${token}`,
     },
   });
-  allContacts.value = response.data;
+  allContacts.value = response.data.value;
+  console.log(allContacts.value, "conte");
 }
 onMounted(async () => {
   await getContacts();
   filteredList.value = allContacts.value;
+  console.log(allContacts.value, "contacts");
   sortContacts();
 });
 </script>
@@ -240,10 +242,10 @@ onMounted(async () => {
                   <div class="text-sm font-bold">
                     {{ contact.fName }} {{ contact.lName }}
                   </div>
-                  <div class="text-sm font-bold">2.49pm</div>
+                  <!-- <div class="text-sm font-bold">2.49pm</div> -->
                 </div>
                 <div class="text-xs text-slate-400">
-                  Can you confirm whether internet services are....
+                  {{ contact.phoneNumber }}
                 </div>
               </div>
             </div>
