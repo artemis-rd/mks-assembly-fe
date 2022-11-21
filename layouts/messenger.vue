@@ -5,7 +5,7 @@ const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
 
 const {
-  public: { AUTH_MAIN_URL },
+  public: { MESSAGING_SERVICE },
 } = useRuntimeConfig();
 
 onMounted(async () => {
@@ -13,12 +13,12 @@ onMounted(async () => {
   await getContacts();
 });
 async function getContacts() {
-  const { AUTH_MAIN_URL } = useRuntimeConfig();
+  const { MESSAGING_SERVICE } = useRuntimeConfig();
   const cookie = useCookie("mks-token");
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
 
-  let response = await useFetch<any>(`${AUTH_MAIN_URL}/contacts/list`, {
+  let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -26,20 +26,23 @@ async function getContacts() {
     },
   });
   allContacts.value = response.data.value;
-
-
   // console.log(response.data.value, "sesponseee");
   // console.log(response, "sespo");
 }
 async function getThreads() {
   try {
-    const threads = useFetch<any>(`${AUTH_MAIN_URL}/threads`, {
+    const token = useCookie('mks-token');
+    const id = JSON.parse(window.atob(token.value.split('.')[1])).id
+    console.log('getting chats for', id);
+    const { data, error } = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list/${id}`, {
       method: "GET",
-      body: directThreads,
     });
-    // console.log(threads);
-  } catch { }
+    console.log('the chats',data.value);
+  } catch(err) {
+    console.log('chat threads error', err)
+  }
 }
+
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
@@ -103,7 +106,7 @@ async function selectContactToJoinGroup() {
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
         <div class="flex gap-2 my-4">
           <img class="" src="@/assets/img/profile.png" alt="loading" />
-          <NuxtLink to="/dashboard/messenger/directMessage" class="flex-col">
+          <NuxtLink to="/dashboard/messenger/dm/22" class="flex-col">
             <div class="flex justify-between">
               <p class="font-bold text-gray-700">Baraka sean</p>
               <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
@@ -114,7 +117,7 @@ async function selectContactToJoinGroup() {
           </NuxtLink>
         </div>
         <!-- thread two -->
-        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/directMessage"
+        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/dm/23"
           class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/user2.png" alt="loading" />
           <div class="flex-col">
@@ -128,7 +131,7 @@ async function selectContactToJoinGroup() {
           </div>
         </NuxtLink>
         <!-- thread three -->
-        <NuxtLink to="/dashboard/messenger/directMessage" class="flex gap-2 active:bg-slate-300">
+        <NuxtLink to="/dashboard/messenger/dm/24" class="flex gap-2 active:bg-slate-300">
           <img class="" src="@/assets/img/user3.png" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -141,7 +144,7 @@ async function selectContactToJoinGroup() {
           </div>
         </NuxtLink>
         <!-- thread four -->
-        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/directMessage"
+        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/dm/25"
           class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/HonSpeaker.svg" alt="loading" />
           <div class="flex-col">
@@ -158,7 +161,7 @@ async function selectContactToJoinGroup() {
 
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 my-4">
+        <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4">
           <img class="" src="@/assets/img/group1.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -171,7 +174,7 @@ async function selectContactToJoinGroup() {
           </div>
         </NuxtLink>
         <!-- thread two -->
-        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300 my-4">
+        <NuxtLink to="/dashboard/messenger/groups/2" class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/group2.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -184,7 +187,7 @@ async function selectContactToJoinGroup() {
           </div>
         </NuxtLink>
         <!-- thread group three -->
-        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300 my-4">
+        <NuxtLink to="/dashboard/messenger/groups/3" class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/group3.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -198,7 +201,7 @@ async function selectContactToJoinGroup() {
         </NuxtLink>
 
         <!-- thread group three -->
-        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300">
+        <NuxtLink to="/dashboard/messenger/groups/4" class="flex gap-2 active:bg-slate-300">
           <img class="" src="@/assets/img/group4.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">

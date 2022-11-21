@@ -115,12 +115,12 @@ function onPageChanged(page) {
 //   console.log(resp, "contee");
 // }
 async function getContacts() {
-  const { AUTH_MAIN_URL } = useRuntimeConfig();
+  const { MESSAGING_SERVICE } = useRuntimeConfig();
   const cookie = useCookie("mks-token");
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
 
-  let response = await useFetch<any>(`${AUTH_MAIN_URL}/contacts/list`, {
+  let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

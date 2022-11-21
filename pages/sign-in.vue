@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { clear } from "console";
 import { FetchError } from "ohmyfetch";
+import { db } from "~~/utils/db";
 
 const router = useRouter();
 
@@ -8,14 +9,14 @@ const {
   public: { AUTH_SERVICE_URL },
 } = useRuntimeConfig();
 
-const userInfo = reactive({
+const userInfo = ref({
   email: "",
   password: "",
 });
 
 const clearForm = () => {
-  userInfo.email = "";
-  userInfo.password = "";
+  userInfo.value.email = "";
+  userInfo.value.password = "";
 };
 
 const errorMessage = ref("");
@@ -28,33 +29,58 @@ async function loginAttempt() {
       `${AUTH_SERVICE_URL}/auth/login`,
       {
         method: "POST",
-        body: userInfo,
+        body: {
+          email: userInfo.value.email,
+          password: userInfo.value.password,
+        },
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
 
-    if (error.value) {
-      throw error.value;
-    }
     // since we don't have an error, get the token returned
     const { token } = data.value;
 
+    if (!token) {
+      if (error.value || data.value.response.errors) {
+        throw error.value ?? data.value.response.errors;
+      }
+    }
+
     const cookie = useCookie("mks-token");
     cookie.value = token;
+    const { email, id } = JSON.parse(window.atob(cookie.value.split('.')[1]));
+    const recordExists = await (await db.user.toArray()).length > 0;
+    if (!recordExists) {
+      const d0 = await db.user.add({
+        id,
+        name: email
+      })
+    } else {
+      const d0 = await db.user.update(id, {
+        id,
+        name: email
+      })
+    }
     // clear the form data
     clearForm();
     authenticating.value = false;
     router.push("dashboard/messenger");
+    
   } catch (error) {
+    console.log('shit,', error);
+    
     authenticating.value = false;
-    if (error instanceof FetchError) {
-      errorMessage.value = error.response._data.errors[0].description;
-      setTimeout(() => {
-        errorMessage.value = "";
-      }, 5000);
-    }
+    userInfo.value = { email: "", password: ""}
+    errorMessage.value = error[0].description;
+    setTimeout(() => {
+      errorMessage.value = "";
+      clearForm();
+    }, 5000);
+
+    // TODO: One day come back to fix this fetch error problem
+    // if (error instanceof FetchError) {}
   }
 }
 </script>

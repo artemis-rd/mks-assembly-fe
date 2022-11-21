@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL,
-      AUTH_MAIN_URL: process.env.AUTH_MAIN_URL,
+      MESSAGING_SERVICE: process.env.MESSAGING_SERVICE,
       AUTH_SOCKET_URL: process.env.SOCKET_DATA,
     },
   },
