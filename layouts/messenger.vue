@@ -26,6 +26,8 @@ async function getContacts() {
     },
   });
   allContacts.value = response.data.value;
+
+
   // console.log(response.data.value, "sesponseee");
   // console.log(response, "sespo");
 }
@@ -36,13 +38,15 @@ async function getThreads() {
       body: directThreads,
     });
     // console.log(threads);
-  } catch {}
+  } catch { }
 }
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
-const selected = ref(true);
+const selected = ref(false);
+const contactSelected = ref([]);
 const groupNameScreen = ref(false);
+const activeColor = ref();
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -64,11 +68,25 @@ function goBackToSelectContact() {
   groupNameScreen.value = false;
   selectContact.value = !selectContact.value;
 }
-function selectContactToAdd() {
-  selected.value;
-}
 function sendContactdata(detail) {
   receiverCont.value = detail;
+}
+async function selectContactToJoinGroup() {
+  selected.value = true
+  if (selected.value = true) {
+    let contactList = contactSelected.value.push(selectContact.value);
+   await getContacts()
+   let myContacts  = allContacts.value
+    for (let x of myContacts) {
+      console.log(x.phoneNumber, "contact number");
+      
+    }
+  let listLength = contactSelected.value.length;
+
+  }
+  console.log(`Contact to selected value: ${selected.value}`);
+
+
 }
 </script>
 <template>
@@ -96,11 +114,8 @@ function sendContactdata(detail) {
           </NuxtLink>
         </div>
         <!-- thread two -->
-        <NuxtLink
-          activeClass="active:bg-slate-300"
-          to="/dashboard/messenger/directMessage"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
+        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/directMessage"
+          class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/user2.png" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -113,10 +128,7 @@ function sendContactdata(detail) {
           </div>
         </NuxtLink>
         <!-- thread three -->
-        <NuxtLink
-          to="/dashboard/messenger/directMessage"
-          class="flex gap-2 active:bg-slate-300"
-        >
+        <NuxtLink to="/dashboard/messenger/directMessage" class="flex gap-2 active:bg-slate-300">
           <img class="" src="@/assets/img/user3.png" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -129,11 +141,8 @@ function sendContactdata(detail) {
           </div>
         </NuxtLink>
         <!-- thread four -->
-        <NuxtLink
-          activeClass="active:bg-slate-300"
-          to="/dashboard/messenger/directMessage"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
+        <NuxtLink activeClass="active:bg-slate-300" to="/dashboard/messenger/directMessage"
+          class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/HonSpeaker.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -149,10 +158,7 @@ function sendContactdata(detail) {
 
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-        <NuxtLink
-          to="/dashboard/messenger/groupMessages"
-          class="flex gap-2 my-4"
-        >
+        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 my-4">
           <img class="" src="@/assets/img/group1.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -165,10 +171,7 @@ function sendContactdata(detail) {
           </div>
         </NuxtLink>
         <!-- thread two -->
-        <NuxtLink
-          to="/dashboard/messenger/groupMessages"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
+        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/group2.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -181,10 +184,7 @@ function sendContactdata(detail) {
           </div>
         </NuxtLink>
         <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groupMessages"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
+        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300 my-4">
           <img class="" src="@/assets/img/group3.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -198,10 +198,7 @@ function sendContactdata(detail) {
         </NuxtLink>
 
         <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groupMessages"
-          class="flex gap-2 active:bg-slate-300"
-        >
+        <NuxtLink to="/dashboard/messenger/groupMessages" class="flex gap-2 active:bg-slate-300">
           <img class="" src="@/assets/img/group4.svg" alt="loading" />
           <div class="flex-col">
             <div class="flex justify-between">
@@ -227,39 +224,23 @@ function sendContactdata(detail) {
 
       <SearchInput />
       <button class="flex gap-4 items-center" @click="showContactToSelect()">
-        <img
-          class="w-6"
-          src="@/assets/img/createContactIcon.svg"
-          alt="loading"
-        />
-        <span class="text-red-500 font-xs font-semibold"
-          >Create a new Group</span
-        >
+        <img class="w-6" src="@/assets/img/createContactIcon.svg" alt="loading" />
+        <span class="text-red-500 font-xs font-semibold">Create a new Group</span>
       </button>
-      <span class="my-4 text-gray-400 font-bold text-sm"
-        >Send Direct Message</span
-      >
+      <span class="my-4 text-gray-400 font-bold text-sm">Send Direct Message</span>
       <!-- starting a conversation screen -->
       <!-- contact list  -->
       <div class="">
-        <div
-          class="flex flex-col"
-          v-for="contact in allContacts"
-          :key="contact.id"
-        >
+        <div class="flex flex-col" v-for="contact in allContacts" :key="contact.id">
           <div class="flex flex-col gap-4 w-full pb-2">
-            <NuxtLink
-              to="/dashboard/messenger/directMessage"
-              class="flex gap-4"
-              @click="sendContactdata(contact.id)"
-            >
+            <NuxtLink to="/dashboard/messenger/directMessage" class="flex gap-4" @click="sendContactdata(contact.id)">
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
                 <p class="text-sm font-bold">
                   {{ contact.fName }} {{ contact.lName }}
                 </p>
                 <span class="text-xs font-semibold text-gray-400">{{
-                  contact.phoneNumber
+                    contact.phoneNumber
                 }}</span>
               </div>
             </NuxtLink>
@@ -272,63 +253,25 @@ function sendContactdata(detail) {
     <!-- contact screen -->
     <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <div class="my-4 gap-4 flex flex-col w-3/4" v-if="selectContact">
-      <button class="flex gap-6 items-center" @click="goBackToStartConv()">
+      <button class="flex gap-6 items-center outline-none" @click="goBackToStartConv()">
         <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
         <span class="text-md font-bold">Start a new Conversation</span>
       </button>
 
       <SearchInput />
 
-      <span class="my-4 text-gray-400 font-bold text-sm"
-        >Select Group Members</span
-      >
+      <span class="my-4 text-gray-400 font-bold text-sm">Select Group Members</span>
       <!-- starting a conversation screen -->
       <!-- contact list  -->
-      <div class="flex flex-col">
-        <div class="flex flex-col gap-4 w-full">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Baraka Sean</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 712 654 234</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact two -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/user2.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Paul Davidson</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 710 231 123</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact three -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/user3.png" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">ICT Office</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 722 345 678</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- contact four -->
-        <div class="flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img class="w-10" src="@/assets/img/HonSpeaker.svg" alt="loading" />
-            <div class="gap-2">
-              <p class="text-sm font-bold">Hon. Speaker</p>
-              <span class="text-xs font-semibold text-gray-400"
-                >+254 790 345 333</span
-              >
+      <div class="flex flex-col gap-2 overflow-y-auto h-3/5">
+        <div class="" v-for="contact in allContacts" key="contact.phoneNumber">
+          <div class="flex flex-col gap- w-full">
+            <div class="flex gap-4" @click="selectContactToJoinGroup()">
+              <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
+              <div class="gap-2">
+                <p class="text-sm font-bold">{{ contact.fName }} {{ contact.lName }}</p>
+                <span class="text-xs font-semibold text-gray-400">{{ contact.phoneNumber }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -339,3 +282,6 @@ function sendContactdata(detail) {
     <slot></slot>
   </div>
 </template>
+<style scoped>
+
+</style>
