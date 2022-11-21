@@ -20,7 +20,7 @@ export const getContacts = async () => {
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
   return useState("contacts", async () => {
-    return await useFetch<any>(`${AUTH_SERVICE_URL}contacts/list`, {
+    return await useFetch<any>(`${AUTH_SERVICE_URL}/contacts/list`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
