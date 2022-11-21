@@ -14,9 +14,9 @@ const senderId = ref();
 const roomIdTaken = ref();
 
 const {
-  public: { AUTH_SOCKET_URL },
+  public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
-const socket: Socket = io(`${AUTH_SOCKET_URL}`);
+const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 
 async function getCreatedRooms() {
   let brokenToken = token.split(".")[1];

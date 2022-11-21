@@ -128,12 +128,10 @@ async function getContacts() {
     },
   });
   allContacts.value = response.data.value;
-  console.log(allContacts.value, "conte");
 }
 onMounted(async () => {
   await getContacts();
   filteredList.value = allContacts.value;
-  console.log(allContacts.value, "contacts");
   sortContacts();
 });
 </script>
