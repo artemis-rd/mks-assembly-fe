@@ -74,23 +74,22 @@ async function getCreatedRooms() {
     }
   }
 }
-async function sendMessage() {
+function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
     receiver: receiverContact.value.toString(),
     roomId: parseInt(rooomId.value),
-  };
-  const id = await db.userMessages.add({
+  }; 
+  socket.emit("newMessage", async ()=>{
+    const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
     roomId: parseInt(rooomId.value),
   })
-  console.log(id);
-  
-  socket.emit("newMessage", msg);
+  });
   
   socket.emit("newMessage", msg, async() => {
       const id = await db.userMessages.add({
