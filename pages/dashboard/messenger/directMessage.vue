@@ -54,9 +54,11 @@ async function getCreatedRooms() {
       if (existingRoom.length < 1) {
         socket.emit("createRoom", participants);
         socket.on("r-createRoom", (data) => {
-          // console.log(data, "dateee");
           rooomId.value = data.split(" ").slice(-1)[0];
-          console.log(rooomId.value, "madata");
+        });
+        socket.on(`${receiverContact.value}`, (data) => {
+          console.log(data, "wamekamuuu");
+          socket.emit("joinRoom", data);
         });
       } else {
         for (let i = 0; i < existingRoom.length; i++) {
