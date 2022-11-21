@@ -74,7 +74,7 @@ async function getCreatedRooms() {
     }
   }
 }
-function sendMessage() {
+async function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
@@ -82,12 +82,14 @@ function sendMessage() {
     receiver: receiverContact.value.toString(),
     roomId: parseInt(rooomId.value),
   };
-  const id = db.userMessages.add({
+  const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
     roomId: parseInt(rooomId.value),
   })
+  console.log(id);
+  
   socket.emit("newMessage", msg);
   socket.on("r-newMessage", (data) => {
     console.log(data, "mameemememe");
