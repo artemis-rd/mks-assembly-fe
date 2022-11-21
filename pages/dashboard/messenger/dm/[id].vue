@@ -81,7 +81,15 @@ function sendMessage() {
     sender: senderId.value,
     receiver: receiverContact.value.toString(),
     roomId: parseInt(rooomId.value),
-  };
+  }; 
+  socket.emit("newMessage", async ()=>{
+    const id = await db.userMessages.add({
+    timeStamp: Date.now().toString(),
+    message: messageData.value,
+    sender: senderId.value,
+    roomId: parseInt(rooomId.value),
+  })
+  });
   
   socket.emit("newMessage", msg, async() => {
       const id = await db.userMessages.add({
