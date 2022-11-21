@@ -1,6 +1,22 @@
+<script setup lang="ts">
+import { db } from '~~/utils/db';
+
+const group = ref("House Business Commitee ");
+onMounted(() => {
+    const route = useRoute()
+    group.value += route.params.id;
+
+    const messages = db.userMessages.filter(x => x.id.toString() === route.params.id);
+    if (messages.count.length > 0) {
+        // show the messages
+    } else {
+        return;
+    }
+})
+</script>
 <template>
     <div class="ml-2 max-w-2lg">
-        <TopBar name="House Bussiness Comm" last-login="27 Members" user="Angel Mwende" />
+        <TopBar :name="group" last-login="27 Members" user="Angel Mwende" />
         <div class="w-full flex flex-col gap-4">
             <p class="text-center text-gray-400 font-semibold my-2 text-sm">
                 The start of your conversation with House Business Comm

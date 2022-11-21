@@ -21,8 +21,8 @@ const socket: Socket = io(`${AUTH_SOCKET_URL}`);
 async function getCreatedRooms() {
   let brokenToken = token.split(".")[1];
   senderId.value = JSON.parse(window.atob(brokenToken)).id;
-  const { AUTH_MAIN_URL } = useRuntimeConfig();
-  let { data } = await useFetch<any>(`${AUTH_MAIN_URL}/chats/list`, {
+  const { MESSAGING_SERVICE } = useRuntimeConfig();
+  let { data } = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -103,8 +103,13 @@ function sendMessage() {
     console.log(data, "mameemememe");
   });
 }
+const name = ref('Paul Davidson ')
+
 onMounted(() => {
-  getCreatedRooms();
+    const route = useRoute()
+    name.value += route.params.id;
+
+    getCreatedRooms();
 });
 watch(receiverContact, async (count) => {
   console.log(count, "watchee");
@@ -113,7 +118,7 @@ watch(receiverContact, async (count) => {
 </script>
 <template>
   <div class="ml-2">
-    <TopBar name="Paul Davidson" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="border-y border-gray-300">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
         The start of your conversation with Paul
