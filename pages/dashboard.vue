@@ -3,11 +3,11 @@ import { io, Socket } from "socket.io-client";
 import { db } from "~~/utils/db";
 
 const {
-  public: { AUTH_SOCKET_URL },
+  public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
 
 onMounted(async() => {
-  const socket: Socket = io(`${AUTH_SOCKET_URL}`);
+  const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
   socket.on("connect", () => {
     console.log('Client connected', socket.id)
   })
