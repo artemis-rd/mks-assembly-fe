@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
-import { db } from "~~/data/db";
+import { db } from "~~/utils/db"
 const receiverContact = useState("receiverContact");
 
 const cookie = useCookie("mks-token");
@@ -82,13 +82,15 @@ function sendMessage() {
     receiver: receiverContact.value.toString(),
     roomId: parseInt(rooomId.value),
   };
-  const id = db.userMessages.add({
-    timeStamp: Date.now().toString(),
-    message: messageData.value,
-    sender: senderId.value,
-    roomId: parseInt(rooomId.value),
-  })
-  socket.emit("newMessage", msg);
+  
+  socket.emit("newMessage", msg, async() => {
+      const id = await db.userMessages.add({
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: parseInt(rooomId.value),
+    });
+  });
   socket.on("r-newMessage", (data) => {
     console.log(data, "mameemememe");
   });
