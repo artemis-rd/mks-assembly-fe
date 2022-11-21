@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 const changingData = defineProps({
   maxVisibleButtons: Number,
   totalPages: Number,
@@ -85,9 +85,8 @@ function isPageActive(page) {
       </button>
     </li>
 
-    <!-- Visible Buttons Start -->
+   
 
-    <!-- ... -->
     <li v-for="page in pages" class="pagination-item" :key="page.name">
       <button
         type="button"
@@ -99,7 +98,7 @@ function isPageActive(page) {
       </button>
     </li>
 
-    <!-- Visible Buttons End -->
+  
 
     <li class="pagination-item">
       <button type="button" @click="onClickNextPage" :disabled="isInLastPage">
@@ -135,4 +134,4 @@ function isPageActive(page) {
   margin-right: 3px;
   border-radius: 4px;
 }
-</style>
+</style> -->

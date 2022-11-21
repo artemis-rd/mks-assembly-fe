@@ -10,6 +10,7 @@ const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
 const rooomId = ref();
 const senderId = ref();
+const roomIdTaken = ref();
 
 const {
   public: { AUTH_SOCKET_URL },
@@ -58,10 +59,13 @@ async function getCreatedRooms() {
           console.log(rooomId.value, "madata");
         });
       } else {
-        socket.emit("getIntoRoom", { roomId: existingRoom.id });
-        console.log(existingRoom, "im here");
-        socket.on(`${existingRoom.id}`, (data) => {
-          console.log(data, "retur ned data");
+        for (let i = 0; i < existingRoom.length; i++) {
+          roomIdTaken.value = existingRoom[i].id;
+        }
+        socket.emit("joinRoom", { roomId: roomIdTaken.value });
+        console.log(roomIdTaken.value, "im here id");
+        socket.on(`${roomIdTaken.value}`, (data) => {
+          console.log(data, "returned data");
         });
       }
     }
@@ -183,7 +187,7 @@ watch(receiverContact, async (count) => {
         class="w-3/4 mt-2 outline-none text-xs"
         v-model="messageData"
       />
-      <button class="flex items-center gap-4" @click="getCreatedRooms()">
+      <button class="flex items-center gap-4" @click="sendMessage()">
         <p class="text-red-500 text-medium font-medium">Send Message</p>
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
