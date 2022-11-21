@@ -3,7 +3,10 @@ import Dexie , {Table } from 'dexie'
 export interface UserMessages{
     id?:number,
     message?:string,
-    timeStamp?:string
+    timeStamp?:string,
+    sender?: any,
+    receiver?:number,
+    roomId?:number
 }
 
 
