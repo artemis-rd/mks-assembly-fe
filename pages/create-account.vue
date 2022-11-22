@@ -1,9 +1,17 @@
 <script lang="ts" setup>
+import { react } from "@babel/types";
 import { FetchError } from "ohmyfetch";
+import { e } from "ohmyfetch/dist/error-4c47223d";
 const regErrorMessage = ref();
 
 const router = useRouter();
 
+const registered = reactive({
+  email: '',
+  password: ''
+})
+const pending = ref(false)
+const email = ref('')
 const tel = ref();
 const firstName = ref();
 const staffId = ref();
@@ -18,16 +26,17 @@ const {
   public: { AUTH_SERVICE_URL },
 } = useRuntimeConfig();
 async function createAccount() {
+  pending.value = true;
   let operatorInfo = {
     tel: tel.value,
-    staffId: staffId.value,
+    email: email.value,
     name: firstName.value + " " + lastName.value,
   };
   const cookie = useCookie("mks-token");
   let token = cookie.value;
   // console.log(token, "matoken");
   try {
-    let resp = await useFetch<any>(`${AUTH_SERVICE_URL}users/add-new`, {
+    let { data, error } = await useFetch<any>(`${AUTH_SERVICE_URL}/auth/signup`, {
       method: "POST",
       body: operatorInfo,
       headers: {
@@ -35,12 +44,19 @@ async function createAccount() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(resp.data, "responsee");
-    if (resp.data) {
+    
+    if (data) {
+      pending.value = false;
       formatInput();
-      router.push("/sign-in");
+      const { email, password } =data.value
+      registered.email = email;
+      registered.password = password
+      // setTimeout(() => {
+      //   router.push("/sign-in");
+      // }, 10000);
     }
   } catch (error) {
+    pending.value = false;
     if (error instanceof FetchError) {
       regErrorMessage.value = error.response._data.errors[0].description;
       setTimeout(() => {
@@ -76,7 +92,7 @@ async function createAccount() {
           class="my-0"
         />
         <LabelInput
-          v-model="staffId"
+          v-model="email"
           type="email"
           placeholder="johndoe.official@email.com"
           label="Email Address"
@@ -84,9 +100,13 @@ async function createAccount() {
         <LabelInput
           v-model="tel"
           type="tel"
-          placeholder="Your secret password"
+          placeholder="Example +245 700321245"
           label="Phone Number"
         />
+      </div>
+      <div class="my-2 text-xs max-w-lg bg-orange-50 p-3 rounded-md border border-orange-500" v-if="registered.password">
+        <h2 class="font-semibold my-1">Successfully created an account for {{registered.email}}</h2>
+        <p>Use the password generated below to access the account.<span class="font-bold cursor-pointer mx-2">{{registered.password}}</span></p>
       </div>
       <div class="flex items-start gap-4">
         <img src="~/assets/img/checkmark.svg" class="my-1" alt="" srcset="" />
@@ -102,9 +122,10 @@ async function createAccount() {
         <button
           @click="createAccount()"
           class="shadow-xl px-8 py-3 text-sm sm:w-auto bg-orange-500 text-white rounded-xl"
-        >
+        v-if="!pending">
           Proceed to Create Account
         </button>
+        <Loading v-else />
         <div class="to-login flex gap-2">
           <span class="text-sm font-semibold">Already have an account ?</span>
           <NuxtLink
