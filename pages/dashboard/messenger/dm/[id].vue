@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
-import { db } from "~~/utils/db"
-const receiverContact = useState("receiverContact");
-
+import { db } from "~~/utils/db";
+// const receiverContact = useState("receiverContact");
+const route = useRoute();
+let receiverContact = route.params.id;
 const cookie = useCookie("mks-token");
 let token = cookie.value;
 const messageData = ref("");
@@ -18,81 +19,79 @@ const {
 } = useRuntimeConfig();
 const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 
-async function getCreatedRooms() {
-  let brokenToken = token.split(".")[1];
-  senderId.value = JSON.parse(window.atob(brokenToken)).id;
-  const { MESSAGING_SERVICE } = useRuntimeConfig();
-  let { data } = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+// async function getCreatedRooms() {
+let brokenToken = token.split(".")[1];
+senderId.value = JSON.parse(window.atob(brokenToken)).id;
+const { MESSAGING_SERVICE } = useRuntimeConfig();
+let { data } = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+});
+if (data.value) {
+  console.log("data", data.value);
+  let createdRooms = data.value;
+  let sender = senderId.value;
+
+  let existingRoom = createdRooms.filter(
+    (x) =>
+      x.participants.sender == sender &&
+      x.participants.receiver == receiverContact
+  );
+  console.log(existingRoom, "existing room");
+
+  // openin a socket for connection
+
+  let participants = {
+    participants: {
+      sender: senderId.value,
+      receiver: receiverContact,
     },
-  });
-  if (data.value) {
-    console.log("data", data.value);
-    let createdRooms = data.value;
-    let sender = senderId.value;
-
-    let existingRoom = createdRooms.filter(
-      (x) =>
-        x.participants.sender == sender &&
-        x.participants.receiver == receiverContact.value
-    );
-    console.log(existingRoom, "existing room");
-
-    // openin a socket for connection
-
-    let participants = {
-      participants: {
-        sender: senderId.value,
-        receiver: receiverContact.value,
-      },
-    };
-    console.log(receiverContact.value, "the receiver");
-    console.log();
-    if (receiverContact.value) {
-      if (existingRoom.length < 1) {
-        socket.emit("createRoom", participants);
-        socket.on("r-createRoom", (data) => {
-          rooomId.value = data.split(" ").slice(-1)[0];
-        });
-        socket.on(`${receiverContact.value}`, (data) => {
-          console.log(data, "wamekamuuu");
-          socket.emit("joinRoom", data);
-        });
-      } else {
-        for (let i = 0; i < existingRoom.length; i++) {
-          roomIdTaken.value = existingRoom[i].id;
-        }
-        socket.emit("joinRoom", { roomId: roomIdTaken.value });
-        console.log(roomIdTaken.value, "im here id");
-        socket.on(`${roomIdTaken.value}`, (data) => {
-          console.log(data, "returned data");
-        });
+  };
+  console.log(receiverContact, "the receiver");
+  console.log();
+  if (receiverContact) {
+    if (existingRoom.length < 1) {
+      socket.emit("createRoom", participants);
+      socket.on("r-createRoom", (data) => {
+        rooomId.value = data.split(" ").slice(-1)[0];
+      });
+      socket.on(`${receiverContact}`, (data) => {
+        socket.emit("joinRoom", data);
+      });
+    } else {
+      for (let i = 0; i < existingRoom.length; i++) {
+        roomIdTaken.value = existingRoom[i].id;
       }
+      socket.emit("joinRoom", { roomId: roomIdTaken.value });
+      socket.on(`${roomIdTaken.value}`, (data) => {
+        console.log(data, "returned data");
+      });
     }
   }
 }
+// }
 function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
-    receiver: receiverContact.value.toString(),
+    receiver: receiverContact.toString(),
     roomId: parseInt(rooomId.value),
-  }; 
-  socket.emit("newMessage", async ()=>{
+  };
+  socket.emit("newMessage", async () => {
     const id = await db.userMessages.add({
-    timeStamp: Date.now().toString(),
-    message: messageData.value,
-    sender: senderId.value,
-    roomId: parseInt(rooomId.value),
-  })
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: parseInt(rooomId.value),
+    });
   });
-  
-  socket.emit("newMessage", msg, async() => {
-      const id = await db.userMessages.add({
+
+  socket.emit("newMessage", msg, async () => {
+    const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
       message: messageData.value,
       sender: senderId.value,
@@ -103,18 +102,17 @@ function sendMessage() {
     console.log(data, "mameemememe");
   });
 }
-const name = ref('Paul Davidson ')
+const name = ref("Paul Davidson ");
 
 onMounted(() => {
-    const route = useRoute()
-    name.value += route.params.id;
+  name.value += route.params.id;
 
-    getCreatedRooms();
+  // getCreatedRooms();
 });
-watch(receiverContact, async (count) => {
-  console.log(count, "watchee");
-  await getCreatedRooms();
-});
+// watch(receiverContact, async (count) => {
+//   console.log(count, "watchee");
+//   await getCreatedRooms();
+// });
 </script>
 <template>
   <div class="ml-2">
