@@ -5,7 +5,7 @@ import { db } from "~~/utils/db"
 const receiverContact = useState("receiverContact");
 
 const cookie = useCookie("mks-token");
-let token = cookie.value;
+const token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
@@ -104,12 +104,28 @@ function sendMessage() {
   });
 }
 const name = ref('Paul Davidson ')
+const {
+  public: { MESSAGING_SERVICE },
+} = useRuntimeConfig();
 
-onMounted(() => {
+async function getMessagesByRoom(){
+}
+const roomId = 847
+console.log(roomId);
+
+const { data: messageList, error, pending } = await useFetch<any>(
+  `${MESSAGING_SERVICE}/message/list/${roomId}`,
+  {
+    method: "GET",
+  }
+); 
+
+onMounted(async () => {
     const route = useRoute()
     name.value += route.params.id;
 
     getCreatedRooms();
+    await getMessagesByRoom();
 });
 watch(receiverContact, async (count) => {
   console.log(count, "watchee");
@@ -125,6 +141,7 @@ watch(receiverContact, async (count) => {
       </p>
 
       <div class="flex-col flex mx-2 gap-2">
+        <p v-for="sendMsg in messageList" key="sendMsg.id">{{sendMsg.message}}</p>
         <!-- conv one -->
         <div class="">
           <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
