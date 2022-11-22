@@ -40,6 +40,7 @@ async function getContacts() {
   // console.log(response, "sespo");
 }
 
+
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
@@ -78,11 +79,11 @@ async function selectContactToJoinGroup() {
     await getContacts();
     let myContacts = allContacts.value;
     for (let x of myContacts) {
-      console.log(x.phoneNumber, "contact number");
+      // code 
     }
     let listLength = contactSelected.value.length;
   }
-  console.log(`Contact to selected value: ${selected.value}`);
+
 }
 </script>
 <template>
