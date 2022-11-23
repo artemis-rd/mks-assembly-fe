@@ -23,6 +23,9 @@ export default defineNuxtConfig({
       ],
     },
   },
+  build: {
+    transpile: ['dexie']
+  },
   css: ["~/assets/css/main.css"],
   modules: ["@nuxtjs/tailwindcss"],
 });

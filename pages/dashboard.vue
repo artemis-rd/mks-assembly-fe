@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { io, Socket } from "socket.io-client";
-import { db } from "~~/utils/db";
+import { db } from "~~/data/db";
 
 const {
   public: { MESSAGING_SOCKET_URL },
