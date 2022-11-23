@@ -12,7 +12,7 @@
     "@nuxtjs/tailwindcss": "^6.1.1",
     "@types/socket.io-client": "^3.0.0",
     "nuxt": "3.0.0-rc.12",
-    "tailwindcss": "^3.2.1"
+    "tailwindcss": "^3.2.4"
   },
   "dependencies": {
     "@types/vue-tel-input": "^2.1.2",
