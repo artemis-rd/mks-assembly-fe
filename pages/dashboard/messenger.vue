@@ -1,6 +1,6 @@
 <template>
    <NuxtLayout name="messenger">
-    <main>
+    <main class="w-full">
         <NuxtPage/>
     </main>
    </NuxtLayout>
