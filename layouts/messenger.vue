@@ -185,7 +185,7 @@ async function selectContactToJoinGroup() {
       </div>
     </div>
     <!-- start conversation button -->
-    <div class="my-4 gap-4 flex flex-col w-3/4" v-if="createGroups">
+    <div class="my-4 gap-4 flex flex-col max-w-3/4" v-if="createGroups">
       <button class="flex gap-6 items-center" @click="goBackToConversation()">
         <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
         <span class="text-md font-bold">Start a new Conversation</span>
