@@ -11,34 +11,47 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-const { data: chatsList, error, pending } = await useFetch<any>(
-  `${MESSAGING_SERVICE}/chats/list?userId=${id}`,
-  {
-    method: "GET",
-  }
-);
-
+console.log(id, "my id");
+const {
+  data: chatsList,
+  error,
+  pending,
+} = await useFetch<any>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
+  method: "GET",
+});
+// console.log(chatsList, "machats");
 onMounted(async () => {
   // await getThreads();
-  await getContacts();
+  // await getContacts();
 });
-async function getContacts() {
-  const { MESSAGING_SERVICE } = useRuntimeConfig();
-  const cookie = useCookie("mks-token");
-  let token = cookie.value;
-  // console.log(AUTH_SERVICE_URL, "url");
+// async function getContacts() {
+// const { MESSAGING_SERVICE } = useRuntimeConfig();
 
-  let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/list`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+// console.log(AUTH_SERVICE_URL, "url");
+
+let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token.value}`,
+  },
+});
+allContacts.value = response.data.value;
+console.log(response.data.value, "contacts");
+console.log(chatsList.value, "chats");
+if (chatsList) {
+  chatsList.value.forEach((element: any) => {
+    element.participants.sender = response.data.value.find(
+      (x: any) => x.id == element.participants.sender
+    );
+    element.participants.receiver = response.data.value.find(
+      (x: any) => x.id == element.participants.receiver
+    );
+    console.log(element.participants.sender, "sender");
+    console.log(element.participants.receiver, "receivers");
   });
-  allContacts.value = response.data.value;
-  // console.log(response.data.value, "sesponseee");
-  // console.log(response, "sespo");
 }
+console.log(chatsList.value, "all chats list");
 
 
 const showGroups = ref(true);
@@ -97,20 +110,31 @@ async function selectContactToJoinGroup() {
 
       <!-- direct messages -->
       <div class="my-1 text-sm" v-if="!pending">
-        <p v-for="item of chatsList" :key="item.id">{{item}}</p>
+        <p></p>
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
-        <NuxtLink to="/dashboard/messenger/dm/22" class="flex gap-2 my-4">
-          <img class="" src="@/assets/img/profile.png" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="font-bold text-gray-700">Baraka sean</p>
-              <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+        <div class="" v-for="item of chatsList" :key="item.id">
+          <NuxtLink to="/dashboard/messenger/dm/22" class="flex gap-2 my-4">
+            <img class="" src="@/assets/img/profile.png" alt="loading" />
+            <div class="flex-col">
+              <div class="flex justify-between">
+                <!-- <p
+                  class="font-bold text-gray-700"
+                  v-if="id != item.participants.sender && item.participants.sender != null"
+                >
+                  {{ item.participants.sender.name }}
+                </p>
+                || -->
+                <p class="font-bold text-gray-700">
+                  {{ item.participants.receiver.name }}
+                </p>
+                <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+              </div>
+              <p class="text-xs text-gray-400">
+                Hello, can you check whether everything is okay...
+              </p>
             </div>
-            <p class="text-xs text-gray-400">
-              Hello, can you check whether everything is okay...
-            </p>
-          </div>
-        </NuxtLink>
+          </NuxtLink>
+        </div>
       </div>
       <div v-else>
         <div class="loader">Retrieving chats...</div>
@@ -215,17 +239,17 @@ async function selectContactToJoinGroup() {
         >
           <div class="flex flex-col gap-4 w-full pb-2">
             <NuxtLink
-              to="/dashboard/messenger/directMessage"
+              :to="`/dashboard/messenger/dm/${contact.id}`"
               class="flex gap-4"
               @click="sendContactdata(contact.id)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
                 <p class="text-sm font-bold">
-                  {{ contact.fName }} {{ contact.lName }}
+                  {{ contact.name }}
                 </p>
                 <span class="text-xs font-semibold text-gray-400">{{
-                  contact.phoneNumber
+                  contact.tel
                 }}</span>
               </div>
             </NuxtLink>

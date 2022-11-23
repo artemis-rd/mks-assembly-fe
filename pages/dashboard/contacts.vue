@@ -120,13 +120,14 @@ async function getContacts() {
   let token = cookie.value;
   // console.log(AUTH_SERVICE_URL, "url");
 
-  let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/list`, {
+  let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log(response.data.value, "dtaa");
   allContacts.value = response.data.value;
 }
 onMounted(async () => {

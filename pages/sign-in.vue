@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { clear } from "console";
 import { FetchError } from "ohmyfetch";
-import { db } from "~~/utils/db";
+import { db } from "~~/data/db";
 
 const router = useRouter();
 
