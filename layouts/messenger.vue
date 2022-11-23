@@ -16,7 +16,7 @@ const {
   data: chatsList,
   error,
   pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list?userId=${id}`, {
+} = await useFetch<any>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
   method: "GET",
 });
 // console.log(chatsList, "machats");
@@ -39,7 +39,7 @@ let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list`, {
 allContacts.value = response.data.value;
 console.log(response.data.value, "contacts");
 console.log(chatsList.value, "chats");
-if (chatsList != null) {
+if (chatsList) {
   chatsList.value.forEach((element: any) => {
     element.participants.sender = response.data.value.find(
       (x: any) => x.id == element.participants.sender
@@ -209,7 +209,7 @@ async function selectContactToJoinGroup() {
       </div>
     </div>
     <!-- start conversation button -->
-    <div class="my-4 gap-4 flex flex-col w-3/4" v-if="createGroups">
+    <div class="my-4 gap-4 flex flex-col max-w-3/4" v-if="createGroups">
       <button class="flex gap-6 items-center" @click="goBackToConversation()">
         <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
         <span class="text-md font-bold">Start a new Conversation</span>
