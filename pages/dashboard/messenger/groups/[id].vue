@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { db } from '~~/utils/db';
+import { db } from '~~/data/db';
 
 const group = ref("House Business Commitee ");
 onMounted(() => {

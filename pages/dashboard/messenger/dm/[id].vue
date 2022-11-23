@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
-import { db } from "~~/utils/db";
+import { db } from "~~/data/db";
 // const receiverContact = useState("receiverContact");
 const route = useRoute();
 let receiverContact = route.params.id;
