@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { Ref } from "vue";
+import { io, Socket } from "socket.io-client";
+const {
+  public: { MESSAGING_SOCKET_URL },
+} = useRuntimeConfig();
 const receiverCont = useState("receiverContact");
+const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
+// const roomId = ref();
+const roomId = useState("createdRoomId");
+
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
 
@@ -11,48 +19,32 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-console.log(id, "my id");
+
 const {
-  data: chatsList,
+  data: rooms,
   error,
   pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list?userId=${id}`, {
+} = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
   method: "GET",
+});
+
+watch(rooms, (r) => {
+  console.log("new room data");
 });
 // console.log(chatsList, "machats");
-onMounted(async () => {
-  // await getThreads();
-  // await getContacts();
-});
-// async function getContacts() {
-// const { MESSAGING_SERVICE } = useRuntimeConfig();
-
-// console.log(AUTH_SERVICE_URL, "url");
-
-let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token.value}`,
-  },
-});
-allContacts.value = response.data.value;
-console.log(response.data.value, "contacts");
-console.log(chatsList.value, "chats");
-if (chatsList != null) {
-  chatsList.value.forEach((element: any) => {
-    element.participants.sender = response.data.value.find(
-      (x: any) => x.id == element.participants.sender
-    );
-    element.participants.receiver = response.data.value.find(
-      (x: any) => x.id == element.participants.receiver
-    );
-    console.log(element.participants.sender, "sender");
-    console.log(element.participants.receiver, "receivers");
-  });
-}
-console.log(chatsList.value, "all chats list");
-
+let { data: contacts } = await useFetch<any>(
+  `${MESSAGING_SERVICE}/contacts/old/list`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token.value}`,
+    },
+  }
+);
+allContacts.value = contacts.value;
+console.log(rooms.value, "rooms");
+// console.log(allContacts.value, "conatctis");
 
 const showGroups = ref(true);
 const createGroups = ref(false);
@@ -92,11 +84,31 @@ async function selectContactToJoinGroup() {
     await getContacts();
     let myContacts = allContacts.value;
     for (let x of myContacts) {
-      // code 
+      // code
     }
     let listLength = contactSelected.value.length;
   }
+}
+// create room if there is no existing room
+function createRoom(receiverId) {
+  if (id && receiverId) {
+    let participants = {
+      participants: {
+        sender: id,
+        receiver: receiverId,
+      },
+    };
+    console.log(participants, "participants");
+    socket.emit("createRoom", participants);
+    socket.on("r-createRoom", (data) => {
+      roomId.value = data.split(" ").slice(-1)[0];
 
+      // console.log(roomId.value, "room id has come");
+    });
+    socket.on(`${receiverId}`, (data) => {
+      socket.emit("joinRoom", data);
+    });
+  }
 }
 </script>
 <template>
@@ -110,30 +122,29 @@ async function selectContactToJoinGroup() {
 
       <!-- direct messages -->
       <div class="my-1 text-sm" v-if="!pending">
-        <p></p>
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
-        <div class="" v-for="item of chatsList" :key="item.id">
-          <NuxtLink to="/dashboard/messenger/dm/22" class="flex gap-2 my-4">
-            <img class="" src="@/assets/img/profile.png" alt="loading" />
-            <div class="flex-col">
-              <div class="flex justify-between">
-                <!-- <p
-                  class="font-bold text-gray-700"
-                  v-if="id != item.participants.sender && item.participants.sender != null"
-                >
-                  {{ item.participants.sender.name }}
-                </p>
-                || -->
-                <p class="font-bold text-gray-700">
-                  {{ item.participants.receiver.name }}
-                </p>
-                <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
-              </div>
-              <p class="text-xs text-gray-400">
-                Hello, can you check whether everything is okay...
-              </p>
+        <div class="">
+          <div class="" v-for="item of rooms" :key="item.id">
+            <div class="">
+              <NuxtLink
+                :to="`/dashboard/messenger/dm/${item.id}`"
+                class="flex gap-2 my-4"
+              >
+                <img class="" src="@/assets/img/profile.png" alt="loading" />
+                <div class="flex-col">
+                  <div class="flex justify-between">
+                    <p class="font-bold text-gray-700">
+                      {{ item.participants.receiver.name }}
+                    </p>
+                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Hello, can you check whether everything is okay...
+                  </p>
+                </div>
+              </NuxtLink>
             </div>
-          </NuxtLink>
+          </div>
         </div>
       </div>
       <div v-else>
@@ -204,7 +215,7 @@ async function selectContactToJoinGroup() {
           </div>
         </NuxtLink>
         <button class="absolute bottom-0" @click="startConversation()">
-          <img src="@/assets/img/chatIcon.svg" alt="" />
+          <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
         </button>
       </div>
     </div>
@@ -239,9 +250,9 @@ async function selectContactToJoinGroup() {
         >
           <div class="flex flex-col gap-4 w-full pb-2">
             <NuxtLink
-              :to="`/dashboard/messenger/dm/${contact.id}`"
+              :to="`/dashboard/messenger/dm/${roomId}`"
               class="flex gap-4"
-              @click="sendContactdata(contact.id)"
+              @click="createRoom(contact.id)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">

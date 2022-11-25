@@ -84,7 +84,7 @@ function sortContacts() {
     };
     obj.header = alphabets.value[i];
     obj.value = filteredList.value.filter(
-      (x: any) => x.fName[0].toUpperCase() == alphabets.value[i]
+      (x: any) => x.name[0].toUpperCase() == alphabets.value[i]
     );
 
     filteredContacts.value.push(obj);
@@ -239,12 +239,12 @@ onMounted(async () => {
               <div class="flex-col">
                 <div class="flex justify-between">
                   <div class="text-sm font-bold">
-                    {{ contact.fName }} {{ contact.lName }}
+                    {{ contact.name }}
                   </div>
                   <!-- <div class="text-sm font-bold">2.49pm</div> -->
                 </div>
                 <div class="text-xs text-slate-400">
-                  {{ contact.phoneNumber }}
+                  {{ contact.tel }}
                 </div>
               </div>
             </div>

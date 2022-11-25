@@ -2,17 +2,15 @@
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
-// const receiverContact = useState("receiverContact");
+const createdRoom = useState("createdRoomId");
 const route = useRoute();
-let receiverContact = route.params.id;
 const cookie = useCookie("mks-token");
 const token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
-const rooomId = ref();
+const rooomId = route.params.id;
 const senderId = ref();
-const roomIdTaken = ref();
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -21,81 +19,39 @@ const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 
 // async function getCreatedRooms() {
 let brokenToken = token.split(".")[1];
-senderId.value = JSON.parse(window.atob(brokenToken)).id;
+senderId.value = JSON.parse(atob(brokenToken)).id;
 const { MESSAGING_SERVICE } = useRuntimeConfig();
-let { data } = await useFetch<any>(`${MESSAGING_SERVICE}/chats/list`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-});
-if (data.value) {
-  console.log("data", data.value);
-  let createdRooms = data.value;
-  let sender = senderId.value;
 
-  let existingRoom = createdRooms.filter(
-    (x) =>
-      x.participants.sender == sender &&
-      x.participants.receiver == receiverContact
-  );
-  console.log(existingRoom, "existing room");
-
-  // openin a socket for connection
-
-  let participants = {
-    participants: {
-      sender: senderId.value,
-      receiver: receiverContact,
-    },
-  };
-  console.log(receiverContact, "the receiver");
-  console.log();
-  if (receiverContact) {
-    if (existingRoom.length < 1) {
-      socket.emit("createRoom", participants);
-      socket.on("r-createRoom", (data) => {
-        rooomId.value = data.split(" ").slice(-1)[0];
-      });
-      socket.on(`${receiverContact}`, (data) => {
-        socket.emit("joinRoom", data);
-      });
-    } else {
-      for (let i = 0; i < existingRoom.length; i++) {
-        roomIdTaken.value = existingRoom[i].id;
-      }
-      socket.emit("joinRoom", { roomId: roomIdTaken.value });
-      socket.on(`${roomIdTaken.value}`, (data) => {
-        console.log(data, "returned data");
-      });
-    }
-  }
+if (rooomId != undefined) {
+  console.log(rooomId, "roommmmmmu");
+  socket.emit("joinRoom", { roomId: rooomId });
+  socket.on(`${rooomId}`, (data) => {
+    console.log(data, "returned data");
+  });
 }
-// }
+
+watch(createdRoom, (room) => {
+  console.log(room, "watchee");
+  socket.emit("joinRoom", { roomId: room });
+  socket.on(`${room}`, (data) => {
+    console.log(data, "returned data");
+  });
+});
 function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
-    receiver: receiverContact.toString(),
-    roomId: parseInt(rooomId.value),
+    roomId: rooomId,
   };
-  socket.emit("newMessage", async () => {
-    const id = await db.userMessages.add({
-      timeStamp: Date.now().toString(),
-      message: messageData.value,
-      sender: senderId.value,
-      roomId: parseInt(rooomId.value),
-    });
-  });
+  console.log(msg, "the message");
 
   socket.emit("newMessage", msg, async () => {
     const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
       message: messageData.value,
       sender: senderId.value,
-      roomId: parseInt(rooomId.value),
+      roomId: parseInt(rooomId.toString()),
     });
   });
   socket.on("r-newMessage", (data) => {
@@ -105,27 +61,16 @@ function sendMessage() {
 const name = ref("Paul Davidson ");
 
 async function getMessagesByRoom() {}
-const roomId = 847;
-console.log(roomId);
+// const roomId = 847;
+// console.log(roomId);
 
 const {
   data: messageList,
   error,
   pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/message/list/${roomId}`, {
+} = await useFetch<any>(`${MESSAGING_SERVICE}/message/list/${rooomId}`, {
   method: "GET",
 });
-
-onMounted(async () => {
-  const route = useRoute();
-  name.value += route.params.id;
-
-  await getMessagesByRoom();
-});
-// watch(receiverContact, async (count) => {
-//   console.log(count, "watchee");
-//   await getCreatedRooms();
-// });
 </script>
 <template>
   <div class="ml-2">
