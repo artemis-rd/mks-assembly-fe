@@ -61,8 +61,46 @@ function sendMessage() {
 const name = ref("Paul Davidson ");
 
 async function getMessagesByRoom() {}
-// const roomId = 847;
-// console.log(roomId);
+const roomId = 847;
+const roomConversation = [
+  {
+    message: "hello",
+    timeStamp: "123456789",
+    receiver: "asdfgjuy",
+    sender: "qwert",
+  },
+  {
+    message: "hello there",
+    timeStamp: "1234567899",
+    receiver: "qwert",
+    sender: "asdfgjuy",
+  },
+  {
+    message: "umekua aje",
+    timeStamp: "123456789",
+    receiver: "asdfgjuy",
+    sender: "qwert",
+  },
+  {
+    message: "niko poa mimi",
+    timeStamp: "123456789",
+    receiver: "qwert",
+    sender: "asdfgjuy",
+  },
+  {
+    message: "Naona umemanage kuunda the design",
+    timeStamp: "123456789",
+    receiver: "asdfgjuy",
+    sender: "qwert",
+  },
+  {
+    message:
+      "Commodo hendrerit luctus tellus, diam fermentum egestas molestie eu. Pellentesque semper egestas vulputate a. Vel amet quis scelerisque lectus ut ac viverra eget. Et porta volutpat egestas a. Ut non potenti est amet. Imperdiet ac dictum euismod at. A hendrerit amet, id tempor integer tincidunt in sit aenean.",
+    timeStamp: "123456789",
+    receiver: "qwert",
+    sender: "asdfgjuy",
+  },
+];
 
 const {
   data: messageList,
@@ -73,106 +111,44 @@ const {
 });
 </script>
 <template>
-  <div class="ml-2">
+  <div class="ml-2 relative h-screen">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="border-y border-gray-300">
+    <div class="p-4">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
         The start of your conversation with Paul
       </p>
 
-      <div class="flex-col flex mx-2 gap-2">
-        <p v-for="sendMsg in messageList" key="sendMsg.id">
-          {{ sendMsg.message }}
-        </p>
-        <!-- conv one -->
+      <div
+        class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
+        v-for="sendMsg in roomConversation"
+        key="sendMsg.receiver"
+      >
         <div class="">
-          <p class="text-xs ml-4 font-semibold text-gray-400 mb-1">04.22 p.m</p>
-          <div class="p-2 rounded-bl-none rounded-2xl bg-red-50 w-3/4">
-            <p class="text-xs font-semibold">
-              Justo, ac lectus eu vitae. Sed urna metus, amet arcu justo, in
-              tortor massa. Ut donec purus tristique risus mauris. Diam
-              fermentum, iaculis vitae pellentesque sociis diam nulla. Quam nunc
-              tristique ut lacus enim aliquet tempus feugiat senectus. Fermentum
-              nunc pharetra arcu mi,
-            </p>
-          </div>
-        </div>
-        <!-- conv two -->
-        <div class="">
-          <div class="flex">
-            <div class="w-1/2"></div>
-            <div
-              class="p-3 rounded-2xl text-cyan-50 bg-red-500 rounded-br-none"
-            >
-              <p class="text-xs flex justify-end font-semibold">
-                Leo sed venenatis vestibulum a. Mauris libero vel odio semper.
-                Dictum tempus tellus iaculis est varius hac ultrices. Et amet,
-                lectus vulputate viverra urna sagittis faucib
-              </p>
-            </div>
-          </div>
           <div
-            class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1"
+            class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
+            :class="{
+              'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                sendMsg.receiver == 'qwert',
+              'rounded-tl-none bg-orange-50': sendMsg.receiver !== 'qwert',
+            }"
           >
-            <p>sent</p>
-            <p>04.22 p.m</p>
-          </div>
-        </div>
-        <!-- conv three -->
-        <div class="">
-          <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
-          <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
-            <p class="text-xs font-semibold">
-              Aenean in at amet luctus condimentum vitae cras viverra eget.
-              Vestibulum, tincidunt scelerisque libero e, imperdiet augue orci
-              diam.
-            </p>
-          </div>
-        </div>
-        <!-- conve four -->
-        <div class="">
-          <p class="text-xs ml-4 font-semibold text-gray-400 mb-0">04.22 p.m</p>
-          <div class="p-3 rounded-bl-none rounded-2xl bg-red-50 w-3/4 mb-4">
-            <p class="text-xs font-semibold w-3/4">
-              Arcu donec adipiscing orci odio consectetur neque gravida
-              facilisis. Condimentum ut morbi a gravida purus fames ac
-              facilisis. Facilisi aliquet mauris a scelerisque a sem. Ut
-              adipiscing a, tempor ornare mi, molestie quis scelerisque
-              vulputate. Quisque erat amet, donec sed fermentum est.
-            </p>
-          </div>
-        </div>
-        <!-- conve five -->
-        <div class="">
-          <div class="flex">
-            <div class="w-1/2"></div>
-            <div
-              class="p-3 rounded-2xl text-cyan-50 bg-red-500 rounded-br-none"
-            >
-              <p class="text-xs font-semibold flex justify-end">
-                Consectetur eget arcu, libero, commodo, cras id hendrerit
-                sagittis. Amet condimentum orci.
-              </p>
-            </div>
-          </div>
-          <div
-            class="flex gap-1 text-xs font-semibold text-gray-400 justify-end my-2"
-          >
-            <p>sent</p>
-            <p>04.22 p.m</p>
+            <p>{{ sendMsg.message }}</p>
           </div>
         </div>
       </div>
     </div>
-    <div class="flex gap-4 items-center mt-3">
+    <div
+      class="flex py-3 justify-between items-end mt-3 absolute w-full bottom-0 border-t border-gray-300"
+    >
       <textarea
+        rows="6"
         placeholder="Type something here ...."
-        class="w-3/4 mt-2 outline-none text-xs"
+        class="w-4/5 mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
         v-model="messageData"
       />
-      <button class="flex items-center gap-4" @click="sendMessage()">
-        <p class="text-red-500 text-medium font-medium">Send Message</p>
-        <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
+      <button class="flex items-center gap-2 mx-7" @click="sendMessage()">
+        <p class="text-red-500 text-xs font-medium">Send Message</p>
+        <img class="w-3" src="@/assets/img/sent.svg" alt="loading" />
       </button>
     </div>
   </div>
