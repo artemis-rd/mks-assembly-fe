@@ -12,13 +12,13 @@ const updateModel = (event: Event) => {
 };
 </script>
 <template>
-  <div class="flex justify-between border rounded-lg outline-none py-2 px-2">
+  <div class="flex justify-between border rounded-lg outline-none py-2 px-3">
     <input
       class="outline-none text-sm"
       @input="updateModel($event)"
       :type="type"
       :placeholder="placeholder"
     />
-    <img class="" src="@/assets/img/Search.svg" />
+    <img class="w-4" src="@/assets/img/Search.svg" />
   </div>
 </template>
