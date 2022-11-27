@@ -28,10 +28,7 @@ const {
   method: "GET",
 });
 
-watch(rooms, (r) => {
-  console.log("new room data");
-});
-// console.log(chatsList, "machats");
+
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
   {
@@ -43,8 +40,6 @@ let { data: contacts } = await useFetch<any>(
   }
 );
 allContacts.value = contacts.value;
-console.log(rooms.value, "rooms");
-// console.log(allContacts.value, "conatctis");
 
 const showGroups = ref(true);
 const createGroups = ref(false);
@@ -98,40 +93,57 @@ function createRoom(receiverId) {
         receiver: receiverId,
       },
     };
-    console.log(participants, "participants");
     socket.emit("createRoom", participants);
     socket.on("r-createRoom", (data) => {
       roomId.value = data.split(" ").slice(-1)[0];
-
-      // console.log(roomId.value, "room id has come");
     });
     socket.on(`${receiverId}`, (data) => {
       socket.emit("joinRoom", data);
     });
   }
 }
+// Group chats mock data
+const groups = [{
+  name: 'House Business Committee',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+},
+{
+  name: 'Legal Affairs',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+},
+{
+  name: 'Lands and Energy',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+}]
 </script>
 <template>
-  <div class="flex">
-    <div class="mx-2 my-3 mb-0 container max-w-fit" v-if="showGroups">
+  <div class="w-full px-2 md:flex">
+    <div class="container w-full md:w-1/3 px-3 py-2" v-if="showGroups">
       <!-- messeges screen -->
       <div class="">
         <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
-        <SearchInput />
+        <SearchInput placeholder="Search Messages" />
       </div>
 
       <!-- direct messages -->
       <div class="my-1 text-sm" v-if="!pending">
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
-        <div class="">
           <div class="" v-for="item of rooms" :key="item.id">
-            <div class="">
               <NuxtLink
                 :to="`/dashboard/messenger/dm/${item.id}`"
-                class="flex gap-2 my-4"
+                class="flex gap-2 px-1"
               >
                 <img class="" src="@/assets/img/profile.png" alt="loading" />
-                <div class="flex-col">
+                <div class="flex-col flex-1">
                   <div class="flex justify-between">
                     <p class="font-bold text-gray-700">
                       {{ item.participants.receiver.name }}
@@ -143,9 +155,7 @@ function createRoom(receiverId) {
                   </p>
                 </div>
               </NuxtLink>
-            </div>
           </div>
-        </div>
       </div>
       <div v-else>
         <div class="loader">Retrieving chats...</div>
@@ -153,11 +163,12 @@ function createRoom(receiverId) {
 
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-        <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4">
+        <div v-for="group in groups" :key="group.name">
+          <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4 px-1">
           <img class="" src="@/assets/img/group1.svg" alt="loading" />
-          <div class="flex-col">
+          <div class="flex-col flex-1">
             <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">House Business Comm</p>
+              <p class="text-gray-700 font-semibold">{{group.name}}</p>
               <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
             </div>
             <p class="text-xs text-gray-400">
@@ -165,56 +176,8 @@ function createRoom(receiverId) {
             </p>
           </div>
         </NuxtLink>
-        <!-- thread two -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/2"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
-          <img class="" src="@/assets/img/group2.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">Finance Department</p>
-              <p class="text-sm font-medium text-gray-700">3.10 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              I think we have a problem with the drainage....
-            </p>
-          </div>
-        </NuxtLink>
-        <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/3"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
-          <img class="" src="@/assets/img/group3.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">Lands And Energy</p>
-              <p class="text-sm font-medium text-gray-700">2.49 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              Can you confirm whether internet services are....
-            </p>
-          </div>
-        </NuxtLink>
-
-        <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/4"
-          class="flex gap-2 active:bg-slate-300"
-        >
-          <img class="" src="@/assets/img/group4.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">ICT Directorate</p>
-              <p class="text-sm font-medium text-gray-700">Saturday 2.49 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              Can you confirm whether internet services are....
-            </p>
-          </div>
-        </NuxtLink>
-        <button class="absolute bottom-0" @click="startConversation()">
+        </div>
+        <button class="fixed bottom-0 right-0 z-10" @click="startConversation()">
           <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
         </button>
       </div>

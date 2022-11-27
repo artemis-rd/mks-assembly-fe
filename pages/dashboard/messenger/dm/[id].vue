@@ -23,16 +23,15 @@ senderId.value = JSON.parse(atob(brokenToken)).id;
 const { MESSAGING_SERVICE } = useRuntimeConfig();
 
 if (rooomId != undefined) {
-  console.log(rooomId, "roommmmmmu");
   socket.emit("joinRoom", { roomId: rooomId });
   socket.on(`${rooomId}`, (data) => {
-    console.log(data, "returned data");
+    // handle when an event is send to this partucular room
   });
 }
 
 watch(createdRoom, (room) => {
-  console.log(room, "watchee");
   socket.emit("joinRoom", { roomId: room });
+  // ?? Not sure
   socket.on(`${room}`, (data) => {
     console.log(data, "returned data");
   });
@@ -44,7 +43,6 @@ function sendMessage() {
     sender: senderId.value,
     roomId: rooomId,
   };
-  console.log(msg, "the message");
 
   socket.emit("newMessage", msg, async () => {
     const id = await db.userMessages.add({
@@ -55,7 +53,7 @@ function sendMessage() {
     });
   });
   socket.on("r-newMessage", (data) => {
-    console.log(data, "mameemememe");
+    // handle a new message that is received
   });
 }
 const name = ref("Paul Davidson ");
@@ -111,7 +109,7 @@ const {
 });
 </script>
 <template>
-  <div class="ml-2 relative h-screen">
+  <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="p-4">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
@@ -138,17 +136,17 @@ const {
       </div>
     </div>
     <div
-      class="flex py-3 justify-between items-end mt-3 absolute w-full bottom-0 border-t border-gray-300"
+      class="bg-white flex p-3 justify-between mt-3 fixed w-full bottom-0 border-t border-gray-300"
     >
       <textarea
-        rows="6"
+        rows="2"
         placeholder="Type something here ...."
-        class="w-4/5 mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
+        class="w-3/4 mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
         v-model="messageData"
       />
-      <button class="flex items-center gap-2 mx-7" @click="sendMessage()">
-        <p class="text-red-500 text-xs font-medium">Send Message</p>
-        <img class="w-3" src="@/assets/img/sent.svg" alt="loading" />
+      <button class="px-3" @click="sendMessage()">
+        <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
+        <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
     </div>
   </div>
