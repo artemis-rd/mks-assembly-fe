@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { Ref } from "vue";
+import { io, Socket } from "socket.io-client";
+const {
+  public: { MESSAGING_SOCKET_URL },
+} = useRuntimeConfig();
 const receiverCont = useState("receiverContact");
+const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
+// const roomId = ref();
+const roomId = useState("createdRoomId");
+
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
 
@@ -11,48 +19,27 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-console.log(id, "my id");
+
 const {
-  data: chatsList,
+  data: rooms,
   error,
   pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
+} = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
   method: "GET",
 });
-// console.log(chatsList, "machats");
-onMounted(async () => {
-  // await getThreads();
-  // await getContacts();
-});
-// async function getContacts() {
-// const { MESSAGING_SERVICE } = useRuntimeConfig();
 
-// console.log(AUTH_SERVICE_URL, "url");
 
-let response = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token.value}`,
-  },
-});
-allContacts.value = response.data.value;
-console.log(response.data.value, "contacts");
-console.log(chatsList.value, "chats");
-if (chatsList) {
-  chatsList.value.forEach((element: any) => {
-    element.participants.sender = response.data.value.find(
-      (x: any) => x.id == element.participants.sender
-    );
-    element.participants.receiver = response.data.value.find(
-      (x: any) => x.id == element.participants.receiver
-    );
-    console.log(element.participants.sender, "sender");
-    console.log(element.participants.receiver, "receivers");
-  });
-}
-console.log(chatsList.value, "all chats list");
-
+let { data: contacts } = await useFetch<any>(
+  `${MESSAGING_SERVICE}/contacts/old/list`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token.value}`,
+    },
+  }
+);
+allContacts.value = contacts.value;
 
 const showGroups = ref(true);
 const createGroups = ref(false);
@@ -92,49 +79,83 @@ async function selectContactToJoinGroup() {
     await getContacts();
     let myContacts = allContacts.value;
     for (let x of myContacts) {
-      // code 
+      // code
     }
     let listLength = contactSelected.value.length;
   }
-
 }
+// create room if there is no existing room
+function createRoom(receiverId) {
+  if (id && receiverId) {
+    let participants = {
+      participants: {
+        sender: id,
+        receiver: receiverId,
+      },
+    };
+    socket.emit("createRoom", participants);
+    socket.on("r-createRoom", (data) => {
+      roomId.value = data.split(" ").slice(-1)[0];
+    });
+    socket.on(`${receiverId}`, (data) => {
+      socket.emit("joinRoom", data);
+    });
+  }
+}
+// Group chats mock data
+const groups = [{
+  name: 'House Business Committee',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+},
+{
+  name: 'Legal Affairs',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+},
+{
+  name: 'Lands and Energy',
+  lastMessage: {
+    content: "Hello can you check whether everything is working as it should",
+    timestamp: new Date(Date.now()).toLocaleTimeString()
+  }
+}]
 </script>
 <template>
-  <div class="flex">
-    <div class="mx-2 my-3 mb-0 container max-w-fit" v-if="showGroups">
+  <div class="w-full px-2 md:flex">
+    <div class="container w-full md:w-1/3 px-3 py-2" v-if="showGroups">
       <!-- messeges screen -->
       <div class="">
         <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
-        <SearchInput />
+        <SearchInput placeholder="Search Messages" />
       </div>
 
       <!-- direct messages -->
       <div class="my-1 text-sm" v-if="!pending">
-        <p></p>
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
-        <div class="" v-for="item of chatsList" :key="item.id">
-          <NuxtLink to="/dashboard/messenger/dm/22" class="flex gap-2 my-4">
-            <img class="" src="@/assets/img/profile.png" alt="loading" />
-            <div class="flex-col">
-              <div class="flex justify-between">
-                <!-- <p
-                  class="font-bold text-gray-700"
-                  v-if="id != item.participants.sender && item.participants.sender != null"
-                >
-                  {{ item.participants.sender.name }}
-                </p>
-                || -->
-                <p class="font-bold text-gray-700">
-                  {{ item.participants.receiver.name }}
-                </p>
-                <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
-              </div>
-              <p class="text-xs text-gray-400">
-                Hello, can you check whether everything is okay...
-              </p>
-            </div>
-          </NuxtLink>
-        </div>
+          <div class="" v-for="item of rooms" :key="item.id">
+              <NuxtLink
+                :to="`/dashboard/messenger/dm/${item.id}`"
+                class="flex gap-2 px-1"
+              >
+                <img class="" src="@/assets/img/profile.png" alt="loading" />
+                <div class="flex-col flex-1">
+                  <div class="flex justify-between">
+                    <p class="font-bold text-gray-700">
+                      {{ item.participants.receiver.name }}
+                    </p>
+                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Hello, can you check whether everything is okay...
+                  </p>
+                </div>
+              </NuxtLink>
+          </div>
       </div>
       <div v-else>
         <div class="loader">Retrieving chats...</div>
@@ -142,11 +163,12 @@ async function selectContactToJoinGroup() {
 
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-        <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4">
+        <div v-for="group in groups" :key="group.name">
+          <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4 px-1">
           <img class="" src="@/assets/img/group1.svg" alt="loading" />
-          <div class="flex-col">
+          <div class="flex-col flex-1">
             <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">House Business Comm</p>
+              <p class="text-gray-700 font-semibold">{{group.name}}</p>
               <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
             </div>
             <p class="text-xs text-gray-400">
@@ -154,57 +176,9 @@ async function selectContactToJoinGroup() {
             </p>
           </div>
         </NuxtLink>
-        <!-- thread two -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/2"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
-          <img class="" src="@/assets/img/group2.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">Finance Department</p>
-              <p class="text-sm font-medium text-gray-700">3.10 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              I think we have a problem with the drainage....
-            </p>
-          </div>
-        </NuxtLink>
-        <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/3"
-          class="flex gap-2 active:bg-slate-300 my-4"
-        >
-          <img class="" src="@/assets/img/group3.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">Lands And Energy</p>
-              <p class="text-sm font-medium text-gray-700">2.49 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              Can you confirm whether internet services are....
-            </p>
-          </div>
-        </NuxtLink>
-
-        <!-- thread group three -->
-        <NuxtLink
-          to="/dashboard/messenger/groups/4"
-          class="flex gap-2 active:bg-slate-300"
-        >
-          <img class="" src="@/assets/img/group4.svg" alt="loading" />
-          <div class="flex-col">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">ICT Directorate</p>
-              <p class="text-sm font-medium text-gray-700">Saturday 2.49 p.m</p>
-            </div>
-            <p class="text-xs text-gray-400">
-              Can you confirm whether internet services are....
-            </p>
-          </div>
-        </NuxtLink>
-        <button class="absolute bottom-0" @click="startConversation()">
-          <img src="@/assets/img/chatIcon.svg" alt="" />
+        </div>
+        <button class="fixed bottom-0 right-0 z-10" @click="startConversation()">
+          <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
         </button>
       </div>
     </div>
@@ -239,9 +213,9 @@ async function selectContactToJoinGroup() {
         >
           <div class="flex flex-col gap-4 w-full pb-2">
             <NuxtLink
-              :to="`/dashboard/messenger/dm/${contact.id}`"
+              :to="`/dashboard/messenger/dm/${roomId}`"
               class="flex gap-4"
-              @click="sendContactdata(contact.id)"
+              @click="createRoom(contact.id)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">

@@ -4,10 +4,24 @@ console.log(active.value);
 </script>
 <template>
   <section class="flex">
+<<<<<<< HEAD
     <aside class="w-1/6">
       <div class="logo flex flex-col p-5">
         <img src="~/assets/img/mks-logo.png" class="my-5 w-20" alt="" srcset="" />
         <span class="text-xs font-semibold font-display">By Artemis Systems LTD</span>
+=======
+    <aside class="hidden md:block md:w-1/5">
+      <div class="logo flex flex-col p-7">
+        <img
+          src="~/assets/img/mks-logo.png"
+          class="my-5 w-20"
+          alt=""
+          srcset=""
+        />
+        <span class="text-xs font-semibold font-display"
+          >By Artemis Systems LTD</span
+        >
+>>>>>>> 0d5fc7494d16e14736653078843b08e9d329e53e
       </div>
       <div class="aside-menu">
         <MenuItem to="/dashboard/messenger">
