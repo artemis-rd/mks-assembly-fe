@@ -127,7 +127,7 @@ const groups = [{
 </script>
 <template>
   <div class="w-full px-2 md:flex">
-    <div class="container w-full md:w-1/3 px-3 py-2" v-if="showGroups">
+    <div class="md:relative container w-full md:w-1/3 px-3 py-2" v-if="showGroups">
       <!-- messeges screen -->
       <div class="">
         <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
@@ -140,7 +140,7 @@ const groups = [{
           <div class="" v-for="item of rooms" :key="item.id">
               <NuxtLink
                 :to="`/dashboard/messenger/dm/${item.id}`"
-                class="flex gap-2 px-1"
+                class="flex gap-2 px-1 my-4"
               >
                 <img class="" src="@/assets/img/profile.png" alt="loading" />
                 <div class="flex-col flex-1">
@@ -177,7 +177,7 @@ const groups = [{
           </div>
         </NuxtLink>
         </div>
-        <button class="fixed bottom-0 right-0 z-10" @click="startConversation()">
+        <button class="md:absolute fixed bottom-0 right-0 z-10" @click="startConversation()">
           <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
         </button>
       </div>
