@@ -61,7 +61,6 @@ async function sendMessage() {
 }
 
 socket.on("r-newMessage", async (data) => {
-  console.log("the data", data);
   if (data.sender == senderId) return;
   const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
@@ -98,22 +97,22 @@ onMounted(async () => {
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="p-4 overflow-y-auto">
+    <div class="p-4 h-4/5 overflow-y-scroll">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
         The start of your conversation with Paul
       </p>
       <div
         class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
         v-for="sendMsg in messages"
-        key="sendMsg.receiver"
+        key="sendMsg.timestamp"
       >
         <div class="">
           <div
             class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
             :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
-                sendMsg.receiver == 'qwert',
-              'rounded-tl-none bg-orange-50': sendMsg.receiver !== 'qwert',
+                sendMsg.sender == senderId,
+              'rounded-tl-none bg-orange-50': sendMsg.receiver == senderId,
             }"
           >
             <p>{{ sendMsg.message }}</p>
@@ -122,7 +121,7 @@ onMounted(async () => {
       </div>
     </div>
     <div
-      class="bg-white flex p-3 mt-3 gap-2 absolute justify-between w-full bottom-0 border-t border-gray-300"
+      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
     >
       <textarea
         rows="2"
