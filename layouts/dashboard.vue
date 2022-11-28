@@ -1,6 +1,6 @@
 <script>
 const active = ref(false)
-console.log(active.value);
+// console.log(active.value);
 </script>
 <template>
   <section class="flex">
