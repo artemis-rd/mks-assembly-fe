@@ -16,14 +16,14 @@ onMounted(async () => {
   const id = userData[0].id;
 
   socket.on(id.toString(), (data) => {
-    console.log("pinged", data);
+    // console.log("pinged", data);
     socket.emit("joinRoom", data, (rm) => {
-      console.log("returned room", rm);
+      // console.log("returned room", rm);
     });
   });
 
   socket.on("r-newMessage", (message) => {
-    console.log("Received the new message", message);
+    // console.log("Received the new message", message);
   });
 });
 </script>

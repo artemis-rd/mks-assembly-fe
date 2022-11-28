@@ -10,3 +10,4 @@ defineProps({
     </div>
   </NuxtLink>
 </template>
+

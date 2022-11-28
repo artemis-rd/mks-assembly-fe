@@ -11,6 +11,7 @@ const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
 const rooomId = route.params.id;
 const senderId = ref();
+const messageList = ref([]) as Ref<any[]>
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -33,7 +34,7 @@ watch(createdRoom, (room) => {
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
-    console.log(data, "returned data");
+    // console.log(data, "returned data");
   });
 });
 function sendMessage() {
@@ -53,60 +54,30 @@ function sendMessage() {
     });
   });
   socket.on("r-newMessage", (data) => {
-    // handle a new message that is received
+    messageList.value[0].push(data)
+    if(data){
+      messageData.value = ''
+    }
+    
+
   });
 }
 const name = ref("Paul Davidson ");
 
-async function getMessagesByRoom() {}
-const roomId = 847;
-const roomConversation = [
-  {
-    message: "hello",
-    timeStamp: "123456789",
-    receiver: "asdfgjuy",
-    sender: "qwert",
-  },
-  {
-    message: "hello there",
-    timeStamp: "1234567899",
-    receiver: "qwert",
-    sender: "asdfgjuy",
-  },
-  {
-    message: "umekua aje",
-    timeStamp: "123456789",
-    receiver: "asdfgjuy",
-    sender: "qwert",
-  },
-  {
-    message: "niko poa mimi",
-    timeStamp: "123456789",
-    receiver: "qwert",
-    sender: "asdfgjuy",
-  },
-  {
-    message: "Naona umemanage kuunda the design",
-    timeStamp: "123456789",
-    receiver: "asdfgjuy",
-    sender: "qwert",
-  },
-  {
-    message:
-      "Commodo hendrerit luctus tellus, diam fermentum egestas molestie eu. Pellentesque semper egestas vulputate a. Vel amet quis scelerisque lectus ut ac viverra eget. Et porta volutpat egestas a. Ut non potenti est amet. Imperdiet ac dictum euismod at. A hendrerit amet, id tempor integer tincidunt in sit aenean.",
-    timeStamp: "123456789",
-    receiver: "qwert",
-    sender: "asdfgjuy",
-  },
-];
+
+
 
 const {
-  data: messageList,
+  data: messages,
   error,
   pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/message/list/${rooomId}`, {
+} = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
   method: "GET",
 });
+
+messageList.value.push(messages.value)
+// console.log(messages.value, "my meso with room id");
+
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
@@ -115,10 +86,9 @@ const {
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
         The start of your conversation with Paul
       </p>
-
       <div
         class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-        v-for="sendMsg in roomConversation"
+        v-for="sendMsg in messageList[0]"
         key="sendMsg.receiver"
       >
         <div class="">

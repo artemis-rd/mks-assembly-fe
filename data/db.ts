@@ -5,7 +5,7 @@ export interface UserMessages{
     message?:string,
     timeStamp?:string,
     sender?: any,
-    receiver?:number,
+    receiver?:any,
     roomId?:number
 }
 export interface Rooms{
