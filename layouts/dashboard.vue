@@ -97,7 +97,7 @@ const active = ref(false)
     <slot></slot>
   </section>
 </template>
-<style>
+<style scoped>
 .router-link-active {
   color: orangered;
 

@@ -9,10 +9,10 @@ const token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
-const rooomId = route.params.id;
+// const rooomId = route.params.id;
 const senderId = ref();
-const messageList = ref([]) as Ref<any[]>
-
+const messageList = ref([]) as Ref<any[]> 
+const rooomId = route.params.id
 const {
   public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
@@ -31,12 +31,30 @@ if (rooomId != undefined) {
 }
 
 watch(createdRoom, (room) => {
+console.log('do something')
+console.log(room, 'roooooooooooom')
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
     // console.log(data, "returned data");
   });
+ 
 });
+// watch(rooomId, (newrooomId)=>{
+// console.log(newrooomId, 'coming id')
+
+// //   const {
+// //   data: messages,
+// //   error,
+// //   pending,
+// // } = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${newrooomId}`, {
+// //   method: "GET",
+// // });
+
+// // messageList.value.push(messages.value)
+// // console.log(messages.value, 'comming messages')
+// } )
+
 function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
@@ -53,8 +71,10 @@ function sendMessage() {
       roomId: parseInt(rooomId.toString()),
     });
   });
+  console.log(msg, 'outgoing message')
   socket.on("r-newMessage", (data) => {
-    messageList.value[0].push(data)
+    messageList.value.push(data)
+    console.log(data,'response after message')
     if(data){
       messageData.value = ''
     }
@@ -67,20 +87,12 @@ const name = ref("Paul Davidson ");
 
 
 
-const {
-  data: messages,
-  error,
-  pending,
-} = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
-  method: "GET",
-});
 
-messageList.value.push(messages.value)
 // console.log(messages.value, "my meso with room id");
 
 </script>
 <template>
-  <div class="ml-2 relative h-screen md:w-full">
+  <div class="ml-2 relative h-screen md:w-full" >
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="p-4 overflow-y-auto">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
