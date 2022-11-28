@@ -92,7 +92,10 @@ function createRoom(receiverId) {
         receiver: receiverId,
       },
     };
-    socket.emit("createRoom", participants);
+    
+    socket.emit("createRoom", participants, (rmCreated) => {
+      navigateTo(`messenger/dm/${rmCreated.roomId}`)
+    });
     socket.on("r-createRoom", (data) => {
       roomId.value = data.split(" ").slice(-1)[0];
     });
@@ -211,10 +214,11 @@ const groups = [{
           :key="contact.id"
         >
           <div class="flex flex-col gap-4 w-full pb-2">
-            <NuxtLink
+            <a
               :to="`/dashboard/messenger/dm/${roomId}`"
-              class="flex gap-4"
-              @click="createRoom(contact.id)"
+              class="flex gap-4 cursor-pointer"
+              event=""
+              @click.prevent="createRoom(contact.id)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
@@ -225,7 +229,7 @@ const groups = [{
                   contact.tel
                 }}</span>
               </div>
-            </NuxtLink>
+            </a>
           </div>
         </div>
       </div>
