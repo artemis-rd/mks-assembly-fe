@@ -59,7 +59,6 @@ function sendMessage() {
 const name = ref("Paul Davidson ");
 
 async function getMessagesByRoom() {}
-const roomId = 847;
 const roomConversation = [
   {
     message: "hello",
@@ -98,6 +97,7 @@ const roomConversation = [
     receiver: "qwert",
     sender: "asdfgjuy",
   },
+  
 ];
 
 const {
@@ -107,6 +107,8 @@ const {
 } = await useFetch<any>(`${MESSAGING_SERVICE}/message/list/${rooomId}`, {
   method: "GET",
 });
+console.log(messageList, "my meso with room id");
+
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
@@ -118,7 +120,7 @@ const {
 
       <div
         class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-        v-for="sendMsg in roomConversation"
+        v-for="sendMsg in messageList"
         key="sendMsg.receiver"
       >
         <div class="">

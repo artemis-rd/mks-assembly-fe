@@ -28,7 +28,6 @@ const {
   method: "GET",
 });
 
-
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
   {
