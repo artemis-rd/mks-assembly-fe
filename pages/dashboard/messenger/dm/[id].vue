@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { dataToEsm } from "@rollup/pluginutils";
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
@@ -9,10 +10,10 @@ const token = cookie.value;
 const messageData = ref("");
 const participantData = ref();
 const existingRoom = ref([]) as Ref<any[]>;
-// const rooomId = route.params.id;
+const rooomId = route.params.id;
 const senderId = ref();
-const messageList = ref([]) as Ref<any[]> 
-const rooomId = route.params.id
+const messageList = ref([]) as Ref<any[]>;
+
 const {
   public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
@@ -40,22 +41,7 @@ console.log(room, 'roooooooooooom')
   });
  
 });
-// watch(rooomId, (newrooomId)=>{
-// console.log(newrooomId, 'coming id')
-
-// //   const {
-// //   data: messages,
-// //   error,
-// //   pending,
-// // } = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${newrooomId}`, {
-// //   method: "GET",
-// // });
-
-// // messageList.value.push(messages.value)
-// // console.log(messages.value, 'comming messages')
-// } )
-
-function sendMessage() {
+async function sendMessage() {
   let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
@@ -63,33 +49,54 @@ function sendMessage() {
     roomId: rooomId,
   };
 
-  socket.emit("newMessage", msg, async () => {
-    const id = await db.userMessages.add({
-      timeStamp: Date.now().toString(),
-      message: messageData.value,
-      sender: senderId.value,
-      roomId: parseInt(rooomId.toString()),
-    });
+  const id = await db.userMessages.add({
+    timeStamp: Date.now().toString(),
+    message: messageData.value,
+    sender: senderId.value,
+    roomId: parseInt(rooomId.toString()),
   });
-  console.log(msg, 'outgoing message')
-  socket.on("r-newMessage", (data) => {
-    messageList.value.push(data)
-    console.log(data,'response after message')
-    if(data){
-      messageData.value = ''
-    }
-    
-
+  messages.value.push(msg);
+  socket.emit("newMessage", msg, (reverseMessage) => {
+    console.log("the reverse message", reverseMessage);
   });
+  // clear the input value
+  messageData.value = "";
 }
+
+socket.on("r-newMessage", async (data) => {
+  console.log("the data", data);
+  if (data.sender == senderId) return;
+  const id = await db.userMessages.add({
+    timeStamp: Date.now().toString(),
+    message: messageData.value,
+    sender: senderId.value,
+    roomId: parseInt(rooomId.toString()),
+  });
+  messages.value.push(data);
+});
+
 const name = ref("Paul Davidson ");
 
+const {
+  data: messages,
+  error,
+  pending,
+} = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
+  method: "GET",
+  key: rooomId.toString(),
+});
 
+onMounted(async () => {
+  if (!navigator.onLine) {
+    const cache = (await db.userMessages.toArray()).filter(
+      (x) => x.roomId == parseInt(rooomId.toString())
+    );
+    messages.value = cache;
+  }
+});
 
-
-
+// messageList.value.push(messages)
 // console.log(messages.value, "my meso with room id");
-
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full" >
@@ -100,7 +107,7 @@ const name = ref("Paul Davidson ");
       </p>
       <div
         class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-        v-for="sendMsg in messageList[0]"
+        v-for="sendMsg in messages"
         key="sendMsg.receiver"
       >
         <div class="">
