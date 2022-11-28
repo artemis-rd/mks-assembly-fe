@@ -113,7 +113,7 @@ console.log(messageList, "my meso with room id");
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="p-4">
+    <div class="p-4 overflow-y-auto">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
         The start of your conversation with Paul
       </p>
@@ -138,15 +138,15 @@ console.log(messageList, "my meso with room id");
       </div>
     </div>
     <div
-      class="bg-white flex p-3 justify-between mt-3 fixed w-full bottom-0 border-t border-gray-300"
+      class="bg-white flex p-3 mt-3 gap-2 absolute justify-between w-full bottom-0 border-t border-gray-300"
     >
       <textarea
         rows="2"
         placeholder="Type something here ...."
-        class="w-3/4 mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
+        class="w-full mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
         v-model="messageData"
       />
-      <button class="px-3" @click="sendMessage()">
+      <button @click="sendMessage()">
         <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
