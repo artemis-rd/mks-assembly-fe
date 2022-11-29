@@ -32,14 +32,13 @@ if (rooomId != undefined) {
 }
 
 watch(createdRoom, (room) => {
-console.log('do something')
-console.log(room, 'roooooooooooom')
+  console.log("do something");
+  console.log(room, "roooooooooooom");
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
     // console.log(data, "returned data");
   });
- 
 });
 async function sendMessage() {
   let msg = {
@@ -48,7 +47,7 @@ async function sendMessage() {
     sender: senderId.value,
     roomId: rooomId,
   };
-  
+
   const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
     message: messageData.value,
@@ -102,27 +101,32 @@ onMounted(async () => {
 // console.log(messages.value, "my meso with room id");
 </script>
 <template>
-  <div class="ml-2 relative h-screen md:w-full" >
+  <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="p-4 h-4/5 overflow-y-scroll">
-      <p class="text-gray-200 text-center font-semibold my-5 text-sm">
+    <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
+      <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
-      </p>
-      <div
-        class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-        v-for="sendMsg in messages"
-        key="sendMsg.timestamp"
-      >
-        <div class="">
-          <div
-            class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
-            :class="{
-              'float-right bg-orange-500 text-cyan-50 rounded-br-none':
-                sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
-            }"
-          >
-            <p>{{ sendMsg.message }}</p>
+      </span>
+      <div class="cont">
+        <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
+          The start of your conversation with John
+        </p> -->
+        <div
+          class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
+          v-for="sendMsg in messages"
+          key="sendMsg.timestamp"
+        >
+          <div class="">
+            <div
+              class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
+              :class="{
+                'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                  sendMsg.sender == senderId,
+                'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+              }"
+            >
+              <p>{{ sendMsg.message }}</p>
+            </div>
           </div>
         </div>
       </div>
