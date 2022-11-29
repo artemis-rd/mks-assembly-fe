@@ -48,9 +48,7 @@ async function sendMessage() {
     sender: senderId.value,
     roomId: rooomId,
   };
-  console.log(msg, 'outgoing');
   
-
   const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
     message: messageData.value,
@@ -65,7 +63,7 @@ async function sendMessage() {
   messageData.value = "";
 }
 
-socket.on("r-newMessage", async (data) => {
+socket.on(`r-newMessage-${rooomId}`, async (data) => {
   if (data.sender != senderId.value) {
     const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
@@ -121,7 +119,7 @@ onMounted(async () => {
             :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
                 sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50': sendMsg.receiver == messages.receiver,
+              'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
             }"
           >
             <p>{{ sendMsg.message }}</p>
