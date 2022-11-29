@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     public: {
       AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL,
       MESSAGING_SERVICE: process.env.MESSAGING_SERVICE,
-      MESSAGING_SOCKET_URL: process.env.SOCKET_DATA,
+      MESSAGING_SOCKET_URL: process.env.MESSAGING_SOCKET_URL,
     },
   },
   app: {

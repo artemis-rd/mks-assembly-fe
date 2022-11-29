@@ -24,8 +24,10 @@ const {
   data: rooms,
   error,
   pending,
+  refresh: refreshRooms
 } = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
   method: "GET",
+  key: id.toString()
 });
 
 let { data: contacts } = await useFetch<any>(
@@ -93,10 +95,14 @@ function createRoom(receiverId) {
       },
     };
     
-    socket.emit("createRoom", participants, (rmCreated) => {
-      navigateTo(`messenger/dm/${rmCreated.roomId}`)
+    socket.emit("createRoom", participants, async(rmCreated) => {
+      showGroups.value = true;
+      createGroups.value = !createGroups.value;
+      await refreshRooms()
+      navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
+      console.log('r created room', data);
       roomId.value = data.split(" ").slice(-1)[0];
     });
     socket.on(`${receiverId}`, (data) => {
@@ -148,7 +154,7 @@ const groups = [{
                 <div class="flex-col flex-1">
                   <div class="flex justify-between">
                     <p class="font-bold text-gray-700">
-                      {{ item.participants.receiver.name }}
+                      {{ item.participants.sender.id == id ? item.participants.receiver.name : item.participants.sender.name }}
                     </p>
                     <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
                   </div>
