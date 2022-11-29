@@ -24,10 +24,10 @@ const {
   data: rooms,
   error,
   pending,
-  refresh: refreshRooms
+  refresh: refreshRooms,
 } = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
   method: "GET",
-  key: id.toString()
+  key: id.toString(),
 });
 
 let { data: contacts } = await useFetch<any>(
@@ -48,7 +48,8 @@ const selectContact = ref(false);
 const selected = ref(false);
 const contactSelected = ref([]);
 const groupNameScreen = ref(false);
-const activeColor = ref();
+const enterGroupName = ref(false);
+const groupName = ref();
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -73,17 +74,41 @@ function goBackToSelectContact() {
 function sendContactdata(detail) {
   receiverCont.value = detail;
 }
+function showNameInput() {
+  selectContact.value = !selectContact.value;
+  enterGroupName.value = true;
+}
+function goBackToContacts() {
+  enterGroupName.value = false;
+  selectContact.value = !selectContact.value;
+}
 async function selectContactToJoinGroup() {
+  let participants = {
+    participants: {
+      sender: id,
+      receiver: "list of ids ",
+    },
+  };
+  socket.emit("createRoom", participants, async (rmCreated) => {
+    // showGroups.value = true;
+    // createGroups.value = !createGroups.value;
+    await refreshRooms();
+    navigateTo(`/dashboard/messenger/groups/${rmCreated.id}`);
+  });
+  socket.on("r-createRoom", (data) => {
+    // console.log("r created room", data);
+    roomId.value = data.split(" ").slice(-1)[0];
+  });
   selected.value = true;
-  if ((selected.value = true)) {
-    let contactList = contactSelected.value.push(selectContact.value);
-    await getContacts();
-    let myContacts = allContacts.value;
-    for (let x of myContacts) {
-      // code
-    }
-    let listLength = contactSelected.value.length;
-  }
+  // if ((selected.value = true)) {
+  //   let contactList = contactSelected.value.push(selectContact.value);
+  //   await getContacts();
+  //   let myContacts = allContacts.value;
+  //   for (let x of myContacts) {
+  //     // code
+  //   }
+  //   let listLength = contactSelected.value.length;
+  // }
 }
 // create room if there is no existing room
 function createRoom(receiverId) {
@@ -94,15 +119,15 @@ function createRoom(receiverId) {
         receiver: receiverId,
       },
     };
-    
-    socket.emit("createRoom", participants, async(rmCreated) => {
+
+    socket.emit("createRoom", participants, async (rmCreated) => {
       showGroups.value = true;
       createGroups.value = !createGroups.value;
-      await refreshRooms()
+      await refreshRooms();
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-      console.log('r created room', data);
+      // console.log("r created room", data);
       roomId.value = data.split(" ").slice(-1)[0];
     });
     socket.on(`${receiverId}`, (data) => {
@@ -111,31 +136,36 @@ function createRoom(receiverId) {
   }
 }
 // Group chats mock data
-const groups = [{
-  name: 'House Business Committee',
-  lastMessage: {
-    content: "Hello can you check whether everything is working as it should",
-    timestamp: new Date(Date.now()).toLocaleTimeString()
-  }
-},
-{
-  name: 'Legal Affairs',
-  lastMessage: {
-    content: "Hello can you check whether everything is working as it should",
-    timestamp: new Date(Date.now()).toLocaleTimeString()
-  }
-},
-{
-  name: 'Lands and Energy',
-  lastMessage: {
-    content: "Hello can you check whether everything is working as it should",
-    timestamp: new Date(Date.now()).toLocaleTimeString()
-  }
-}]
+const groups = [
+  {
+    name: "House Business Committee",
+    lastMessage: {
+      content: "Hello can you check whether everything is working as it should",
+      timestamp: new Date(Date.now()).toLocaleTimeString(),
+    },
+  },
+  {
+    name: "Legal Affairs",
+    lastMessage: {
+      content: "Hello can you check whether everything is working as it should",
+      timestamp: new Date(Date.now()).toLocaleTimeString(),
+    },
+  },
+  {
+    name: "Lands and Energy",
+    lastMessage: {
+      content: "Hello can you check whether everything is working as it should",
+      timestamp: new Date(Date.now()).toLocaleTimeString(),
+    },
+  },
+];
 </script>
 <template>
   <div class="w-full px-2 md:flex">
-    <div class="md:relative container w-full md:w-1/3 px-3 py-2" v-if="showGroups">
+    <div
+      class="md:relative container w-full md:w-1/3 px-3 py-2"
+      v-if="showGroups"
+    >
       <!-- messeges screen -->
       <div class="">
         <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
@@ -145,25 +175,29 @@ const groups = [{
       <!-- direct messages -->
       <div class="my-1 text-sm" v-if="!pending">
         <p class="my-5 font-bold text-sm text-gray-700">Direct Messages</p>
-          <div class="" v-for="item of rooms" :key="item.id">
-              <NuxtLink
-                :to="`/dashboard/messenger/dm/${item.id}`"
-                class="flex gap-2 px-1 my-4"
-              >
-                <img class="" src="@/assets/img/profile.png" alt="loading" />
-                <div class="flex-col flex-1">
-                  <div class="flex justify-between">
-                    <p class="font-bold text-gray-700">
-                      {{ item.participants.sender.id == id ? item.participants.receiver.name : item.participants.sender.name }}
-                    </p>
-                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
-                  </div>
-                  <p class="text-xs text-gray-400">
-                    Hello, can you check whether everything is okay...
-                  </p>
-                </div>
-              </NuxtLink>
-          </div>
+        <div class="" v-for="item of rooms" :key="item.id">
+          <NuxtLink
+            :to="`/dashboard/messenger/dm/${item.id}`"
+            class="flex gap-2 px-1 my-4"
+          >
+            <img class="" src="@/assets/img/profile.png" alt="loading" />
+            <div class="flex-col flex-1">
+              <div class="flex justify-between">
+                <p class="font-bold text-gray-700">
+                  {{
+                    item.participants.sender.id == id
+                      ? item.participants.receiver.name
+                      : item.participants.sender.name
+                  }}
+                </p>
+                <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+              </div>
+              <p class="text-xs text-gray-400">
+                Hello, can you check whether everything is okay...
+              </p>
+            </div>
+          </NuxtLink>
+        </div>
       </div>
       <div v-else>
         <div class="loader">Retrieving chats...</div>
@@ -172,20 +206,26 @@ const groups = [{
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
         <div v-for="group in groups" :key="group.name">
-          <NuxtLink to="/dashboard/messenger/groups/1" class="flex gap-2 my-4 px-1">
-          <img class="" src="@/assets/img/group1.svg" alt="loading" />
-          <div class="flex-col flex-1">
-            <div class="flex justify-between">
-              <p class="text-gray-700 font-semibold">{{group.name}}</p>
-              <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+          <NuxtLink
+            to="/dashboard/messenger/groups/1"
+            class="flex gap-2 my-4 px-1"
+          >
+            <img class="" src="@/assets/img/group1.svg" alt="loading" />
+            <div class="flex-col flex-1">
+              <div class="flex justify-between">
+                <p class="text-gray-700 font-semibold">{{ group.name }}</p>
+                <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+              </div>
+              <p class="text-xs text-gray-400">
+                Hello, can you check whether everything is okay...
+              </p>
             </div>
-            <p class="text-xs text-gray-400">
-              Hello, can you check whether everything is okay...
-            </p>
-          </div>
-        </NuxtLink>
+          </NuxtLink>
         </div>
-        <button class="md:absolute fixed bottom-0 right-0 z-10" @click="startConversation()">
+        <button
+          class="md:absolute fixed bottom-0 right-0 z-10"
+          @click="startConversation()"
+        >
           <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
         </button>
       </div>
@@ -242,6 +282,38 @@ const groups = [{
       <!-- end of the screen -->
     </div>
     <!-- select contact for the group  -->
+    <!-- enter the group name  -->
+    <div class="mt-6 mr-4 w-4/12" v-if="enterGroupName">
+      <div class="flex-col">
+        <button
+          class="cursor:pointer font-semibold flex gap-2 items-center"
+          @click="goBackToContacts()"
+        >
+          <img src="@/assets/img/ArrowLeft.svg" alt="" />
+
+          Create a New Group
+        </button>
+        <div class="mt-2">
+          <div class="text-sm">Creating with 33 selected Members</div>
+        </div>
+        <div class="mt-2 text-sm">
+          <div class="text-sm">Enter the name of the group</div>
+          <input
+            class="border-solid border p-1 border-slate-300 rounded-md w-full"
+            type="text"
+            v-model="groupName"
+            placeholder="Example: Marketing Department"
+          />
+        </div>
+        <div class="">
+          <button
+            class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
+          >
+            Save Group Info
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- contact screen -->
     <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <div class="my-4 gap-4 flex flex-col w-3/4" v-if="selectContact">
@@ -260,23 +332,32 @@ const groups = [{
       >
       <!-- starting a conversation screen -->
       <!-- contact list  -->
-      <div class="flex flex-col gap-2 overflow-y-auto h-3/5">
-        <div class="" v-for="contact in allContacts" key="contact.phoneNumber">
+
+      <div class="flex flex-col gap-2 overflow-y-auto">
+        <div class="" v-for="contact in allContacts" :key="contact.id">
           <div class="flex flex-col gap- w-full">
-            <div class="flex gap-4" @click="selectContactToJoinGroup()">
+            <div
+              class="flex gap-4 cursor-pointer"
+              @click="selectContactToJoinGroup()"
+            >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
-                <p class="text-sm font-bold">
-                  {{ contact.fName }} {{ contact.lName }}
-                </p>
+                <p class="text-sm font-bold">{{ contact.name }}</p>
                 <span class="text-xs font-semibold text-gray-400">{{
-                  contact.phoneNumber
+                  contact.tel
                 }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <button
+        class="text-red-500 font-semibold flex gap-2 content-center items-center"
+        @click="showNameInput()"
+      >
+        Next
+        <img src="@/assets/img/ArrowRight.svg" alt="" />
+      </button>
       <!-- end of the screen -->
     </div>
     <!-- message slot  -->
