@@ -48,6 +48,8 @@ async function sendMessage() {
     sender: senderId.value,
     roomId: rooomId,
   };
+  console.log(msg, 'outgoing');
+  
 
   const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
@@ -115,7 +117,7 @@ onMounted(async () => {
             :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
                 sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50': sendMsg.receiver == senderId,
+              'rounded-tl-none bg-orange-50': sendMsg.receiver == messages.receiver,
             }"
           >
             <p>{{ sendMsg.message }}</p>
