@@ -69,7 +69,6 @@ socket.on("r-newMessage", async (data) => {
       roomId: parseInt(rooomId.toString()),
     });
     messages.value.push(data);
-    // console.log(data, "checking sender");
   } else {
     return;
   }
@@ -116,7 +115,7 @@ onMounted(async () => {
             :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
                 sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50': sendMsg.receiver == senderId,
+              'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
             }"
           >
             <p>{{ sendMsg.message }}</p>
