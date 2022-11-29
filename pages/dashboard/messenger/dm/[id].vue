@@ -32,11 +32,14 @@ if (rooomId != undefined) {
 }
 
 watch(createdRoom, (room) => {
+console.log('do something')
+console.log(room, 'roooooooooooom')
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
     // console.log(data, "returned data");
   });
+ 
 });
 async function sendMessage() {
   let msg = {
@@ -45,7 +48,7 @@ async function sendMessage() {
     sender: senderId.value,
     roomId: rooomId,
   };
-
+  
   const id = await db.userMessages.add({
     timeStamp: Date.now().toString(),
     message: messageData.value,
@@ -60,7 +63,7 @@ async function sendMessage() {
   messageData.value = "";
 }
 
-socket.on("r-newMessage", async (data) => {
+socket.on(`r-newMessage-${rooomId}`, async (data) => {
   if (data.sender != senderId.value) {
     const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
@@ -99,7 +102,7 @@ onMounted(async () => {
 // console.log(messages.value, "my meso with room id");
 </script>
 <template>
-  <div class="ml-2 relative h-screen md:w-full">
+  <div class="ml-2 relative h-screen md:w-full" >
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="p-4 h-4/5 overflow-y-scroll">
       <p class="text-gray-200 text-center font-semibold my-5 text-sm">
@@ -116,7 +119,7 @@ onMounted(async () => {
             :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
                 sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50': sendMsg.receiver == senderId,
+              'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
             }"
           >
             <p>{{ sendMsg.message }}</p>
