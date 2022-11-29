@@ -73,7 +73,6 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
       roomId: parseInt(rooomId.toString()),
     });
     messages.value.push(data);
-    // console.log(data, "checking sender");
   } else {
     return;
   }
@@ -129,6 +128,7 @@ onMounted(async () => {
             >
               <p>{{ sendMsg.message }}</p>
             </div>
+            >>>>>>> 9f810b9e005687c022219cb90e0da8c7e140fc35
           </div>
         </div>
       </div>
