@@ -41,7 +41,8 @@ watch(createdRoom, (room) => {
   });
 });
 async function sendMessage() {
-  let msg = {
+  if (messageData.value != ""){
+    let msg = {
     timeStamp: Date.now().toString(),
     message: messageData.value,
     sender: senderId.value,
@@ -60,6 +61,7 @@ async function sendMessage() {
   });
   // clear the input value
   messageData.value = "";
+  }
 }
 
 socket.on(`r-newMessage-${rooomId}`, async (data) => {
