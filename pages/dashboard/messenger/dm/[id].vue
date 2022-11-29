@@ -59,21 +59,25 @@ async function sendMessage() {
   });
   messages.value.push(msg);
   socket.emit("newMessage", msg, (reverseMessage) => {
-    console.log("the reverse message", reverseMessage);
+    // console.log("the reverse message", reverseMessage);
   });
   // clear the input value
   messageData.value = "";
 }
 
 socket.on("r-newMessage", async (data) => {
-  if (data.sender == senderId) return;
-  const id = await db.userMessages.add({
-    timeStamp: Date.now().toString(),
-    message: messageData.value,
-    sender: senderId.value,
-    roomId: parseInt(rooomId.toString()),
-  });
-  messages.value.push(data);
+  if (data.sender != senderId.value) {
+    const id = await db.userMessages.add({
+      timeStamp: Date.now().toString(),
+      message: messageData.value.trim(),
+      sender: senderId.value,
+      roomId: parseInt(rooomId.toString()),
+    });
+    messages.value.push(data);
+    // console.log(data, "checking sender");
+  } else {
+    return;
+  }
 });
 
 const name = ref("Paul Davidson ");
