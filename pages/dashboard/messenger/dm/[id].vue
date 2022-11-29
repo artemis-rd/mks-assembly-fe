@@ -139,6 +139,7 @@ onMounted(async () => {
         placeholder="Type something here ...."
         class="w-full mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
         v-model="messageData"
+        @keyup.enter="sendMessage()"
       />
       <button @click="sendMessage()">
         <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
