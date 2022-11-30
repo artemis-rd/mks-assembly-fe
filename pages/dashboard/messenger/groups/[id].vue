@@ -1,105 +1,140 @@
 <script setup lang="ts">
-import { db } from '~~/data/db';
+import { db } from "~~/data/db";
+import { io, Socket } from "socket.io-client";
+const cookie = useCookie("mks-token");
+const token = cookie.value;
+const senderId = ref();
+const messageData = ref();
+const route = useRoute();
+const rooomId = route.params.id;
 
-const group = ref("House Business Commitee ");
+const {
+  public: { MESSAGING_SOCKET_URL },
+} = useRuntimeConfig();
+const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
+const createdGroupRoom = useState("createdGroupRoomId");
+// const group = ref("House Business Commitee ");
+let brokenToken = token.split(".")[1];
+senderId.value = JSON.parse(atob(brokenToken)).id;
+const { MESSAGING_SERVICE } = useRuntimeConfig();
+
+const {
+  data: messages,
+  error,
+  pending,
+} = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
+  method: "GET",
+  key: createdGroupRoom.toString(),
+});
+
 onMounted(() => {
-    const route = useRoute()
-    group.value += route.params.id;
+  const route = useRoute();
+  const messages = db.userMessages.filter(
+    (x) => x.id.toString() === route.params.id
+  );
+  if (messages.count.length > 0) {
+    // show the messages
+  } else {
+    return;
+  }
+});
+if (rooomId != undefined) {
+  socket.emit("joinRoom", { roomId: rooomId });
+  socket.on(`${rooomId}`, (data) => {
+    // handle when an event is send to this partucular room
+  });
+}
+watch(createdGroupRoom, (room) => {
+  socket.emit("joinRoom", { roomId: room });
+  // ?? Not sure
+  socket.on(`${room}`, (data) => {
+    // console.log(data, "returned data");
+  });
+});
+async function sendGroupMessage() {
+  if (messageData.value != "") {
+    let msg = {
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: rooomId,
+    };
 
-    const messages = db.userMessages.filter(x => x.id.toString() === route.params.id);
-    if (messages.count.length > 0) {
-        // show the messages
-    } else {
-        return;
-    }
-})
+    const id = await db.userMessages.add({
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: parseInt(rooomId.toString()),
+    });
+    messages.value.push(msg);
+    socket.emit("newMessage", msg, (reverseMessage) => {
+      // console.log("the reverse message", reverseMessage);
+    });
+    // clear the input value
+    messageData.value = "";
+  }
+}
+
+socket.on(`r-newMessage-${rooomId}`, async (data) => {
+  if (data.sender != senderId.value) {
+    const id = await db.userMessages.add({
+      timeStamp: Date.now().toString(),
+      message: messageData.value.trim(),
+      sender: senderId.value,
+      roomId: parseInt(rooomId.toString()),
+    });
+    messages.value.push(data);
+  } else {
+    return;
+  }
+});
+const group = ref("Paul Davidson ");
 </script>
 <template>
-    <div class="ml-2 max-w-2lg">
-        <TopBar :name="group" last-login="27 Members" user="Angel Mwende" />
-        <div class="w-full flex flex-col gap-4">
-            <p class="text-center text-gray-400 font-semibold my-2 text-sm">
-                The start of your conversation with House Business Comm
-            </p>
-            <div class="mx-3">
-                <div class="flex">
-                    <div class="w-1/2"></div>
-                    <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
-
-                        <p class="text-xs flex justify-end font-semibold">
-                            Commodo hendrerit luctus tellus, diam fermentum egestas molestie eu. Pellentesque semper
-                            egestas vulputate a. Vel amet quis scelerisque lectus ut ac viverra eget. Et porta volutpat
-                            egestas a. Ut non potenti est amet. Imperdiet ac dictum euismod at. A hendrerit amet, id
-                            tempor integer tincidunt in sit aenean.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
-                    <p>sent</p>
-                    <p>12th Oct 04.22 p.m</p>
-                </div>
+  <div class="ml-2 relative h-screen md:w-full">
+    <TopBar :name="group" lastLogin="4.22pm" user="Angel Mwende" />
+    <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
+      <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
+        The start of your conversation with Paul
+      </span>
+      <div class="cont">
+        <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
+          The start of your conversation with John
+        </p> -->
+        <div
+          class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
+          v-for="sendMsg in messages"
+          :key="sendMsg.timestamp"
+        >
+          <div class="">
+            <div
+              class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
+              :class="{
+                'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                  sendMsg.sender == senderId,
+                'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+              }"
+            >
+              <p>{{ sendMsg.message }}</p>
             </div>
-            <!-- conv twoo -->
-            <div class="mx-3">
-                <div class="flex">
-                    <div class="w-1/2"></div>
-                    <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
-
-                        <p class="text-xs flex justify-end font-semibold">
-                            Commodo hendrerit luctus tellus, diam fermentum egestas molestie eu. Pellentesque semper
-                            egestas vulputate a. Vel amet quis scelerisque lectus ut ac viverra eget. Et porta volutpat
-                            egestas a. Ut non potenti est amet. Imperdiet ac dictum euismod at. A hendrerit amet, id
-                            tempor integer tincidunt in sit aenean.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
-                    <p>sent</p>
-                    <p>12th Oct 04.22 p.m</p>
-                </div>
-            </div>
-            <!-- conv three -->
-            <div class="mx-3">
-                <div class="flex">
-                    <div class="w-1/2"></div>
-                    <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none">
-
-                        <p class="text-xs flex justify-end font-semibold">
-                            Commodo hendrerit luctus tellus, diam fermentum egestas molestie eu. Pellentesque semper
-                            egestas vulputate a. Vel amet quis scelerisque lectus ut ac viverra eget. Et porta volutpat
-                            egestas a. Ut non potenti est amet. Imperdiet ac dictum euismod at. A hendrerit amet, id
-                            tempor integer tincidunt in sit aenean.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
-                    <p>sent</p>
-                    <p>12th Oct 04.22 p.m</p>
-                </div>
-            </div>
-            <!-- conv four -->
-            <div class="mx-3">
-                <div class="flex">
-                    <div class="w-1/2"></div>
-                    <div class="p-3 rounded-2xl  text-cyan-50 bg-red-500 rounded-br-none max-w-lg">
-
-                        <p class="text-xs flex justify-end font-semibold">
-                            Erat ipsum magna dictum aliquam, lacus, ligula. Pharetra, feugiat nec bibendum volutpat
-                            ipsum. Dolor ut at bibendum ullamcorper enim. In risus volutpat eleifend quis nisl, proin
-                            adipiscing. Ac ipsum, in in adipiscing suspendisse sodales leo id sit. Ut convallis sed eget
-                            amet. Massa congue dignissim cras maecenas id velit a. Scelerisque cursus sapien, quam et
-                            ultricies. Ullamcorper etiam ullamcorper purus lectus nec. Quam lacus ut in nec enim
-                            consectetur magnis ullamcorper. Et est volutpat tincidunt ac ultrices volutpat fermentum,
-                            est. Quis fames vitae pellentesque ullamcorper. Arcu eget cursus arcu mauris porta.
-                            Lorem nam porttitor nunc morbi nunc eget ultrices mauris quam. Est viverra in.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex gap-1 text-xs font-semibold text-gray-400 justify-end mt-1">
-                    <p>sent</p>
-                    <p>12th Oct 04.22 p.m</p>
-                </div>
-            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <div
+      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
+    >
+      <textarea
+        rows="2"
+        placeholder="Type something here ...."
+        class="w-full mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
+        v-model="messageData"
+        @keyup.enter="sendGroupMessage()"
+      />
+      <button @click="sendGroupMessage()">
+        <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
+        <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
+      </button>
     </div>
+  </div>
 </template>

@@ -32,8 +32,6 @@ if (rooomId != undefined) {
 }
 
 watch(createdRoom, (room) => {
-  console.log("do something");
-  console.log(room, "roooooooooooom");
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
@@ -105,7 +103,7 @@ onMounted(async () => {
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
+    <div class="p-4 h-[87%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
       </span>
@@ -116,7 +114,7 @@ onMounted(async () => {
         <div
           class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
           v-for="sendMsg in messages"
-          key="sendMsg.timestamp"
+          :key="sendMsg.timestamp"
         >
           <div class="">
             <div
