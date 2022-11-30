@@ -91,6 +91,18 @@ function goBackToContacts() {
   enterGroupName.value = false;
   selectContact.value = !selectContact.value;
 }
+function changeName(valueGiven) {
+  let converted = valueGiven.toUpperCase();
+  let newName = converted.split(" ");
+  let firstWord = newName[0][0];
+  let finalName = "";
+  if (newName.length > 1) {
+    let last = newName.pop()[0];
+    finalName = firstWord + last;
+    return finalName;
+  }
+  return firstWord[0];
+}
 
 function selectContactToJoinGroup(contact) {
   if (roomList.value.includes(contact)) {
@@ -198,7 +210,12 @@ function createRoom(receiverId, name) {
             :to="`/dashboard/messenger/groups/${group.id}`"
             class="flex gap-2 my-4 px-1"
           >
-            <img class="" src="@/assets/img/group1.svg" alt="loading" />
+            <div
+              class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
+            >
+              {{ changeName(group.name) }}
+            </div>
+
             <div class="flex-col flex-1">
               <div class="flex justify-between">
                 <p class="text-gray-700 font-semibold">{{ group.name }}</p>
@@ -247,7 +264,7 @@ function createRoom(receiverId, name) {
           v-for="contact in allContacts"
           :key="contact.id"
         >
-          <div class="flex flex-col gap-4 w-full pb-2">
+          <div class="flex flex-col gap-4 w-full pb-2" v-if="contact.id != id">
             <a
               :to="`/dashboard/messenger/dm/${roomId}`"
               class="flex gap-4 cursor-pointer"
@@ -326,8 +343,9 @@ function createRoom(receiverId, name) {
         <div class="" v-for="contact in allContacts" :key="contact.id">
           <div class="flex flex-col gap- w-full">
             <div
+              v-if="id != contact.id"
               class="flex gap-4 cursor-pointer"
-              @click="selectContactToJoinGroup(contact.id)"
+              @click="selectContactToJoinGroup(contact.tel)"
             >
               <div class="flex">
                 <img
