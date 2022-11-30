@@ -14,6 +14,7 @@ const rooomId = route.params.id;
 const senderId = ref();
 const messageList = ref([]) as Ref<any[]>;
 
+
 const {
   public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
