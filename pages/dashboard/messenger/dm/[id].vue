@@ -41,27 +41,27 @@ watch(createdRoom, (room) => {
   });
 });
 async function sendMessage() {
-  const tosend = messageData.value.trim()  
-  if (tosend.length < 1){
+  const tosend = messageData.value.trim();
+  if (tosend.length > 0) {
     let msg = {
-    timeStamp: Date.now().toString(),
-    message: messageData.value,
-    sender: senderId.value,
-    roomId: rooomId,
-  };
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: rooomId,
+    };
 
-  const id = await db.userMessages.add({
-    timeStamp: Date.now().toString(),
-    message: messageData.value,
-    sender: senderId.value,
-    roomId: parseInt(rooomId.toString()),
-  });
-  messages.value.push(msg);
-  socket.emit("newMessage", msg, (reverseMessage) => {
-    // console.log("the reverse message", reverseMessage);
-  });
-  // clear the input value
-  messageData.value = "";
+    const id = await db.userMessages.add({
+      timeStamp: Date.now().toString(),
+      message: messageData.value,
+      sender: senderId.value,
+      roomId: parseInt(rooomId.toString()),
+    });
+    messages.value.push(msg);
+    socket.emit("newMessage", msg, (reverseMessage) => {
+      // console.log("the reverse message", reverseMessage);
+    });
+    // clear the input value
+    messageData.value = "";
   }
 }
 
