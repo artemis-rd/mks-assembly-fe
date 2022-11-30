@@ -167,54 +167,54 @@ function checkReceiverName(receiverName, id) {
 
         <!-- direct messages -->
         <div class="overflow-y-scroll h-[90%] md:absolute pb-4 w-full">
-        <div class="my-1 text-sm" v-if="!pending">
-          <p class="my-5 font-bold text-sm text-gray-700 px-4">Direct Messages</p>
-          <div class=" hover:bg-gray-100 px-[15px] py-[0.5px]" v-for="item of rooms" :key="item.id">
-            <a :to="`/dashboard/messenger/dm/${item.id}`" class="flex gap-2 px-1 my-4 cursor-pointer" @click.prevent="checkReceiverName(item.participants.sender.id == id
-            ? item.participants.receiver.name
-            : item.participants.sender.name, item.id)">
-              <img class="" src="@/assets/img/profile.png" alt="loading" />
-              <div class="flex-col flex-1">
-                <div class="flex justify-between">
-                  <p class=" font-semibold text-gray-700">
-                    {{
-                        item.participants.sender.id == id
-                          ? item.participants.receiver.name
-                          : item.participants.sender.name
-                    }}
+          <div class="my-1 text-sm" v-if="!pending">
+            <p class="my-5 font-bold text-sm text-gray-700 px-4">Direct Messages</p>
+            <div class=" hover:bg-gray-100 px-[15px] py-[0.5px]" v-for="item of rooms" :key="item.id">
+              <a :to="`/dashboard/messenger/dm/${item.id}`" class="flex gap-2 px-1 my-4 cursor-pointer" @click.prevent="checkReceiverName(item.participants.sender.id == id
+              ? item.participants.receiver.name
+              : item.participants.sender.name, item.id)">
+                <img class="" src="@/assets/img/profile.png" alt="loading" />
+                <div class="flex-col flex-1">
+                  <div class="flex justify-between">
+                    <p class=" font-semibold text-gray-700">
+                      {{
+                          item.participants.sender.id == id
+                            ? item.participants.receiver.name
+                            : item.participants.sender.name
+                      }}
+                    </p>
+                    <p class="text-[12px] text-gray-700">4.14 p.m</p>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Hello, can you check whether everything is ..
                   </p>
-                  <p class="text-[12px] text-gray-700">4.14 p.m</p>
                 </div>
-                <p class="text-xs text-gray-400">
-                  Hello, can you check whether everything is ..
-                </p>
-              </div>
-            </a>
+              </a>
+            </div>
           </div>
-        </div>
-        <div v-else>
-          <div class="loader">Retrieving chats...</div>
-        </div>
+          <div v-else>
+            <div class="loader">Retrieving chats...</div>
+          </div>
 
-        <div class="my-1 text-sm">
-          <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-          <div v-for="group in groupRooms" :key="group.id">
-            <NuxtLink :to="`/dashboard/messenger/groups/${group.id}`" class="flex gap-2 my-4 px-1">
-              <img class="" src="@/assets/img/group1.svg" alt="loading" />
-              <div class="flex-col flex-1">
-                <div class="flex justify-between">
-                  <p class="text-gray-700 font-semibold">{{ group.name }}</p>
-                  <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+          <div class="my-1 text-sm">
+            <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
+            <div v-for="group in groupRooms" :key="group.id">
+              <NuxtLink :to="`/dashboard/messenger/groups/${group.id}`" class="flex gap-2 my-4 px-1">
+                <img class="" src="@/assets/img/group1.svg" alt="loading" />
+                <div class="flex-col flex-1">
+                  <div class="flex justify-between">
+                    <p class="text-gray-700 font-semibold">{{ group.name }}</p>
+                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Hello, can you check whether everything is okay...
+                  </p>
                 </div>
-                <p class="text-xs text-gray-400">
-                  Hello, can you check whether everything is okay...
-                </p>
-              </div>
-            </NuxtLink>
+              </NuxtLink>
+            </div>
+
           </div>
-        
         </div>
-      </div>
 
 
 
@@ -298,37 +298,15 @@ function checkReceiverName(receiverName, id) {
             <div class="flex flex-col gap- w-full">
               <div class="flex gap-4 cursor-pointer" @click="selectContactToJoinGroup(contact.id)">
                 <div class="flex">
-                <img
-                  class="w-10 z-20"
-                  src="@/assets/img/profile.png"
-                  alt="loading"
-                />
-  
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 40 40"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  v-if="roomList.includes(contact.id)"
-                  class="w-10 z-30 absolute"
-                >
-                  <circle
-                    cx="20"
-                    cy="20"
-                    r="20"
-                    fill="#EC5237"
-                    fill-opacity="0.6"
-                  />
-                  <path
-                    d="M9 22.4898L16.0278 28L31 13"
-                    stroke="white"
-                    stroke-width="3"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-              <div class="gap-2">
+                  <img class="w-10 z-20" src="@/assets/img/profile.png" alt="loading" />
+
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    v-if="roomList.includes(contact.id)" class="w-10 z-30 absolute">
+                    <circle cx="20" cy="20" r="20" fill="#EC5237" fill-opacity="0.6" />
+                    <path d="M9 22.4898L16.0278 28L31 13" stroke="white" stroke-width="3" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div class="gap-2">
                   <p class="text-sm font-bold">{{ contact.name }}</p>
                   <span class="text-xs font-semibold text-gray-400">{{
                       contact.tel
@@ -344,11 +322,11 @@ function checkReceiverName(receiverName, id) {
         </button>
         <!-- end of the screen -->
       </div>
-   
+
       <!-- start conv  button -->
-      <button class="md:absolute bottom-0 right-0 z-10" @click="startConversation()">
-            <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
-          </button>
+      <button class="md:absolute bottom-0 right-0 z-10" @click="startConversation()" v-if="showGroups">
+        <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
+      </button>
     </div>
     <!-- message slot  -->
     <slot></slot>
