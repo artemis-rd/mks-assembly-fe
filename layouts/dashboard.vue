@@ -69,14 +69,15 @@ const active = ref(false)
         </MenuItem>
       </div>
       <!-- updates threads -->
-      <div class="mx-4">
-        <div class="flex gap-8">
-          <p class="text-sm text-gray-400">System Updates</p>
+      <div class="mx-4 flex flex-col gap-3 mt-6">
+        <div class="flex justify-between">
+          <p class="text-sm text-gray-500 font-semibold">System Updates</p>
           <img class="w-4" src="@/assets/img/notification.svg" alt="loading" />
         </div>
-        <p class="font-bold text-xs mt-2">Scheduled Maintenance</p>
-        <ul>
-          <li class="text-xs justify-center">
+  
+        <p class="font-bold text-xs">Scheduled Maintenance</p>
+        <ul class="px-4">
+          <li class="text-xs justify-center list-decimal">
             There will be a scheduled maintenance operation on the 28th October
             from 01:00 am to 02:00am. Kindly bare with us and appologies for any
             inconveniences
@@ -84,14 +85,9 @@ const active = ref(false)
         </ul>
       </div>
       <div class="flex justify-center">
-        <button class="p-2 bg-red-100 text-xs font-semibold w-4/5 my-7 rounded-md text-red-500">
+        <button class="p-2 bg-orange-200 text-xs font-semibold w-4/5 my-7 rounded-md text-orange-500">
           Dismiss
         </button>
-      </div>
-
-      <div class="flex items-center ml-3 gap-2">
-        <img src="@/assets/img/logout.svg" alt="loading" />
-        <p class="text-sm">Logout</p>
       </div>
     </aside>
     <slot></slot>
@@ -99,11 +95,11 @@ const active = ref(false)
 </template>
 <style scoped>
 .router-link-active {
-  color: orangered;
+  color: #EC5237;
 
 }
 
 .router-link-active svg path{
-  fill: red;
+  fill: #EC5237;
 }
 </style>

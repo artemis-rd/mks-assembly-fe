@@ -14,7 +14,7 @@ const updateModel = (event: Event) => {
 <template>
   <div class="flex justify-between border rounded-lg outline-none py-2 px-3">
     <input
-      class="outline-none text-sm"
+      class="outline-none text-sm bg-transparent"
       @input="updateModel($event)"
       :type="type"
       :placeholder="placeholder"
