@@ -8,6 +8,7 @@ const receiverCont = useState("receiverContact");
 const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 // const roomId = ref();
 const roomId = useState("createdRoomId");
+const createdGroupRoom = useState("createdGroupRoomId");
 
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
@@ -29,6 +30,12 @@ const {
   method: "GET",
   key: id.toString(),
 });
+const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
+  `${MESSAGING_SERVICE}/rooms/groups/list?userId=${id}`,
+  {
+    method: "GET",
+  }
+);
 
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
@@ -50,6 +57,8 @@ const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
+const roomList = ref([]) as Ref<any[]>;
+const selectedContact = ref();
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -82,36 +91,38 @@ function goBackToContacts() {
   enterGroupName.value = false;
   selectContact.value = !selectContact.value;
 }
-async function selectContactToJoinGroup() {
-  let participants = {
-    participants: {
-      sender: id,
-      receiver: "list of ids ",
-    },
+
+function selectContactToJoinGroup(contact) {
+  if (roomList.value.includes(contact)) {
+    const index = roomList.value.indexOf(contact);
+    if (index > -1) {
+      roomList.value.splice(index, 1);
+    }
+  } else {
+    roomList.value.push(contact);
+  }
+}
+function createNewGroup() {
+  let obj = {
+    groupName: groupName.value,
+    groupParticipants: roomList.value,
+    groupAdmin: id,
   };
-  socket.emit("createRoom", participants, async (rmCreated) => {
-    // showGroups.value = true;
+  socket.emit("createRoom", obj, async (groupRmCreated) => {
+    enterGroupName.value = false;
+    showGroups.value = true;
     // createGroups.value = !createGroups.value;
-    await refreshRooms();
-    navigateTo(`/dashboard/messenger/groups/${rmCreated.id}`);
+    createdGroupRoom.value = groupRmCreated.id;
+    await refreshGroupRooms;
+    navigateTo(`/dashboard/messenger/groups/${groupRmCreated.id}`);
   });
   socket.on("r-createRoom", (data) => {
-    // console.log("r created room", data);
     roomId.value = data.split(" ").slice(-1)[0];
   });
   selected.value = true;
-  // if ((selected.value = true)) {
-  //   let contactList = contactSelected.value.push(selectContact.value);
-  //   await getContacts();
-  //   let myContacts = allContacts.value;
-  //   for (let x of myContacts) {
-  //     // code
-  //   }
-  //   let listLength = contactSelected.value.length;
-  // }
 }
 // create room if there is no existing room
-function createRoom(receiverId) {
+function createRoom(receiverId, name) {
   if (id && receiverId) {
     let participants = {
       participants: {
@@ -136,29 +147,6 @@ function createRoom(receiverId) {
   }
 }
 // Group chats mock data
-const groups = [
-  {
-    name: "House Business Committee",
-    lastMessage: {
-      content: "Hello can you check whether everything is working as it should",
-      timestamp: new Date(Date.now()).toLocaleTimeString(),
-    },
-  },
-  {
-    name: "Legal Affairs",
-    lastMessage: {
-      content: "Hello can you check whether everything is working as it should",
-      timestamp: new Date(Date.now()).toLocaleTimeString(),
-    },
-  },
-  {
-    name: "Lands and Energy",
-    lastMessage: {
-      content: "Hello can you check whether everything is working as it should",
-      timestamp: new Date(Date.now()).toLocaleTimeString(),
-    },
-  },
-];
 </script>
 <template>
   <div class="w-full px-2 md:flex">
@@ -205,9 +193,9 @@ const groups = [
 
       <div class="my-1 text-sm">
         <p class="my-5 font-bold text-sm text-gray-700">Group Messages</p>
-        <div v-for="group in groups" :key="group.name">
+        <div v-for="group in groupRooms" :key="group.id">
           <NuxtLink
-            to="/dashboard/messenger/groups/1"
+            :to="`/dashboard/messenger/groups/${group.id}`"
             class="flex gap-2 my-4 px-1"
           >
             <img class="" src="@/assets/img/group1.svg" alt="loading" />
@@ -264,7 +252,7 @@ const groups = [
               :to="`/dashboard/messenger/dm/${roomId}`"
               class="flex gap-4 cursor-pointer"
               event=""
-              @click.prevent="createRoom(contact.id)"
+              @click.prevent="createRoom(contact.id, contact.name)"
             >
               <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
               <div class="gap-2">
@@ -307,6 +295,7 @@ const groups = [
         </div>
         <div class="">
           <button
+            @click="createNewGroup()"
             class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
           >
             Save Group Info
@@ -338,9 +327,39 @@ const groups = [
           <div class="flex flex-col gap- w-full">
             <div
               class="flex gap-4 cursor-pointer"
-              @click="selectContactToJoinGroup()"
+              @click="selectContactToJoinGroup(contact.id)"
             >
-              <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
+              <div class="flex">
+                <img
+                  class="w-10 z-20"
+                  src="@/assets/img/profile.png"
+                  alt="loading"
+                />
+
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  v-if="roomList.includes(contact.id)"
+                  class="w-10 z-30 absolute"
+                >
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#EC5237"
+                    fill-opacity="0.6"
+                  />
+                  <path
+                    d="M9 22.4898L16.0278 28L31 13"
+                    stroke="white"
+                    stroke-width="3"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
               <div class="gap-2">
                 <p class="text-sm font-bold">{{ contact.name }}</p>
                 <span class="text-xs font-semibold text-gray-400">{{
