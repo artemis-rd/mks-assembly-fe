@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
 const createdRoom = useState("createdRoomId");
+const receiverName: Ref<string> = useState("createdChatName")
 const route = useRoute();
 const cookie = useCookie("mks-token");
 const token = cookie.value;
@@ -33,14 +34,13 @@ if (rooomId != undefined) {
 }
 
 watch(createdRoom, (room) => {
-  console.log("do something");
-  console.log(room, "roooooooooooom");
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
   socket.on(`${room}`, (data) => {
     // console.log(data, "returned data");
   });
 });
+
 async function sendMessage() {
   const tosend = messageData.value.trim()  
   if (tosend.length < 1){
@@ -81,8 +81,6 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
   }
 });
 
-const name = ref("Paul Davidson ");
-
 const {
   data: messages,
   error,
@@ -106,7 +104,7 @@ onMounted(async () => {
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="name" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="receiverName" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
