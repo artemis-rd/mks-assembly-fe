@@ -128,7 +128,6 @@ onMounted(async () => {
             >
               <p>{{ sendMsg.message }}</p>
             </div>
-            >>>>>>> 9f810b9e005687c022219cb90e0da8c7e140fc35
           </div>
         </div>
       </div>
