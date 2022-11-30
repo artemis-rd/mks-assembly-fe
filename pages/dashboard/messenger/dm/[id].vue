@@ -39,7 +39,8 @@ watch(createdRoom, (room) => {
   });
 });
 async function sendMessage() {
-  if (messageData.value != "") {
+  const tosend = messageData.value.trim();
+  if (tosend.length > 0) {
     let msg = {
       timeStamp: Date.now().toString(),
       message: messageData.value,
