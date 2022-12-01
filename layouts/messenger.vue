@@ -179,10 +179,10 @@ function checkReceiverName(receiverName, id, isGroup) {
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
           <SearchInput placeholder="Search Messages" />
         </div>
-
         <!-- direct messages -->
         <div class="overflow-y-scroll h-[90%] md:absolute pb-4 w-full">
           <div class="my-1 text-sm" v-if="!pending">
+
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
             </p>
@@ -436,11 +436,7 @@ function checkReceiverName(receiverName, id, isGroup) {
       </div>
 
       <!-- start conv  button -->
-
-      <button
-        class="md:absolute bottom-0 right-0 z-10"
-        @click="startConversation()"
-      >
+      <button class="md:absolute bottom-0 right-0 z-10" @click="startConversation()" v-if="showGroups">
         <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
       </button>
     </div>
