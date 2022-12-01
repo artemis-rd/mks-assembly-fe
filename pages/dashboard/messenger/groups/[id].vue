@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { db } from "~~/data/db";
 import { io, Socket } from "socket.io-client";
+import { Ref } from "vue";
 const cookie = useCookie("mks-token");
 const token = cookie.value;
 const senderId = ref();
 const messageData = ref();
 const route = useRoute();
 const rooomId = route.params.id;
+const chatName: Ref<string> = useState("createdChatName");
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -88,11 +90,10 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
     return;
   }
 });
-const group = ref("Paul Davidson ");
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="group" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
     <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
