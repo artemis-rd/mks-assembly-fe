@@ -50,9 +50,10 @@ let userTel = foundUser.tel;
 roomList.value.push(foundUser.tel);
 // console.log(userTel, "my number");
 const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
-  `${MESSAGING_SERVICE}/rooms/groups?tel=${userTel}`,
+  `${MESSAGING_SERVICE}/rooms/groups`,
   {
-    method: "GET",
+    body: { tel: userTel },
+    method: "POST",
     key: Math.floor(Math.random() * 1000).toString(),
   }
 );
