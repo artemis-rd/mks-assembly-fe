@@ -60,6 +60,7 @@ async function sendGroupMessage() {
       message: messageData.value,
       sender: senderId.value,
       roomId: rooomId,
+      groupName: chatName.value,
     };
 
     const id = await db.userMessages.add({
@@ -122,6 +123,8 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
         </div>
       </div>
     </div>
+    <div class="min-w-fit">displaying contacts here</div>
+
     <div
       class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
     >
