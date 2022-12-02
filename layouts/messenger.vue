@@ -11,6 +11,7 @@ const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
 const createdGroupRoom = useState("createdGroupId");
+const roomList = ref([]) as Ref<any[]>;
 
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
@@ -46,7 +47,8 @@ let { data: contacts } = await useFetch<any>(
 allContacts.value = contacts.value;
 let foundUser = allContacts.value.find((x: any) => x.id == id);
 let userTel = foundUser.tel;
-
+roomList.value.push(foundUser.tel);
+// console.log(userTel, "my number");
 const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
   `${MESSAGING_SERVICE}/rooms/groups?tel=${userTel}`,
   {
@@ -63,7 +65,6 @@ const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
-const roomList = ref([]) as Ref<any[]>;
 const selectedContact = ref();
 function startConversation() {
   showGroups.value = false;

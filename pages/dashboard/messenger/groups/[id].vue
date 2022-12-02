@@ -7,8 +7,12 @@ const token = cookie.value;
 const senderId = ref();
 const messageData = ref();
 const route = useRoute();
+const showContacts = ref(false);
 const rooomId = route.params.id;
+const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
+
+//  showToggleContact.value = useState("toggleShow");
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -46,6 +50,7 @@ if (rooomId != undefined) {
     // handle when an event is send to this partucular room
   });
 }
+
 watch(createdGroupRoom, (room) => {
   socket.emit("joinRoom", { roomId: room });
   // ?? Not sure
@@ -53,6 +58,9 @@ watch(createdGroupRoom, (room) => {
     // console.log(data, "returned data");
   });
 });
+function toggleContacts() {
+  showContacts.value = !showContacts.value;
+}
 async function sendGroupMessage() {
   if (messageData.value != "") {
     let msg = {
@@ -91,40 +99,85 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
     return;
   }
 });
+const { data: groupContacts } = await useFetch<any[]>(
+  `${MESSAGING_SERVICE}/rooms/groups/contacts?roomId=${rooomId}`,
+  {
+    method: "GET",
+    // key: Math.floor(Math.random() * 1000).toString(),
+  }
+);
+console.log(rooomId, "room id given");
+console.log("conatcts ", groupContacts.value);
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
-    <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll">
-      <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
-        The start of your conversation with Paul
-      </span>
-      <div class="cont">
-        <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
+    <div
+      v-if="showToggleContact"
+      class="right-0 flex w-52 bg-red-100 mr-4 absolute p-2 rounded z-30"
+      @click="toggleContacts()"
+    >
+      <div class="text-red-500 font-bold">show contacts</div>
+    </div>
+    <div class="flex">
+      <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll flex-1">
+        <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
+          The start of your conversation with Paul
+        </span>
+        <div class="cont">
+          <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
           The start of your conversation with John
         </p> -->
+          <div
+            class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
+            v-for="sendMsg in messages"
+            :key="sendMsg.timestamp"
+          >
+            <div class="">
+              <div
+                class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
+                :class="{
+                  'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                    sendMsg.sender == senderId,
+                  'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+                }"
+              >
+                <p>{{ sendMsg.message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="h-full px-8">
         <div
-          class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-          v-for="sendMsg in messages"
-          :key="sendMsg.timestamp"
+          class="font-extrabold cursor-pointer pb-2 pt-1 text-red-500"
+          @click="toggleContacts()"
         >
-          <div class="">
-            <div
-              class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
-              :class="{
-                'float-right bg-orange-500 text-cyan-50 rounded-br-none':
-                  sendMsg.sender == senderId,
-                'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
-              }"
-            >
-              <p>{{ sendMsg.message }}</p>
+          X
+        </div>
+        <div class="flex flex-col gap-2 overflow-y-auto">
+          <div class="" v-for="contact in groupContacts" :key="contact.id">
+            <div class="flex flex-col gap- w-full">
+              <div class="flex gap-4 cursor-pointer">
+                <div class="flex">
+                  <img
+                    class="w-10 z-20"
+                    src="@/assets/img/profile.png"
+                    alt="loading"
+                  />
+                </div>
+                <div class="gap-2">
+                  <p class="text-sm font-bold">{{ contact.name }}</p>
+                  <span class="text-xs font-semibold text-gray-400">{{
+                    contact.tel
+                  }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="min-w-fit">displaying contacts here</div>
-
     <div
       class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
     >

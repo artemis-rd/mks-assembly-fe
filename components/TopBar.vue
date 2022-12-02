@@ -1,4 +1,9 @@
 <script setup lang="ts">
+const toggelShowContacts = useState("toggleShow");
+function changeToggle() {
+  toggelShowContacts.value = !toggelShowContacts.value;
+}
+
 defineProps({
   name: String,
   lastLogin: String,
@@ -13,7 +18,12 @@ defineProps({
     </div>
     <div class="flex justify-between items-center gap-8 pr-4">
       <img src="@/assets/img/Search.svg" alt="" />
-      <img src="@/assets/img/topdots.svg" alt="" />
+      <img
+        src="@/assets/img/topdots.svg"
+        class="cursor-pointer"
+        alt=""
+        @click="changeToggle()"
+      />
 
       <div class="flex items-center gap-2">
         <img src="@/assets/img/avatartop.svg" alt="" />
