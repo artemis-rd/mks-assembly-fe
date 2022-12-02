@@ -32,13 +32,6 @@ const {
   method: "GET",
   key: id.toString(),
 });
-const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
-  `${MESSAGING_SERVICE}/rooms/groups/list?userId=${id}`,
-  {
-    method: "GET",
-    key: Math.floor(Math.random() * 1000).toString(),
-  }
-);
 
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
@@ -51,6 +44,16 @@ let { data: contacts } = await useFetch<any>(
   }
 );
 allContacts.value = contacts.value;
+let foundUser = allContacts.value.find((x: any) => x.id == id);
+let userTel = foundUser.tel;
+
+const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
+  `${MESSAGING_SERVICE}/rooms/groups?tel=${userTel}`,
+  {
+    method: "GET",
+    key: Math.floor(Math.random() * 1000).toString(),
+  }
+);
 
 const showGroups = ref(true);
 const createGroups = ref(false);
@@ -154,7 +157,6 @@ function createRoom(receiverId, name) {
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-      // console.log("r created room", data);
       roomId.value = data.split(" ").slice(-1)[0];
     });
     socket.on(`${receiverId}`, (data) => {
@@ -182,7 +184,6 @@ function checkReceiverName(receiverName, id, isGroup) {
         <!-- direct messages -->
         <div class="overflow-y-scroll h-[90%] md:absolute pb-4 w-full">
           <div class="my-1 text-sm" v-if="!pending">
-
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
             </p>
@@ -436,10 +437,15 @@ function checkReceiverName(receiverName, id, isGroup) {
       </div>
 
       <!-- start conv  button -->
-      <button class="md:absolute bottom-0 right-0 z-10" @click="startConversation()" v-if="showGroups">
+      <button
+        class="md:absolute bottom-0 right-0 z-10"
+        @click="startConversation()"
+        v-if="showGroups"
+      >
         <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
       </button>
     </div>
+
     <!-- message slot  -->
     <slot></slot>
   </div>
