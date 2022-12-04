@@ -50,29 +50,36 @@ async function loginAttempt() {
 
     const cookie = useCookie("mks-token");
     cookie.value = token;
-    const { email, id } = JSON.parse(window.atob(cookie.value.split('.')[1]));
-    const recordExists = await (await db.user.toArray()).length > 0;
+    const { email, id } = JSON.parse(window.atob(cookie.value.split(".")[1]));
+    const recordExists = (await (await db.user.toArray()).length) > 0;
     if (!recordExists) {
       const d0 = await db.user.add({
         id,
-        name: email
-      })
+        name: email,
+      });
     } else {
       const d0 = await db.user.update(id, {
         id,
-        name: email
-      })
+        name: email,
+      });
     }
     // clear the form data
+    // let { data: contacts } = await useFetch<any>(
+    //   `${MESSAGING_SERVICE}/contacts/old/list`,
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token.value}`,
+    //     },
+    //   }
+    // );
     clearForm();
     authenticating.value = false;
     router.push("dashboard/messenger");
-    
   } catch (error) {
-    console.log('shit,', error);
-    
     authenticating.value = false;
-    userInfo.value = { email: "", password: ""}
+    userInfo.value = { email: "", password: "" };
     errorMessage.value = error[0].description;
     setTimeout(() => {
       errorMessage.value = "";
