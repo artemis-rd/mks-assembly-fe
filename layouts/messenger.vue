@@ -370,13 +370,13 @@ function checkReceiverName(receiverName, id, isGroup) {
 
         <SearchInput placeholder="search contact" />
 
-        <span class="my-4 text-gray-400 font-bold text-sm"
+        <span class="my-2 text-gray-400 font-bold text-sm"
           >Select Group Members</span
         >
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-auto">
+        <div class="flex flex-col gap-2 overflow-y-scroll h-[20%]  bg-blue-500">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div
@@ -392,8 +392,8 @@ function checkReceiverName(receiverName, id, isGroup) {
                   />
 
                   <svg
-                    width="40"
-                    height="40"
+                    width="44"
+                    height="44"
                     viewBox="0 0 40 40"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
