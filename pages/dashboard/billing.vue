@@ -3,6 +3,9 @@ const currentPage = ref();
 function onPageChange(page) {
   currentPage.value = page;
 }
+const listedPayment = useState("receivedPayment")
+console.log(listedPayment.value, "New list");
+
 </script>
 <template>
   <div class="">
@@ -62,7 +65,7 @@ function onPageChange(page) {
         </thead>
         <tbody>
           <tr class="hover:bg-slate-100 text-xs font-semibold py-12">
-            <td>15/10/2022</td>
+            <td>{{}}</td>
             <td>QWE234RE1</td>
             <td>0724xxxxx98</td>
             <td>KES 2500</td>
