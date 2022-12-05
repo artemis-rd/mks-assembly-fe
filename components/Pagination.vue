@@ -21,12 +21,12 @@ const nextPage = () => {
         emit('goToPage', 1)
     }
     else
-    emit('goToPage', n) // test alaf unishow kama iko sawa
+    emit('goToPage', n)
 }
 
 </script>
 <template>
-    <div class="  absolute bottom-0 border-t-[1px] w-full border-gray-500">
+    <div class="   bottom-0 border-t-[1px] w-full border-gray-500">
         <div class="flex gap-2 items-center mt-2">
             <div class="flex gap-2 font-bold" >
                 <span>Showing</span>
