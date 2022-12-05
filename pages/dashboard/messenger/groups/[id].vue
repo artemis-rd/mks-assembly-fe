@@ -34,6 +34,7 @@ const {
   method: "GET",
   key: rooomId.toString(),
 });
+// console.log(messages.value, "totala");
 
 onMounted(() => {
   const route = useRoute();
@@ -51,6 +52,10 @@ if (rooomId != undefined) {
   socket.on(`${rooomId}`, (data) => {
     // handle when an event is send to this partucular room
   });
+}
+function editTime(theDate) {
+  let newDate = new Date(theDate);
+  return newDate.toLocaleTimeString();
 }
 
 watch(createdGroupRoom, (room) => {
@@ -148,6 +153,9 @@ const { data: groupContacts } = await useFetch<any[]>(
                 }"
               >
                 <p>{{ sendMsg.message }}</p>
+                <div class="mt-2 max-w-xs flex float-right">
+                  {{ editTime(sendMsg.timeStamp) }}
+                </div>
               </div>
             </div>
           </div>

@@ -98,6 +98,10 @@ onMounted(async () => {
     messages.value = cache;
   }
 });
+function editTime(theDate) {
+  let newDate = new Date(theDate);
+  return newDate.toLocaleTimeString();
+}
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
@@ -125,6 +129,9 @@ onMounted(async () => {
               }"
             >
               <p>{{ sendMsg.message }}</p>
+              <div class="mt-2 max-w-xs flex float-right">
+                {{ editTime(sendMsg.timeStamp) }}
+              </div>
             </div>
           </div>
         </div>
