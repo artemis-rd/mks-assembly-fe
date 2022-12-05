@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
 const createdRoom = useState("createdRoomId");
-const receiverName: Ref<string> = useState("createdChatName")
+const receiverName: Ref<string> = useState("createdChatName");
 const route = useRoute();
 const cookie = useCookie("mks-token");
 const token = cookie.value;
@@ -14,7 +14,6 @@ const existingRoom = ref([]) as Ref<any[]>;
 const rooomId = route.params.id;
 const senderId = ref();
 const messageList = ref([]) as Ref<any[]>;
-
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -85,6 +84,7 @@ const {
   data: messages,
   error,
   pending,
+  refresh: refreshMessages,
 } = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
   method: "GET",
   key: rooomId.toString(),
@@ -98,9 +98,6 @@ onMounted(async () => {
     messages.value = cache;
   }
 });
-
-// messageList.value.push(messages)
-// console.log(messages.value, "my meso with room id");
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">

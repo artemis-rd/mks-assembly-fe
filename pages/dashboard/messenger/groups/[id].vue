@@ -3,16 +3,18 @@ import { db } from "~~/data/db";
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 const cookie = useCookie("mks-token");
+const adminNumber = useState("adminId");
+
 const token = cookie.value;
 const senderId = ref();
 const messageData = ref();
 const route = useRoute();
 const showContacts = ref(false);
 const rooomId = route.params.id;
-const showToggleContact = ref(false);
+// const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
 
-//  showToggleContact.value = useState("toggleShow");
+const showToggleContact = useState("toggleShow");
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -30,7 +32,7 @@ const {
   pending,
 } = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
   method: "GET",
-  key: createdGroupRoom.toString(),
+  key: rooomId.toString(),
 });
 
 onMounted(() => {
@@ -58,8 +60,13 @@ watch(createdGroupRoom, (room) => {
     // console.log(data, "returned data");
   });
 });
+
 function toggleContacts() {
-  showContacts.value = !showContacts.value;
+  showContacts.value = true;
+  showToggleContact.value = !showToggleContact.value;
+}
+function toggleContactsFalse() {
+  showContacts.value = false;
 }
 async function sendGroupMessage() {
   if (messageData.value != "") {
@@ -106,21 +113,19 @@ const { data: groupContacts } = await useFetch<any[]>(
     // key: Math.floor(Math.random() * 1000).toString(),
   }
 );
-console.log(rooomId, "room id given");
-console.log("conatcts ", groupContacts.value);
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
     <div
       v-if="showToggleContact"
-      class="right-0 flex w-52 bg-red-100 mr-4 absolute p-2 rounded z-30"
+      class="right-0 flex w-52 bg-orange-200 mr-4 absolute p-2 rounded z-30 cursor-pointer"
       @click="toggleContacts()"
     >
       <div class="text-red-500 font-bold">show contacts</div>
     </div>
     <div class="flex">
-      <div class="p-4 h-[90%] flex flex-col-reverse overflow-y-scroll flex-1">
+      <div class="p-4 h-[90%] flex flex-col-reverse overflow-auto flex-1">
         <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
           The start of your conversation with Paul
         </span>
@@ -148,37 +153,40 @@ console.log("conatcts ", groupContacts.value);
           </div>
         </div>
       </div>
-      <div class="h-full px-8">
-        <div
-          class="font-extrabold cursor-pointer pb-2 pt-1 text-red-500"
-          @click="toggleContacts()"
-        >
-          X
-        </div>
-        <div class="flex flex-col gap-2 overflow-y-auto">
-          <div class="" v-for="contact in groupContacts" :key="contact.id">
-            <div class="flex flex-col gap- w-full">
-              <div class="flex gap-4 cursor-pointer">
-                <div class="flex">
-                  <img
-                    class="w-10 z-20"
-                    src="@/assets/img/profile.png"
-                    alt="loading"
-                  />
-                </div>
-                <div class="gap-2">
-                  <p class="text-sm font-bold">{{ contact.name }}</p>
-                  <span class="text-xs font-semibold text-gray-400">{{
-                    contact.tel
-                  }}</span>
+      <Transition name="slide-fade">
+        <div class="h-full px-8" v-if="showContacts">
+          <div
+            class="font-extrabold cursor-pointer pb-2 pt-1 text-red-500"
+            @click="toggleContactsFalse()"
+          >
+            X
+          </div>
+          <div class="flex flex-col gap-2 overflow-y-auto">
+            <div class="" v-for="contact in groupContacts" :key="contact.id">
+              <div class="flex flex-col gap- w-full">
+                <div class="flex gap-4 cursor-pointer">
+                  <div class="flex">
+                    <img
+                      class="w-10 z-20"
+                      src="@/assets/img/profile.png"
+                      alt="loading"
+                    />
+                  </div>
+                  <div class="gap-2">
+                    <p class="text-sm font-bold">{{ contact.name }}</p>
+                    <span class="text-xs font-semibold text-gray-400">{{
+                      contact.tel
+                    }}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </div>
     <div
+      v-if="senderId == adminNumber"
       class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
     >
       <textarea
@@ -195,3 +203,19 @@ console.log("conatcts ", groupContacts.value);
     </div>
   </div>
 </template>
+<style scoped>
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+</style>
+1795.7

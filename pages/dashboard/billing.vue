@@ -3,6 +3,31 @@ const currentPage = ref();
 function onPageChange(page) {
   currentPage.value = page;
 }
+const {
+  public: { MESSAGING_SERVICE },
+} = useRuntimeConfig();
+type messagesBalances = {
+  id: string;
+  smsBalance: number;
+};
+const { data: messagesBallance, refresh: refreshBallance } =
+  await useFetch<messagesBalances>(
+    `${MESSAGING_SERVICE}/accounts/list/mks-assembly`,
+    {
+      method: "GET",
+      key: Math.floor(Math.random() * 1000).toString(),
+    }
+  );
+const { data: allTransactions, refresh: refreshTransactions } = await useFetch<
+  any[]
+>(`${MESSAGING_SERVICE}/payments/list`, {
+  body: { page: 1, take: 10 },
+  method: "GET",
+  key: Math.floor(Math.random() * 1000).toString(),
+});
+
+let balance = messagesBallance.value;
+let availableMoney = Math.floor(balance.smsBalance / 0.65);
 </script>
 <template>
   <div class="">
@@ -16,9 +41,9 @@ function onPageChange(page) {
           The number of SMS the system is able to send
         </div>
         <div class="pt-5 flex gap-4 font-bold">
-          <div class="text-5xl">1,044</div>
+          <div class="text-5xl">{{ availableMoney }}</div>
           <div class="flex items-center">
-            <div class="flex">KES 678.60</div>
+            <div class="flex">KES {{ balance.smsBalance }}</div>
           </div>
         </div>
         <div class="mt-10 mb-3">
@@ -61,7 +86,11 @@ function onPageChange(page) {
           </tr>
         </thead>
         <tbody>
-          <tr class="hover:bg-slate-100 text-xs font-semibold py-12">
+          <tr
+            class="hover:bg-slate-100 text-xs font-semibold py-12"
+            v-for="transaction in allTransactions"
+            :key="transaction.id"
+          >
             <td>15/10/2022</td>
             <td>QWE234RE1</td>
             <td>0724xxxxx98</td>
@@ -69,7 +98,7 @@ function onPageChange(page) {
             <td>3000</td>
             <td>
               <button
-                class="items-center justify-center font-medium  text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
+                class="items-center justify-center font-medium text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
               >
                 Details
               </button>
