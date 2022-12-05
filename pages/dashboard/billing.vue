@@ -1,10 +1,26 @@
 <script setup lang="ts">
-const currentPage = ref();
-function onPageChange(page) {
-  currentPage.value = page;
+function onPageChange(page: number) {
+  console.log('page changed to', page)
+  if (page) currentPage.value = page
 }
-const listedPayment = useState("receivedPayment")
-console.log(listedPayment.value, "New list");
+const {
+  public: { MESSAGING_SERVICE },
+} = useRuntimeConfig();
+
+const currentPage = ref(1)
+const pageSize = ref(6)
+const  { data: paymentList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`,{
+    method:"GET",
+    key: currentPage.value.toString(),
+    params: {
+        page:currentPage.value,
+        take:pageSize.value
+    }
+} )
+console.log(paymentList.value);
+// iyo payment n list
+// hi hapa ju ?? line 20
+// nope hapa chini shuka na mimi // nimeicheki,, iko sawa
 
 </script>
 <template>
@@ -64,12 +80,12 @@ console.log(listedPayment.value, "New list");
           </tr>
         </thead>
         <tbody>
-          <tr class="hover:bg-slate-100 text-xs font-semibold py-12">
-            <td>{{}}</td>
-            <td>QWE234RE1</td>
-            <td>0724xxxxx98</td>
-            <td>KES 2500</td>
-            <td>3000</td>
+          <tr class="hover:bg-slate-100 text-xs font-semibold py-12" v-for="transcation in paymentList.paymentsList">
+            <td>{{transcation.createdAt}}</td>
+            <td>{{JSON.parse(transcation.payment).TransID}}</td>
+            <td>{{JSON.parse(transcation.payment).MSISDN}}</td>
+            <td>KES {{JSON.parse(transcation.payment).TransAmount}}</td>
+            <td>{{Math.floor(parseInt(JSON.parse(transcation.payment).TransAmount) / 0.65 )}}</td>
             <td>
               <button
                 class="items-center justify-center font-medium  text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
@@ -83,9 +99,8 @@ console.log(listedPayment.value, "New list");
       <pagination
         style="margin-top: 1rem"
         :totalPages="10"
-        :perPage="10"
         :currentPage="currentPage"
-        @pagechanged="onPageChange"
+        @goToPage="onPageChange($event)"
       />
     </div>
   </div>
