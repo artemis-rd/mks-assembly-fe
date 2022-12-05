@@ -11,6 +11,7 @@ const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
 const createdGroupRoom = useState("createdGroupId");
+const passedGroup = useState("groupData");
 const roomList = ref([]) as Ref<any[]>;
 
 const directThreads = ref({});
@@ -45,6 +46,7 @@ let { data: contacts } = await useFetch<any>(
   }
 );
 allContacts.value = contacts.value;
+// console.log("gana", allContacts.value);
 let foundUser = allContacts.value.find((x: any) => x.id == id);
 let userTel = foundUser.tel;
 roomList.value.push(foundUser.tel);
@@ -57,6 +59,8 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
     key: Math.floor(Math.random() * 1000).toString(),
   }
 );
+console.log("mshanyeshewwa", groupRooms.value);
+groupRooms.value.filter((x: any) => x.groupAdmin == id);
 
 const showGroups = ref(true);
 const createGroups = ref(false);
@@ -171,6 +175,9 @@ function checkReceiverName(receiverName, id, isGroup) {
   if (isGroup) {
     navigateTo(`/dashboard/messenger/groups/${id}`);
   } else navigateTo(`/dashboard/messenger/dm/${id}`);
+}
+function sendGroup(group) {
+  passedGroup.value = group;
 }
 // Group chats mock data
 </script>
