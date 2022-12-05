@@ -11,6 +11,8 @@ const showContacts = ref(false);
 const rooomId = route.params.id;
 const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
+const passedGroup = useState("groupData");
+console.log(passedGroup.value, "data man");
 
 //  showToggleContact.value = useState("toggleShow");
 
@@ -30,7 +32,7 @@ const {
   pending,
 } = await useFetch<any>(`${MESSAGING_SERVICE}/messages/list/${rooomId}`, {
   method: "GET",
-  key: createdGroupRoom.toString(),
+  key: rooomId.toString(),
 });
 
 onMounted(() => {
@@ -103,11 +105,10 @@ const { data: groupContacts } = await useFetch<any[]>(
   `${MESSAGING_SERVICE}/rooms/groups/contacts?roomId=${rooomId}`,
   {
     method: "GET",
-    // key: Math.floor(Math.random() * 1000).toString(),
+    key: Math.floor(Math.random() * 1000).toString(),
   }
 );
-console.log(rooomId, "room id given");
-console.log("conatcts ", groupContacts.value);
+// console.log("gana ni gani", groupContacts.value);
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
