@@ -30,9 +30,9 @@ const nextPage = () => {
         <div class="flex gap-2 items-center mt-2">
             <div class="flex gap-2 font-bold" >
                 <span>Showing</span>
-                <span :currentPage="currentPage">{{}}</span>
+                <span :currentPage="currentPage">{{currentPage}}</span>
                 <span>of</span>
-                <span :totalPages="totalPages">{{}}</span>
+                <span :totalPages="totalPages">{{totalPages}}</span>
             </div>
             <!-- previous -->
             <div class="flex gap-2">
