@@ -184,7 +184,7 @@ function checkReceiverName(receiverName, id, isGroup) {
           <SearchInput placeholder="Search Messages" />
         </div>
         <!-- direct messages -->
-        <div class="overflow-y-scroll h-[90%] md:absolute pb-4 w-full">
+        <div class="overflow-y-auto h-[90%] md:absolute pb-4 w-full">
           <div class="my-1 text-sm" v-if="!pending">
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
@@ -379,7 +379,7 @@ function checkReceiverName(receiverName, id, isGroup) {
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-scroll h-[20%]  bg-blue-500">
+        <div class="flex flex-col gap-2 overflow-y-auto h-[20%] ">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div
