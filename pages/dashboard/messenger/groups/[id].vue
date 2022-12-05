@@ -13,6 +13,8 @@ const showContacts = ref(false);
 const rooomId = route.params.id;
 // const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
+const passedGroup = useState("groupData");
+console.log(passedGroup.value, "data man");
 
 const showToggleContact = useState("toggleShow");
 
@@ -115,7 +117,7 @@ const { data: groupContacts } = await useFetch<any[]>(
   `${MESSAGING_SERVICE}/rooms/groups/contacts?roomId=${rooomId}`,
   {
     method: "GET",
-    // key: Math.floor(Math.random() * 1000).toString(),
+    key: Math.floor(Math.random() * 1000).toString(),
   }
 );
 </script>
