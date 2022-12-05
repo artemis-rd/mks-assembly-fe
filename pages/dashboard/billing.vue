@@ -1,6 +1,5 @@
 <script setup lang="ts">
 function onPageChange(page: number) {
-  console.log('page changed to', page)
   if (page) currentPage.value = page
 }
 const {
@@ -9,7 +8,11 @@ const {
 
 const currentPage = ref(1)
 const pageSize = ref(6)
-const { data: paymentList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
+//  i mean reset to base.. hiyo ni kama bado kuna any conflicts, sasa ukireset to base, iarudi venye ilikuwa before pull
+// kwani bado kuna conflicts ? nope tu 0 ata .. ooh, ni sawa,
+// imerun poa kwako ? bado .. ikona error gani ?
+
+const { data: paymentList, refresh: refreshList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
   method: "GET",
   key: currentPage.value.toString(),
   params: {
@@ -17,6 +20,21 @@ const { data: paymentList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/
     take: pageSize.value
   }
 })
+
+watch(currentPage, async (newVal) => {
+  const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
+    method: "GET",
+    key: newVal.toString(),
+    params: {
+      page: currentPage.value,
+      take: pageSize.value
+    }
+  })
+  paymentList.value = data.value
+})
+// iyo payment n list
+// hi hapa ju ?? line 20
+// nope hapa chini shuka na mimi // nimeicheki,, iko sawa
 </script>
 <template>
   <div class="">
@@ -34,7 +52,7 @@ const { data: paymentList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/
           <div class="flex items-center">
             <div class="flex">KES 678.60</div>
           </div>
-        </div>
+        </div> 
         <div class="mt-10 mb-3">
           <button
             class="flex items-center top-up justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
