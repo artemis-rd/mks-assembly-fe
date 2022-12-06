@@ -11,8 +11,18 @@ const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
 const createdGroupRoom = useState("createdGroupId");
+const adminNumber = useState("adminId");
 const passedGroup = useState("groupData");
 const roomList = ref([]) as Ref<any[]>;
+const showGroups = ref(true);
+const createGroups = ref(false);
+const selectContact = ref(false);
+const selected = ref(false);
+const contactSelected = ref([]);
+const groupNameScreen = ref(false);
+const enterGroupName = ref(false);
+const groupName = ref();
+const selectedContact = ref();
 
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
@@ -61,16 +71,6 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
 );
 console.log("mshanyeshewwa", groupRooms.value);
 groupRooms.value.filter((x: any) => x.groupAdmin == id);
-
-const showGroups = ref(true);
-const createGroups = ref(false);
-const selectContact = ref(false);
-const selected = ref(false);
-const contactSelected = ref([]);
-const groupNameScreen = ref(false);
-const enterGroupName = ref(false);
-const groupName = ref();
-const selectedContact = ref();
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -102,6 +102,9 @@ function showNameInput() {
 function goBackToContacts() {
   enterGroupName.value = false;
   selectContact.value = !selectContact.value;
+}
+function sendAdmin(admin) {
+  adminNumber.value = admin;
 }
 function changeName(valueGiven) {
   let converted = valueGiven.toUpperCase();
@@ -249,7 +252,10 @@ function sendGroup(group) {
               <a
                 :to="`/dashboard/messenger/groups/${group.id}`"
                 class="flex gap-2 px-1 my-4 cursor-pointer"
-                @click.prevent="checkReceiverName(group.name, group.id, true)"
+                @click.prevent="
+                  checkReceiverName(group.name, group.id, true),
+                    sendAdmin(group.groupAdmin)
+                "
               >
                 <div
                   class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
