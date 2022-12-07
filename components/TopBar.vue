@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const toggelShowContacts = useState("toggleShow");
+const toggelShowContacts = useState<boolean>("toggleShow", () => false);
 function changeToggle() {
   toggelShowContacts.value = !toggelShowContacts.value;
 }
@@ -20,7 +20,7 @@ defineProps({
       <img src="@/assets/img/Search.svg" alt="" />
       <img
         src="@/assets/img/topdots.svg"
-        class="cursor-pointer"
+        class="cursor-pointer px-4"
         alt=""
         @click="changeToggle()"
       />
