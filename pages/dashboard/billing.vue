@@ -32,9 +32,30 @@ watch(currentPage, async (newVal) => {
   })
   paymentList.value = data.value
 })
-// iyo payment n list
-// hi hapa ju ?? line 20
-// nope hapa chini shuka na mimi // nimeicheki,, iko sawa
+
+
+type messagesBalances = {
+  id: string;
+  smsBalance: number;
+};
+const { data: messagesBallance, refresh: refreshBallance } =
+  await useFetch<messagesBalances>(
+    `${MESSAGING_SERVICE}/accounts/list/mks-assembly`,
+    {
+      method: "GET",
+      key: Math.floor(Math.random() * 1000).toString(),
+    }
+  );
+const { data: allTransactions, refresh: refreshTransactions } = await useFetch<
+  any[]
+>(`${MESSAGING_SERVICE}/payments/list`, {
+  body: { page: 1, take: 10 },
+  method: "GET",
+  key: Math.floor(Math.random() * 1000).toString(),
+});
+
+let balance = messagesBallance.value;
+let availableMoney = Math.floor(balance.smsBalance / 0.65);
 </script>
 <template>
   <div class="">
@@ -48,9 +69,9 @@ watch(currentPage, async (newVal) => {
           The number of SMS the system is able to send
         </div>
         <div class="pt-5 flex gap-4 font-bold">
-          <div class="text-5xl">1,044</div>
+          <div class="text-5xl">{{ availableMoney }}</div>
           <div class="flex items-center">
-            <div class="flex">KES 678.60</div>
+            <div class="flex">KES {{ balance.smsBalance }}</div>
           </div>
         </div> 
         <div class="mt-10 mb-3">
@@ -100,6 +121,7 @@ watch(currentPage, async (newVal) => {
             <td>
               <button
                 class="items-center justify-center font-medium  text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white">
+
                 Details
               </button>
             </td>
