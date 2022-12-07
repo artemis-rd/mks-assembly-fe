@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build --prod",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -10,7 +10,13 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.1.1",
+    "@types/socket.io-client": "^3.0.0",
     "nuxt": "3.0.0-rc.12",
-    "tailwindcss": "^3.2.1"
+    "tailwindcss": "^3.2.4"
+  },
+  "dependencies": {
+    "@types/vue-tel-input": "^2.1.2",
+    "dexie": "^3.2.2",
+    "socket.io-client": "^4.5.3"
   }
 }
