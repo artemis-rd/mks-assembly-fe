@@ -62,7 +62,7 @@ let foundUser = allContacts.value.find((x: any) => x.id == id);
 let userTel = foundUser.tel;
 roomList.value.push(foundUser.tel);
 // console.log(userTel, "my number");
-const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
+const { data: groupRooms, refresh: refreshGroupRooms, } = await useFetch<any[]>(
   `${MESSAGING_SERVICE}/rooms/groups`,
   {
     body: { tel: userTel },
@@ -70,7 +70,6 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
     key: Math.floor(Math.random() * 1000).toString(),
   }
 );
-
 groupRooms.value.filter((x: any) => x.groupAdmin == id);
 function startConversation() {
   showGroups.value = false;
@@ -149,6 +148,7 @@ function createNewGroup() {
     roomId.value = data.split(" ").slice(-1)[0];
   });
   selected.value = true;
+  groupName.value = ''
 }
 // create room if there is no existing room
 function createRoom(receiverId, name) {
@@ -242,7 +242,7 @@ watch(searchData, (data) => {
             </div>
           </div>
           <div v-else>
-            <div class="loader">Retrieving chats...</div>
+            <Loading/>
           </div>
 
           <div class="my-1 text-sm">
@@ -250,6 +250,7 @@ watch(searchData, (data) => {
               Group Messages
             </p>
             <div
+              v-if="!pending"
               class="hover:bg-gray-100 px-[15px] py-[0.5px]"
               v-for="group in groupRooms"
               :key="group.id"
@@ -279,6 +280,7 @@ watch(searchData, (data) => {
                 </div>
               </a>
             </div>
+            <Loading v-else/>
           </div>
         </div>
       </div>
