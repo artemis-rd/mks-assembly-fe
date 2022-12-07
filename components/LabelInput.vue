@@ -21,6 +21,7 @@ const updateModel = (event: Event) => {
       class="container min-w-auto px-3 py-2 my-1 border rounded-lg text-sm outline-none"
       :type="type"
       :placeholder="placeholder"
+      :value="modelValue"
     />
   </div>
 </template>

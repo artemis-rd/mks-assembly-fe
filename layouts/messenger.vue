@@ -69,7 +69,7 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
     key: Math.floor(Math.random() * 1000).toString(),
   }
 );
-console.log("mshanyeshewwa", groupRooms.value);
+
 groupRooms.value.filter((x: any) => x.groupAdmin == id);
 function startConversation() {
   showGroups.value = false;
@@ -392,7 +392,7 @@ function sendGroup(group) {
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-auto h-[20%] ">
+        <div class="flex flex-col gap-2 overflow-y-auto h-[20%]">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div

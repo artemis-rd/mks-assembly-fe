@@ -23,6 +23,7 @@ const errorMessage = ref("");
 const authenticating = ref(false);
 
 async function loginAttempt() {
+  // console.log("user", userInfo.value);
   authenticating.value = true;
   try {
     const { data, error } = await useFetch<any>(
