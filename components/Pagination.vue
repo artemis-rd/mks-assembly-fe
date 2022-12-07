@@ -56,5 +56,4 @@ const clickPage = (page) => {
 
         </div>
     </div>
-  </div>
 </template>
