@@ -194,7 +194,7 @@ function sendGroup(group) {
           <SearchInput placeholder="Search Messages" />
         </div>
         <!-- direct messages -->
-        <div class="overflow-y-scroll h-[90%] md:absolute pb-4 w-full">
+        <div class="overflow-y-auto h-[90%] md:absolute pb-4 w-full">
           <div class="my-1 text-sm" v-if="!pending">
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
@@ -386,13 +386,13 @@ function sendGroup(group) {
 
         <SearchInput placeholder="search contact" />
 
-        <span class="my-4 text-gray-400 font-bold text-sm"
+        <span class="my-2 text-gray-400 font-bold text-sm"
           >Select Group Members</span
         >
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-auto">
+        <div class="flex flex-col gap-2 overflow-y-auto h-[20%] ">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div
@@ -408,8 +408,8 @@ function sendGroup(group) {
                   />
 
                   <svg
-                    width="40"
-                    height="40"
+                    width="44"
+                    height="44"
                     viewBox="0 0 40 40"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
