@@ -20,7 +20,7 @@ const { data: paymentList, refresh: refreshList } = await useFetch<any>(`${MESSA
     take: pageSize.value
   }
 })
-
+const paymentCount = Math.ceil(paymentList.value.paymentsCount/ pageSize.value)
 watch(currentPage, async (newVal) => {
   const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
     method: "GET",
@@ -32,7 +32,6 @@ watch(currentPage, async (newVal) => {
   })
   paymentList.value = data.value
 })
-
 
 type messagesBalances = {
   id: string;
@@ -128,7 +127,7 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           </tr>
         </tbody>
       </table>
-      <pagination style="margin-top: 1rem" :totalPages="10" :currentPage="currentPage"
+      <pagination style="margin-top: 1rem" :totalPages="paymentCount" :currentPage="currentPage"
         @goToPage="onPageChange($event)" />
     </div>
   </div>
