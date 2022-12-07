@@ -8,6 +8,10 @@ const {
 
 const currentPage = ref(1)
 const pageSize = ref(6)
+//  i mean reset to base.. hiyo ni kama bado kuna any conflicts, sasa ukireset to base, iarudi venye ilikuwa before pull
+// kwani bado kuna conflicts ? nope tu 0 ata .. ooh, ni sawa,
+// imerun poa kwako ? bado .. ikona error gani ?
+
 const { data: paymentList, refresh: refreshList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
   method: "GET",
   key: currentPage.value.toString(),
@@ -28,6 +32,7 @@ watch(currentPage, async (newVal) => {
   })
   paymentList.value = data.value
 })
+
 
 type messagesBalances = {
   id: string;
@@ -68,7 +73,7 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           <div class="flex items-center">
             <div class="flex">KES {{ balance.smsBalance }}</div>
           </div>
-        </div>
+        </div> 
         <div class="mt-10 mb-3">
           <button
             class="flex items-center top-up justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
@@ -123,7 +128,7 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           </tr>
         </tbody>
       </table>
-      <pagination style="margin-top: 1rem" :totalPages="Math.ceil(paymentList.paymentsCount / parseInt(paymentList.perPage))" :currentPage="currentPage"
+      <pagination style="margin-top: 1rem" :totalPages="10" :currentPage="currentPage"
         @goToPage="onPageChange($event)" />
     </div>
   </div>
