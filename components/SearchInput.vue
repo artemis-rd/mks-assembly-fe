@@ -18,6 +18,7 @@ const updateModel = (event: Event) => {
       @input="updateModel($event)"
       :type="type"
       :placeholder="placeholder"
+      :value="modelValue"
     />
     <img class="w-4" src="@/assets/img/Search.svg" />
   </div>

@@ -18,7 +18,7 @@ const clearForm = () => {
   userInfo.value.email = "";
   userInfo.value.password = "";
 };
-
+console.log(userInfo.value.email, "test");
 const errorMessage = ref("");
 const authenticating = ref(false);
 
