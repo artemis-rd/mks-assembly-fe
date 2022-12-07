@@ -20,7 +20,7 @@ const { data: paymentList, refresh: refreshList } = await useFetch<any>(`${MESSA
     take: pageSize.value
   }
 })
-const paymentCount = Math.ceil(paymentList.value.paymentsCount/ pageSize.value)
+const paymentCount = Math.ceil(paymentList.value.paymentsCount / pageSize.value)
 watch(currentPage, async (newVal) => {
   const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
     method: "GET",
@@ -72,7 +72,7 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           <div class="flex items-center">
             <div class="flex">KES {{ balance.smsBalance }}</div>
           </div>
-        </div> 
+        </div>
         <div class="mt-10 mb-3">
           <button
             class="flex items-center top-up justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
