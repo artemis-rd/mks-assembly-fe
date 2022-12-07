@@ -1,38 +1,43 @@
 <script setup lang="ts">
 function onPageChange(page: number) {
-  if (page) currentPage.value = page
+  if (page) currentPage.value = page;
 }
 const {
   public: { MESSAGING_SERVICE },
 } = useRuntimeConfig();
 
-const currentPage = ref(1)
-const pageSize = ref(6)
+const currentPage = ref(1);
+const pageSize = ref(6);
 //  i mean reset to base.. hiyo ni kama bado kuna any conflicts, sasa ukireset to base, iarudi venye ilikuwa before pull
 // kwani bado kuna conflicts ? nope tu 0 ata .. ooh, ni sawa,
 // imerun poa kwako ? bado .. ikona error gani ?
 
-const { data: paymentList, refresh: refreshList } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
-  method: "GET",
-  key: currentPage.value.toString(),
-  params: {
-    page: currentPage.value,
-    take: pageSize.value
+const { data: paymentList, refresh: refreshList } = await useFetch<any>(
+  `${MESSAGING_SERVICE}/payment/list`,
+  {
+    method: "GET",
+    key: currentPage.value.toString(),
+    params: {
+      page: currentPage.value,
+      take: pageSize.value,
+    },
   }
-})
+
+);
 const paymentCount = Math.ceil(paymentList.value.paymentsCount/ pageSize.value)
+
 watch(currentPage, async (newVal) => {
   const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
     method: "GET",
     key: newVal.toString(),
     params: {
       page: currentPage.value,
+
       take: pageSize.value
     }
   })
   paymentList.value = data.value
 })
-
 type messagesBalances = {
   id: string;
   smsBalance: number;
@@ -52,17 +57,18 @@ const { data: allTransactions, refresh: refreshTransactions } = await useFetch<
   method: "GET",
   key: Math.floor(Math.random() * 1000).toString(),
 });
+function editTime(theDate) {
+  let newDate = new Date(theDate);
+  return newDate.toLocaleDateString();
+}
 
 let balance = messagesBallance.value;
 let availableMoney = Math.floor(balance.smsBalance / 0.65);
 </script>
 <template>
   <div class="">
-    <div class="top">
-      <TopBar user="Angel Mwende" name="Billing" />
-    </div>
     <div class="main-div flex pr-3 pt-4 mr-16 pl-10">
-      <div class="left-main flex-1">
+      <div class="left-main mr-24">
         <div class="pt-6 font-bold">Available SMS Balance</div>
         <div class="pt-2 text-sm">
           The number of SMS the system is able to send
@@ -72,16 +78,17 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           <div class="flex items-center">
             <div class="flex">KES {{ balance.smsBalance }}</div>
           </div>
-        </div> 
+        </div>
         <div class="mt-10 mb-3">
           <button
-            class="flex items-center top-up justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500">
+            class="flex items-center top-up justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
+          >
             Top Up Account
           </button>
         </div>
       </div>
       <div class="right-main">
-        <img src="@/assets/img/billingIlustration.svg" alt="" width="450" />
+        <img src="@/assets/img/billingIlustration.svg" alt="" width="310" />
       </div>
     </div>
     <div class="middle-main pl-10">
@@ -92,7 +99,8 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
         </div>
         <div class="">
           <button
-            class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-orange-100">
+            class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-orange-100"
+          >
             <img src="@/assets/img/pdf.svg" alt="" /> Export as PDF
           </button>
         </div>
@@ -111,16 +119,25 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           </tr>
         </thead>
         <tbody>
-          <tr class="hover:bg-slate-100 text-xs font-semibold py-12" v-for="transcation in paymentList.paymentsList">
-            <td>{{ transcation.createdAt }}</td>
+          <tr
+            class="hover:bg-slate-100 text-xs font-semibold py-12"
+            v-for="transcation in paymentList.paymentsList"
+          >
+            <td>{{ editTime(transcation.createdAt) }}</td>
             <td>{{ JSON.parse(transcation.payment).TransID }}</td>
             <td>{{ JSON.parse(transcation.payment).MSISDN }}</td>
             <td>KES {{ JSON.parse(transcation.payment).TransAmount }}</td>
-            <td>{{ Math.floor(parseInt(JSON.parse(transcation.payment).TransAmount) / 0.65) }}</td>
+            <td>
+              {{
+                Math.floor(
+                  parseInt(JSON.parse(transcation.payment).TransAmount) / 0.65
+                )
+              }}
+            </td>
             <td>
               <button
-                class="items-center justify-center font-medium  text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white">
-
+                class="items-center justify-center font-medium text-orange-500 border border-orange-500 text-xs px-2 rounded-2xl bg-white"
+              >
                 Details
               </button>
             </td>
