@@ -34,7 +34,7 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-
+const loader = ref(false)
 const {
   data: rooms,
   error,
@@ -130,6 +130,7 @@ function selectContactToJoinGroup(contact) {
   }
 }
 function createNewGroup() {
+  loader.value = true
   let obj = {
     groupName: groupName.value,
     groupParticipants: roomList.value,
@@ -365,11 +366,13 @@ function sendGroup(group) {
           </div>
           <div class="">
             <button
+            v-if="!loader"
               class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
               @click="createNewGroup()"
             >
               Save Group Info
             </button>
+            <Loading v-else/>
           </div>
         </div>
       </div>

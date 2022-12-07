@@ -23,7 +23,9 @@ const nextPage = () => {
     else
     emit('goToPage', n)
 }
-
+const clickPage = (page) => {
+ emit('goToPage', page) 
+}
 </script>
 <template>
     <div class="   bottom-0 border-t-[1px] w-full border-gray-500">
@@ -50,7 +52,7 @@ const nextPage = () => {
             </div>
             <NuxtLink
                 class=" hover:bg-orange-500 font-semibold hover:rounded-[100%] hover:w-4 p-[4px] hover:text-blue-50"
-                v-for="pageCount in totalPages" key="pageCount">{{ pageCount }}</NuxtLink>
+                v-for="pageCount in totalPages" key="pageCount" @click="clickPage(pageCount)">{{ pageCount }}</NuxtLink>
 
         </div>
     </div>

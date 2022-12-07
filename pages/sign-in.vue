@@ -19,6 +19,19 @@ const clearForm = () => {
   userInfo.value.password = "";
 };
 
+onMounted(() => {
+  const token = useCookie("mks-token");
+  if (token) {
+    const timeStamp = JSON.parse(atob(token.value.split(".")[1]))
+    const expTimeStamp = timeStamp.exp * 1000
+    const now = Date.now()
+    if(now < expTimeStamp){
+      router.push('/dashboard/messenger')
+    }
+  }
+})
+
+
 const errorMessage = ref("");
 const authenticating = ref(false);
 
@@ -92,9 +105,7 @@ async function loginAttempt() {
 }
 </script>
 <template>
-  <section
-    class="sign-in-container flex items-center container px-10 md:px-20 md:py-10 min-h-screen min-w-full"
-  >
+  <section class="sign-in-container flex items-center container px-10 md:px-20 md:py-10 min-h-screen min-w-full">
     <div class="sign-in-form w-96">
       <Alert v-if="errorMessage !== ''">
         <div class="content text-sm font-semibold">{{ errorMessage }}</div>
@@ -104,45 +115,30 @@ async function loginAttempt() {
         Sign in to your operator account
       </h4>
 
-      <LabelInput
-        v-model="userInfo.email"
-        type="text"
-        placeholder="johndoe.official@email.com"
-        label="Enter your email address or username"
-      />
+      <LabelInput v-model="userInfo.email" type="text" placeholder="johndoe.official@email.com"
+        label="Enter your email address or username" />
 
-      <LabelInput
-        v-model="userInfo.password"
-        type="password"
-        placeholder="Your secret password"
-        label="Enter your Password"
-      />
+      <LabelInput v-model="userInfo.password" type="password" placeholder="Your secret password"
+        label="Enter your Password" />
       <div class="flex gap-10 align-middle justify-between my-4">
         <div class="remember-me-container flex gap-2 align-baseline">
           <input type="checkbox" name="remember" id="remember" />
           <label for="remember" class="text-sm">Remember Me</label>
         </div>
         <div class="forgot-password-container">
-          <NuxtLink to="forgot-password" class="text-sm text-red-500 underline"
-            >Forgot Password</NuxtLink
-          >
+          <NuxtLink to="forgot-password" class="text-sm text-red-500 underline">Forgot Password</NuxtLink>
         </div>
       </div>
       <div class="form-submit my-4">
-        <button
-          v-if="!authenticating"
-          @click="loginAttempt"
-          class="shadow-xl px-8 py-3 text-sm min-w-full bg-orange-500 text-white rounded-xl"
-        >
+        <button v-if="!authenticating" @click="loginAttempt"
+          class="shadow-xl px-8 py-3 text-sm min-w-full bg-orange-500 text-white rounded-xl">
           Proceed to Login
         </button>
         <Loading v-else />
       </div>
       <div class="form-footer flex gap-2">
         <p class="text-sm">Wish to have an account ?</p>
-        <NuxtLink to="create-account" class="text-sm text-red-500 underline"
-          >Register from Here</NuxtLink
-        >
+        <NuxtLink to="create-account" class="text-sm text-red-500 underline">Register from Here</NuxtLink>
       </div>
     </div>
   </section>
