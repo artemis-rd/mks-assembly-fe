@@ -8,8 +8,8 @@ function logOutMks() {
 }
 </script>
 <template>
-  <section class="flex">
-    <aside class="hidden md:block md:w-1/5">
+  <section class="flex h-screen">
+    <aside class="hidden md:block md:w-1/5 overflow-auto">
       <div class="logo flex flex-col p-7">
         <img
           src="~/assets/img/mks-logo.png"

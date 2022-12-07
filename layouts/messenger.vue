@@ -22,6 +22,7 @@ const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
+const searchData = ref();
 const selectedContact = ref();
 
 const directThreads = ref({});
@@ -183,6 +184,9 @@ function checkReceiverName(receiverName, id, isGroup) {
 function sendGroup(group) {
   passedGroup.value = group;
 }
+watch(searchData, (data) => {
+  console.log("entered", data);
+});
 // Group chats mock data
 </script>
 <template>
@@ -192,7 +196,7 @@ function sendGroup(group) {
         <!-- messeges screen -->
         <div class="px-4">
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
-          <SearchInput placeholder="Search Messages" />
+          <SearchInput placeholder="Search Messages" v-model="searchData" />
         </div>
         <!-- direct messages -->
         <div class="overflow-y-auto h-[90%] md:absolute pb-4 w-full">
@@ -397,7 +401,7 @@ function sendGroup(group) {
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-auto h-[20%] ">
+        <div class="flex flex-col gap-2 overflow-y-auto h-[20%]">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div

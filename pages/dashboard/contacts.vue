@@ -127,7 +127,7 @@ async function getContacts() {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response.data.value, "dtaa");
+
   allContacts.value = response.data.value;
 }
 onMounted(async () => {
