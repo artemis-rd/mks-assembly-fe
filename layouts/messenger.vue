@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { Ref } from "vue";
-import { io, Socket } from "socket.io-client";
+import { socket } from "~~/data/sockets";
 
-const {
-  public: { MESSAGING_SOCKET_URL },
-} = useRuntimeConfig();
 const receiverCont = useState("receiverContact");
-const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
 // const roomId = ref();
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
