@@ -2,6 +2,11 @@
 import { io, Socket } from "socket.io-client";
 import { db } from "~~/data/db";
 
+
+definePageMeta({
+    middleware: ['auth']
+});
+
 const {
   public: { MESSAGING_SOCKET_URL },
 } = useRuntimeConfig();
