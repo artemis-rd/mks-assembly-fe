@@ -40,7 +40,7 @@ type messagesBalances = {
   id: string;
   smsBalance: number;
 };
-const { data: messagesBallance, refresh: refreshBallance } =
+const { data: messagesBallance, refresh: refreshBallance, pending } =
   await useFetch<messagesBalances>(
     `${MESSAGING_SERVICE}/accounts/list/mks-assembly`,
     {
@@ -118,6 +118,7 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
         </thead>
         <tbody>
           <tr
+            v-if="!pending"
             class="hover:bg-slate-100 text-xs font-semibold py-12"
             v-for="transcation in paymentList.paymentsList"
           >
@@ -140,6 +141,9 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
               </button>
             </td>
           </tr>
+          <div class="" v-else>
+            <Loading/>
+          </div>
         </tbody>
       </table>
       <pagination style="margin-top: 1rem" :totalPages="paymentCount" :currentPage="currentPage"

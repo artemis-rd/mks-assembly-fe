@@ -114,47 +114,31 @@ function editTime(theDate) {
         <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
           The start of your conversation with John
         </p> -->
-        <div
-          class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
-          v-for="sendMsg in messages"
-          :key="sendMsg.timestamp"
-        >
-          <div class="flex flex-col">
-            <div
-              class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
-              :class="{
-                'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
-                  sendMsg.sender == senderId,
-                'rounded-tl-none bg-orange-50 self-start':
-                  sendMsg.sender != senderId,
-              }"
-            >
+        <div class="flex-col flex mx-2 gap-2 my-2 max-w-2lg" v-for="sendMsg in messages" :key="sendMsg.timestamp">
+          <div class="">
+            <div v-if="!pending" class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4" :class="{
+              'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                sendMsg.sender == senderId,
+              'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+            }">
               <p>{{ sendMsg.message }}</p>
+              <div class="mt-2 max-w-xs flex float-right">
+                {{ editTime(sendMsg.timeStamp) }}
+              </div>
             </div>
-            <div
-              :class="{
-                'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
-                  sendMsg.sender == senderId,
-                'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
-                  sendMsg.sender != senderId,
-              }"
-            >
-              {{ editTime(sendMsg.timeStamp) }}
+            <div class=" m-auto flex items-center" v-else>
+              <Loading />
             </div>
+
           </div>
         </div>
       </div>
     </div>
     <div
-      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
-    >
-      <textarea
-        rows="2"
-        placeholder="Type something here ...."
+      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300">
+      <textarea rows="2" placeholder="Type something here ...."
         class="w-full mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
-        v-model="messageData"
-        @keyup.enter="sendMessage()"
-      />
+        v-model="messageData" @keyup.enter="sendMessage()" />
       <button @click="sendMessage()">
         <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
