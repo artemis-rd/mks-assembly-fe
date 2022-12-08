@@ -18,12 +18,13 @@ const clearForm = () => {
   userInfo.value.email = "";
   userInfo.value.password = "";
 };
-console.log(userInfo.value.email, "test");
+
 const errorMessage = ref("");
 const authenticating = ref(false);
 
 async function loginAttempt() {
   // console.log("user", userInfo.value);
+
   authenticating.value = true;
   try {
     const { data, error } = await useFetch<any>(
