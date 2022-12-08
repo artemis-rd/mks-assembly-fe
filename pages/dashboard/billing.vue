@@ -22,15 +22,8 @@ const { data: paymentList, refresh: refreshList } = await useFetch<any>(
       take: pageSize.value,
     },
   }
-<<<<<<< HEAD
-})
-const paymentCount = Math.ceil(paymentList.value.paymentsCount / pageSize.value)
-=======
-
 );
 const paymentCount = Math.ceil(paymentList.value.paymentsCount/ pageSize.value)
-
->>>>>>> df2ee28153a107c62453281edf35607d99b77c28
 watch(currentPage, async (newVal) => {
   const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
     method: "GET",
