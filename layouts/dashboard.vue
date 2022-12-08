@@ -8,6 +8,7 @@ const logout = function () {
  const token = useCookie("mks-token")
  token.value = null
  const router = useRouter()
+ location.reload()
  router.push("/")
 }
 </script>
