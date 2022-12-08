@@ -199,14 +199,18 @@ function sendGroup(group) {
 watch(searchData, (data) => {
   // if (searchData.value != "") {
   filteredGroups.value = groupRooms.value.filter((x: any) =>
-    x.name.includes(searchData.value)
+    x.name.toLocaleLowerCase().includes(searchData.value.toLocaleLowerCase())
   );
 
   // console.log("filtered groups", filteredGroups.value);
   let searchedRooms = rooms.value.filter(
     (x: any) =>
-      x.participants.sender.name.includes(searchData.value) ||
-      x.participants.receiver.name.includes(searchData.value)
+      x.participants.sender.name
+        .toLocaleLowerCase()
+        .includes(searchData.value.toLocaleLowerCase()) ||
+      x.participants.receiver.name
+        .toLocaleLowerCase()
+        .includes(searchData.value.toLocaleLowerCase())
   );
   filteredRooms.value = searchedRooms;
   // console.log(filteredRooms.value, "filtered ");
