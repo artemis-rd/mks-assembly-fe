@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { timestamp } from "@vueuse/shared";
 import { clear } from "console";
 import { FetchError } from "ohmyfetch";
 import { db } from "~~/data/db";
@@ -55,7 +56,9 @@ async function loginAttempt() {
 
     const cookie = useCookie("mks-token");
     cookie.value = token;
-    const { email, id } = JSON.parse(window.atob(cookie.value.split(".")[1]));
+    const { email, id, exp } = JSON.parse(window.atob(cookie.value.split(".")[1]));
+    console.log(exp);
+    
     const recordExists = (await (await db.user.toArray()).length) > 0;
     if (!recordExists) {
       const d0 = await db.user.add({
