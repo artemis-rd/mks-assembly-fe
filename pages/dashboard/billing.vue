@@ -23,19 +23,19 @@ const { data: paymentList, refresh: refreshList } = await useFetch<any>(
     },
   }
 );
-
+const paymentCount = Math.ceil(paymentList.value.paymentsCount/ pageSize.value)
 watch(currentPage, async (newVal) => {
   const { data } = await useFetch<any>(`${MESSAGING_SERVICE}/payment/list`, {
     method: "GET",
     key: newVal.toString(),
     params: {
       page: currentPage.value,
-      take: pageSize.value,
-    },
-  });
-  paymentList.value = data.value;
-});
 
+      take: pageSize.value
+    }
+  })
+  paymentList.value = data.value
+})
 type messagesBalances = {
   id: string;
   smsBalance: number;
@@ -142,12 +142,8 @@ let availableMoney = Math.floor(balance.smsBalance / 0.65);
           </tr>
         </tbody>
       </table>
-      <pagination
-        style="margin-top: 1rem"
-        :totalPages="10"
-        :currentPage="currentPage"
-        @goToPage="onPageChange($event)"
-      />
+      <pagination style="margin-top: 1rem" :totalPages="paymentCount" :currentPage="currentPage"
+        @goToPage="onPageChange($event)" />
     </div>
   </div>
 </template>

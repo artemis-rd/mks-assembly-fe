@@ -37,7 +37,7 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-
+const loader = ref(false)
 const {
   data: rooms,
   error,
@@ -144,6 +144,7 @@ function selectContactToJoinGroup(contact) {
   }
 }
 function createNewGroup() {
+  loader.value = true
   let obj = {
     groupName: groupName.value,
     groupParticipants: roomList.value,
@@ -161,6 +162,7 @@ function createNewGroup() {
     roomId.value = data.split(" ").slice(-1)[0];
   });
   selected.value = true;
+  groupName.value = ''
 }
 // create room if there is no existing room
 function createRoom(receiverId, name) {
@@ -268,7 +270,7 @@ watch(searchData, (data) => {
             </div>
           </div>
           <div v-else>
-            <div class="loader">Retrieving chats...</div>
+            <Loading/>
           </div>
 
           <div class="my-1 text-sm">
@@ -277,6 +279,7 @@ watch(searchData, (data) => {
             </p>
 
             <div
+              v-if="!pending"
               class="hover:bg-gray-100 px-[15px] py-[0.5px]"
               v-for="group of filteredGroups"
               :key="group.id"
@@ -306,6 +309,7 @@ watch(searchData, (data) => {
                 </div>
               </a>
             </div>
+            <Loading v-else/>
           </div>
         </div>
       </div>
@@ -397,11 +401,13 @@ watch(searchData, (data) => {
           </div>
           <div class="">
             <button
+            v-if="!loader"
               class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
               @click="createNewGroup()"
             >
               Save Group Info
             </button>
+            <Loading v-else/>
           </div>
         </div>
       </div>
