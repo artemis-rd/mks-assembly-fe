@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ref } from "vue";
-import { socket } from "~~/data/sockets";
 
+const socket = useSocketIO()
 const receiverCont = useState("receiverContact");
 // const roomId = ref();
 const roomId = useState("createdRoomId");
