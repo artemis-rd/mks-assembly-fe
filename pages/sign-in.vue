@@ -18,9 +18,11 @@ const clearForm = () => {
   userInfo.value.email = "";
   userInfo.value.password = "";
 };
+
 onMounted(() => {
   const token = useCookie("mks-token");
-  if (token) {
+  console.log("the token", token);
+  if (token.value != undefined) {
     const timeStamp = JSON.parse(atob(token.value.split(".")[1]))
     const expTimeStamp = timeStamp.exp * 1000
     const now = Date.now()
@@ -34,13 +36,12 @@ const errorMessage = ref("");
 const authenticating = ref(false);
 
 async function loginAttempt() {
-  // console.log("user", userInfo.value);
-  authenticating.value = true;
   try {
     const { data, error } = await useFetch<any>(
       `${AUTH_SERVICE_URL}/auth/login`,
       {
         method: "POST",
+        key: userInfo.value.email,
         body: {
           email: userInfo.value.email,
           password: userInfo.value.password,
@@ -56,6 +57,7 @@ async function loginAttempt() {
 
     if (!token) {
       if (error.value || data.value.response.errors) {
+          clearForm();
         throw error.value ?? data.value.response.errors;
       }
     }
@@ -75,30 +77,19 @@ async function loginAttempt() {
         name: email,
       });
     }
-    // clear the form data
-    // let { data: contacts } = await useFetch<any>(
-    //   `${MESSAGING_SERVICE}/contacts/old/list`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token.value}`,
-    //     },
-    //   }
-    // );
+   
     clearForm();
     authenticating.value = false;
     router.push("dashboard/messenger");
   } catch (error) {
-    authenticating.value = false;
-    userInfo.value = { email: "", password: "" };
     errorMessage.value = error[0].description;
     setTimeout(() => {
       errorMessage.value = "";
       clearForm();
-    }, 5000);
+    }, 3000);
 
-    // TODO: One day come back to fix this fetch error problem
+  // authenticating.value = true;
+      // TODO: One day come back to fix this fetch error problem
     // if (error instanceof FetchError) {}
   }
 }
