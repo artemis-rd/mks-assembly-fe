@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Ref } from "vue";
+import { useSocketIO } from "~~/composables/sockets";
 
 const socket = useSocketIO()
 const receiverCont = useState("receiverContact");

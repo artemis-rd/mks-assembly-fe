@@ -20,6 +20,17 @@ const clearForm = () => {
   userInfo.value.password = "";
 };
 
+onMounted(() => {
+  const token = useCookie("mks-token");
+  if (token.value != undefined) {
+    const timeStamp = JSON.parse(atob(token.value.split(".")[1]))
+    const expTimeStamp =timeStamp.exp * 1000
+    const now = Date.now()
+    if(now < expTimeStamp){
+      router.push('/dashboard/messenger')
+    }
+  }
+})
 const errorMessage = ref("");
 const authenticating = ref(false);
 
