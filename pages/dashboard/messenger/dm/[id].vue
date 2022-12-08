@@ -116,7 +116,7 @@ function editTime(theDate) {
         </p> -->
         <div class="flex-col flex mx-2 gap-2 my-2 max-w-2lg" v-for="sendMsg in messages" :key="sendMsg.timestamp">
           <div class="">
-            <div v-if="!pending" class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4" :class="{
+            <div v-if="pending" class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4" :class="{
               'float-right bg-orange-500 text-cyan-50 rounded-br-none':
                 sendMsg.sender == senderId,
               'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,

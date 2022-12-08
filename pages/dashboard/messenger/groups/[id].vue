@@ -14,7 +14,6 @@ const rooomId = route.params.id;
 // const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
 const passedGroup = useState("groupData");
-console.log(passedGroup.value, "data man");
 
 const showToggleContact = useState("toggleShow");
 
@@ -145,19 +144,27 @@ const { data: groupContacts } = await useFetch<any[]>(
             v-for="sendMsg in messages"
             :key="sendMsg.timestamp"
           >
-            <div class="">
+            <div class="flex flex-col">
               <div
                 class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
                 :class="{
-                  'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                  'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
                     sendMsg.sender == senderId,
-                  'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+                  'rounded-tl-none bg-orange-50 self-start':
+                    sendMsg.sender != senderId,
                 }"
               >
                 <p>{{ sendMsg.message }}</p>
-                <div class="mt-2 max-w-xs flex float-right">
-                  {{ editTime(sendMsg.timeStamp) }}
-                </div>
+              </div>
+              <div
+                :class="{
+                  'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
+                    sendMsg.sender == senderId,
+                  'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
+                    sendMsg.sender != senderId,
+                }"
+              >
+                {{ editTime(sendMsg.timeStamp) }}
               </div>
             </div>
           </div>

@@ -22,8 +22,10 @@ const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
-const searchData = ref();
+const searchData = ref("");
 const selectedContact = ref();
+const filteredGroups = ref([]) as Ref<any[]>;
+const filteredRooms = ref([]) as Ref<any[]>;
 
 const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
@@ -45,6 +47,8 @@ const {
   method: "GET",
   key: id.toString(),
 });
+filteredRooms.value = rooms.value;
+// console.log(rooms.value, "marroms");
 
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
@@ -58,19 +62,29 @@ let { data: contacts } = await useFetch<any>(
 );
 allContacts.value = contacts.value;
 // console.log("gana", allContacts.value);
+
 let foundUser = allContacts.value.find((x: any) => x.id == id);
 let userTel = foundUser.tel;
 roomList.value.push(foundUser.tel);
 // console.log(userTel, "my number");
-const { data: groupRooms, refresh: refreshGroupRooms, } = await useFetch<any[]>(
-  `${MESSAGING_SERVICE}/rooms/groups`,
-  {
-    body: { tel: userTel },
-    method: "POST",
-    key: Math.floor(Math.random() * 1000).toString(),
-  }
-);
-groupRooms.value.filter((x: any) => x.groupAdmin == id);
+type group = {
+  createdAt: string;
+  groupAdmin: string;
+  groupSlug: string;
+  id: string;
+  name: string;
+  participants: [string];
+};
+const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
+  group[]
+>(`${MESSAGING_SERVICE}/rooms/groups`, {
+  body: { tel: userTel },
+  method: "POST",
+  key: Math.floor(Math.random() * 1000).toString(),
+});
+filteredGroups.value = groupRooms.value;
+// console.log("groups", groupRooms.value);
+
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -185,7 +199,20 @@ function sendGroup(group) {
   passedGroup.value = group;
 }
 watch(searchData, (data) => {
-  console.log("entered", data);
+  // if (searchData.value != "") {
+  filteredGroups.value = groupRooms.value.filter((x: any) =>
+    x.name.includes(searchData.value)
+  );
+
+  // console.log("filtered groups", filteredGroups.value);
+  let searchedRooms = rooms.value.filter(
+    (x: any) =>
+      x.participants.sender.name.includes(searchData.value) ||
+      x.participants.receiver.name.includes(searchData.value)
+  );
+  filteredRooms.value = searchedRooms;
+  // console.log(filteredRooms.value, "filtered ");
+  // }
 });
 // Group chats mock data
 </script>
@@ -198,6 +225,7 @@ watch(searchData, (data) => {
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
           <SearchInput placeholder="Search Messages" v-model="searchData" />
         </div>
+
         <!-- direct messages -->
         <div class="overflow-y-auto h-[90%] md:absolute pb-4 w-full">
           <div class="my-1 text-sm" v-if="!pending">
@@ -206,7 +234,7 @@ watch(searchData, (data) => {
             </p>
             <div
               class="hover:bg-gray-100 px-[15px] py-[0.5px]"
-              v-for="item of rooms"
+              v-for="item of filteredRooms"
               :key="item.id"
             >
               <a
@@ -249,10 +277,11 @@ watch(searchData, (data) => {
             <p class="my-5 font-bold text-sm text-gray-700 px-3 py-3">
               Group Messages
             </p>
+
             <div
               v-if="!pending"
               class="hover:bg-gray-100 px-[15px] py-[0.5px]"
-              v-for="group in groupRooms"
+              v-for="group of filteredGroups"
               :key="group.id"
             >
               <a
