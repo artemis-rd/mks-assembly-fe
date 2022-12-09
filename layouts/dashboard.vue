@@ -5,11 +5,11 @@ const active = ref(false);
 // console.log(active.value);
 // 
 const logout = function () {
- const token = useCookie("mks-token")
- token.value = null
- const router = useRouter()
- location.reload()
- router.push("/")
+  const token = useCookie("mks-token")
+  token.value = null
+  const router = useRouter()
+  location.reload()
+  router.push("/")
 }
 </script>
 <template>
