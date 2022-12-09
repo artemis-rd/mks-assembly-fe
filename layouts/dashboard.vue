@@ -7,9 +7,10 @@ const active = ref(false);
 const logout = function () {
   const token = useCookie("mks-token")
   token.value = null
-  const router = useRouter()
-  location.reload()
-  router.push("/")
+  navigateTo("/sign-in")
+  // const router = useRouter()
+  // location.reload()
+  // router.push("/")
 }
 </script>
 <template>
