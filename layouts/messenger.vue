@@ -152,11 +152,12 @@ function createNewGroup() {
     showGroups.value = true;
     // createGroups.value = !createGroups.value;
     createdGroupRoom.value = groupRmCreated.id;
-    await refreshGroupRooms;
+    // await refreshGroupRooms;
     navigateTo(`/dashboard/messenger/groups/${groupRmCreated.id}`);
   });
   socket.on("r-createRoom", (data) => {
-    roomId.value = data.split(" ").slice(-1)[0];
+    filteredGroups.value.unshift(data);
+    roomId.value = data.id 
   });
   selected.value = true;
   groupName.value = ''
@@ -174,12 +175,14 @@ function createRoom(receiverId, name) {
     socket.emit("createRoom", participants, async (rmCreated) => {
       showGroups.value = true;
       createGroups.value = !createGroups.value;
-      await refreshRooms();
+      // await refreshRooms();
       chatName.value = name;
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-      roomId.value = data.split(" ").slice(-1)[0];
+        console.log('new private chat', data);
+      filteredRooms.value.unshift(data);
+      roomId.value = data.id 
     });
     socket.on(`${receiverId}`, (data) => {
       socket.emit("joinRoom", data);
