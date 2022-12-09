@@ -20,31 +20,18 @@ const clearForm = () => {
   userInfo.value.password = "";
 };
 
-onMounted(() => {
-  const token = useCookie("mks-token");
-  if (token.value != undefined) {
-    const timeStamp = JSON.parse(atob(token.value.split(".")[1]))
-    const expTimeStamp =timeStamp.exp * 1000
-    const now = Date.now()
-    if(now < expTimeStamp){
-      router.push('/dashboard/messenger')
-    }
-  }
-})
 const errorMessage = ref("");
 const authenticating = ref(false);
 
 async function loginAttempt() {
-  // console.log("user", userInfo.value);
-
+  console.log(userInfo.value)
   authenticating.value = true;
-
   try {
     const { data, error } = await useFetch<any>(
       `${AUTH_SERVICE_URL}/auth/login`,
       {
         method: "POST",
-        key: userInfo.value.email,
+        key: JSON.stringify(userInfo.value),
         body: {
           email: userInfo.value.email,
           password: userInfo.value.password,
@@ -68,7 +55,6 @@ async function loginAttempt() {
     const cookie = useCookie("mks-token");
     cookie.value = token;
     const { email, id, exp } = JSON.parse(window.atob(cookie.value.split(".")[1]));
-    console.log(exp);
     
     const recordExists = (await (await db.user.toArray()).length) > 0;
     if (!recordExists) {
@@ -88,6 +74,7 @@ async function loginAttempt() {
     router.push("dashboard/messenger");
   } catch (error) {
     errorMessage.value = error[0].description;
+    authenticating.value = false;
     setTimeout(() => {
       errorMessage.value = "";
       clearForm();
