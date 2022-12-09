@@ -77,7 +77,7 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
 >(`${MESSAGING_SERVICE}/rooms/groups`, {
   body: { tel: userTel },
   method: "POST",
-  key: Math.floor(Math.random() * 1000).toString(),
+   key: `${id}-groups`
 });
 filteredGroups.value = groupRooms.value;
 // console.log("groups", groupRooms.value);
@@ -234,13 +234,13 @@ watch(searchData, (data) => {
               Direct Messages
             </p>
             <div
-              class="hover:bg-gray-100 px-[15px] py-[0.5px]"
+              class="hover:bg-gray-100 my-4 py-[0.5px]"
               v-for="item of filteredRooms"
               :key="item.id"
             >
               <a
                 :to="`/dashboard/messenger/dm/${item.id}`"
-                class="flex gap-2 px-1 my-4 cursor-pointer"
+                class="flex gap-2 p-[15px] cursor-pointer"
                 @click.prevent="
                   checkReceiverName(
                     item.participants.sender.id == id
@@ -281,13 +281,13 @@ watch(searchData, (data) => {
 
             <div
               v-if="!pending"
-              class="hover:bg-gray-100 px-[15px] py-[0.5px]"
+              class="hover:bg-gray-100 py-[0.5px] my-4"
               v-for="group of filteredGroups"
               :key="group.id"
             >
               <a
                 :to="`/dashboard/messenger/groups/${group.id}`"
-                class="flex gap-2 px-1 my-4 cursor-pointer"
+                class="flex gap-2 p-[15px] cursor-pointer"
                 @click.prevent="
                   checkReceiverName(group.name, group.id, true),
                     sendAdmin(group.groupAdmin)
@@ -296,7 +296,7 @@ watch(searchData, (data) => {
                 <div
                   class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
                 >
-                  {{ changeName(group.name) }}
+                  {{ changeName(group.name.toString()) }}
                 </div>
 
                 <div class="flex-col flex-1">
