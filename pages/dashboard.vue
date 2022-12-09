@@ -2,7 +2,6 @@
 import { io, Socket } from "socket.io-client";
 import { db } from "~~/data/db";
 
-
 definePageMeta({
     middleware: ['auth']
 });
@@ -12,7 +11,7 @@ const {
 } = useRuntimeConfig();
 
 onMounted(async () => {
-  const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
+  const socket: Socket = useSocketIO(); 
   socket.on("connect", () => {
     // console.log('Client connected', socket.id)
   });
