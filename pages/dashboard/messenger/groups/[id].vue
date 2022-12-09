@@ -16,6 +16,7 @@ const chatName: Ref<string> = useState("createdChatName");
 const passedGroup = useState("groupData");
 
 const showToggleContact = useState("toggleShow");
+const showAddContact = useState("showToAddContact");
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -35,7 +36,6 @@ const {
   method: "GET",
   key: rooomId.toString(),
 });
-// console.log(messages.value, "totala");
 
 onMounted(() => {
   const route = useRoute();
@@ -70,6 +70,10 @@ watch(createdGroupRoom, (room) => {
 function toggleContacts() {
   showContacts.value = true;
   showToggleContact.value = !showToggleContact.value;
+}
+function toggleShowAddContact() {
+  showAddContact.value = !showAddContact.value;
+  showToggleContact.value = false;
 }
 function toggleContactsFalse() {
   showContacts.value = false;
@@ -123,13 +127,25 @@ const { data: groupContacts } = await useFetch<any[]>(
 <template>
   <div class="ml-2 relative h-screen md:w-full">
     <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
-    <div
-      v-if="showToggleContact"
-      class="right-0 flex w-52 bg-orange-200 mr-4 absolute p-2 rounded z-30 cursor-pointer"
-      @click="toggleContacts()"
-    >
-      <div class="text-red-500 font-bold">show contacts</div>
-    </div>
+    <Transition name="fade-top">
+      <div
+        v-if="showToggleContact"
+        class="right-0 flex w-52 bg-orange-200 mr-2 absolute rounded z-30 flex-col"
+      >
+        <div
+          class="text-red-500 font-bold text-xs p-1 px-2 hover:bg-red-300 cursor-pointer"
+          @click="toggleContacts()"
+        >
+          Show contacts
+        </div>
+        <div
+          class="text-red-500 font-bold text-xs p-1 mt-2 px-2 hover:bg-red-300 cursor-pointer items-center content-center flex"
+          @click="toggleShowAddContact()"
+        >
+          Add Contact <span class="font-extrabold ml-2">+</span>
+        </div>
+      </div>
+    </Transition>
     <div class="flex">
       <div class="p-4 h-[90%] flex flex-col-reverse overflow-auto flex-1">
         <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
@@ -232,6 +248,21 @@ const { data: groupContacts } = await useFetch<any[]>(
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateX(20px);
+  opacity: 0;
+}
+/* transitions  */
+
+.fade-top-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.fade-top-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.fade-top-enter-from,
+.fade-top-leave-to {
+  transform: translateY(-20px);
   opacity: 0;
 }
 </style>
