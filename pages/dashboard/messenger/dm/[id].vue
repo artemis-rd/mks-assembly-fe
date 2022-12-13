@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import moment from "moment";
 import { useSocketIO } from "~~/composables/sockets";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
@@ -34,7 +35,7 @@ async function sendMessage() {
   const tosend = messageData.value.trim();
   if (tosend.length > 0) {
     let msg = {
-      timeStamp: Date.now().toString(),
+      timeStamp: Date.now(),
       message: messageData.value,
       sender: senderId.value,
       roomId: rooomId,
@@ -89,8 +90,11 @@ onMounted(async () => {
   }
 });
 function editTime(theDate) {
-  let newDate = new Date(theDate);
-  return newDate.toLocaleTimeString();
+  const nw = new Date(Date.now()).getDay();
+  const msgDay= new Date(theDate).getDay();
+  if (nw == msgDay) return moment(theDate).format('h:mm a');
+
+  return moment(theDate).format("MMM Do YYYY, h:mm a"); 
 }
 </script>
 <template>
