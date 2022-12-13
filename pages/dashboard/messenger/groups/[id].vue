@@ -2,11 +2,14 @@
 import { db } from "~~/data/db";
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
+import { use } from "h3";
 const cookie = useCookie("mks-token");
 const adminNumber = useState("adminId");
+const storedRoomId = useState("storeRoomId")
 
 const token = cookie.value;
 const senderId = ref();
+
 const messageData = ref();
 const route = useRoute();
 const showContacts = ref(false);
@@ -25,6 +28,8 @@ const createdGroupRoom = useState("createdGroupRoomId");
 // const group = ref("House Business Commitee ");
 let brokenToken = token.split(".")[1];
 senderId.value = JSON.parse(atob(brokenToken)).id;
+storedRoomId.value = senderId.value 
+
 const { MESSAGING_SERVICE } = useRuntimeConfig();
 
 const {

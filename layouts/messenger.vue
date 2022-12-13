@@ -4,6 +4,8 @@ import { useSocketIO } from "~~/composables/sockets";
 
 const socket = useSocketIO()
 const receiverCont = useState("receiverContact");
+const theRoomId = useState("idCreate")
+
 // const roomId = ref();
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
@@ -80,6 +82,8 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
    key: `${id}-groups`
 });
 filteredGroups.value = groupRooms.value;
+
+
 // console.log("groups", groupRooms.value);
 
 function startConversation() {
@@ -188,6 +192,7 @@ function createRoom(receiverId, name) {
 }
 function checkReceiverName(receiverName, id, isGroup) {
   chatName.value = receiverName;
+  theRoomId.value = id
   if (isGroup) {
     navigateTo(`/dashboard/messenger/groups/${id}`);
   } else navigateTo(`/dashboard/messenger/dm/${id}`);
@@ -285,9 +290,9 @@ watch(searchData, (data) => {
               v-for="group of filteredGroups"
               :key="group.id"
             >
-              <a
+              <NuxtLink
                 :to="`/dashboard/messenger/groups/${group.id}`"
-                class="flex gap-2 p-[15px] cursor-pointer"
+                class="flex gap-2 p-[15px] cursor-pointer link-active"
                 @click.prevent="
                   checkReceiverName(group.name, group.id, true),
                     sendAdmin(group.groupAdmin)
@@ -308,7 +313,7 @@ watch(searchData, (data) => {
                     Hello, can you check whether everything is...
                   </p>
                 </div>
-              </a>
+              </NuxtLink>
             </div>
             <Loading v-else/>
           </div>
@@ -504,4 +509,10 @@ watch(searchData, (data) => {
     <slot></slot>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+  .router-link-active {
+  padding: 1em 0.8em;
+  background-color: #F0F0F0;
+}
+
+</style>
