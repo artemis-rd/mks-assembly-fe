@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 import { db } from "~~/data/db";
 
 definePageMeta({
-    middleware: ['auth']
+    middleware: ['auth','active-link']
 });
 
 const {

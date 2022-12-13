@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import activeLink from '~~/middleware/activeLink';
+
 const active = ref(false);
 // const cookie = useCookie("mks-token");
 
@@ -7,11 +9,9 @@ const active = ref(false);
 const logout = function () {
   const token = useCookie("mks-token")
   token.value = null
-  navigateTo("/sign-in")
-  // const router = useRouter()
-  // location.reload()
-  // router.push("/")
+  navigateTo("/sign-in");
 }
+
 </script>
 <template>
   <section class="flex h-screen">
@@ -101,6 +101,9 @@ const logout = function () {
 <style scoped>
 .router-link-active {
   color: #ec5237;
+  padding: 1em 0.8em;
+  background-color: #FFF9F8;
+  border-right: 3px solid #FF7057;
 }
 
 .router-link-active svg path {
