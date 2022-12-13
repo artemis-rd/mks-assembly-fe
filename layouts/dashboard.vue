@@ -101,7 +101,6 @@ const logout = function () {
 <style scoped>
 .router-link-active {
   color: #ec5237;
-  padding: 1em 0.8em;
   background-color: #FFF9F8;
   border-right: 3px solid #FF7057;
 }
