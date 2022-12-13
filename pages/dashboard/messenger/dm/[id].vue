@@ -131,6 +131,7 @@ function editTime(theDate) {
               }"
             >
               {{ editTime(sendMsg.timeStamp) }}
+              {{ sendMsg.timeStamp }}
             </div>
           </div>
         </div>
