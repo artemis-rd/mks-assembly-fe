@@ -607,7 +607,7 @@ watch(searchData, (data) => {
 </template>
 <style scoped>
   .router-link-active {
-  background-color: #F0F0F0;
+  background-color: #E4E4E4;
 }
 
 </style>
