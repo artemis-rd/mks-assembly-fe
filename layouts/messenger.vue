@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import moment from "moment";
 import { Ref } from "vue";
 import { useSocketIO } from "~~/composables/sockets";
 const socket = useSocketIO();
@@ -95,7 +96,8 @@ filteredRooms.value = rooms.value;
 for (let i = 0; i < filteredRooms.value.length; i++) {
   let lastMessage = await getLastMessage(filteredRooms.value[i].id);
 
-  filteredRooms.value[i].lastMessage = lastMessage;
+  filteredRooms.value[i].lastMessage = lastMessage.message;
+  filteredRooms.value[i].timestamp = new Date(lastMessage.timeStamp);
 }
 type LastMessageResponse = {
   id: string;
@@ -108,7 +110,7 @@ async function getLastMessage(room) {
     `${MESSAGING_SERVICE}/messages/last-last?roomId=${room}`,
     { method: "GET", key: room + "mks-sms" }
   );
-  return LastMessage.value.message;
+  return LastMessage.value;
 }
 
 let { data: contacts } = await useFetch<any>(
@@ -147,7 +149,8 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
 filteredGroups.value = groupRooms.value;
 for (let i = 0; i < filteredGroups.value.length; i++) {
   let lastMessage = await getLastMessage(filteredGroups.value[i].id);
-  filteredGroups.value[i].lastMessage = lastMessage;
+  filteredGroups.value[i].lastMessage = lastMessage.message;
+  filteredGroups.value[i].timestamp = new Date(lastMessage.timeStamp);
 }
 function changeName(valueGiven) {
   let converted = valueGiven.toUpperCase();
@@ -314,7 +317,7 @@ watch(searchData, (data) => {
                           : item.participants.sender.name
                       }}
                     </p>
-                    <p class="text-[12px] text-gray-700">4.14 p.m</p>
+                    <p class="text-[12px] text-gray-700">{{ moment(item.timestamp).format("h:mm a")}}</p>
                   </div>
                   <p class="text-xs text-gray-400">
                     {{ item.lastMessage }}
