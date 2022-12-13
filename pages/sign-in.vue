@@ -24,7 +24,6 @@ const errorMessage = ref("");
 const authenticating = ref(false);
 
 async function loginAttempt() {
-  console.log(userInfo.value)
   authenticating.value = true;
   try {
     const { data, error } = await useFetch<any>(
@@ -47,15 +46,17 @@ async function loginAttempt() {
 
     if (!token) {
       if (error.value || data.value.response.errors) {
-          clearForm();
+        clearForm();
         throw error.value ?? data.value.response.errors;
       }
     }
 
     const cookie = useCookie("mks-token");
     cookie.value = token;
-    const { email, id, exp } = JSON.parse(window.atob(cookie.value.split(".")[1]));
-    
+    const { email, id, exp } = JSON.parse(
+      window.atob(cookie.value.split(".")[1])
+    );
+
     const recordExists = (await (await db.user.toArray()).length) > 0;
     if (!recordExists) {
       const d0 = await db.user.add({
@@ -68,7 +69,7 @@ async function loginAttempt() {
         name: email,
       });
     }
-   
+
     clearForm();
     authenticating.value = false;
     router.push("dashboard/messenger");
@@ -80,14 +81,16 @@ async function loginAttempt() {
       clearForm();
     }, 3000);
 
-  // authenticating.value = true;
-      // TODO: One day come back to fix this fetch error problem
+    // authenticating.value = true;
+    // TODO: One day come back to fix this fetch error problem
     // if (error instanceof FetchError) {}
   }
 }
 </script>
 <template>
-  <section class="sign-in-container flex items-center container px-10 md:px-20 md:py-10 min-h-screen min-w-full">
+  <section
+    class="sign-in-container flex items-center container px-10 md:px-20 md:py-10 min-h-screen min-w-full"
+  >
     <div class="sign-in-form w-96">
       <Alert v-if="errorMessage !== ''">
         <div class="content text-sm font-semibold">{{ errorMessage }}</div>
@@ -97,30 +100,45 @@ async function loginAttempt() {
         Sign in to your operator account
       </h4>
 
-      <LabelInput v-model="userInfo.email" type="text" placeholder="johndoe.official@email.com"
-        label="Enter your email address or username" />
+      <LabelInput
+        v-model="userInfo.email"
+        type="text"
+        placeholder="johndoe.official@email.com"
+        label="Enter your email address or username"
+      />
 
-      <LabelInput v-model="userInfo.password" type="password" placeholder="Your secret password"
-        label="Enter your Password" />
+      <LabelInput
+        v-model="userInfo.password"
+        type="password"
+        placeholder="Your secret password"
+        label="Enter your Password"
+      />
       <div class="flex gap-10 align-middle justify-between my-4">
         <div class="remember-me-container flex gap-2 align-baseline">
           <input type="checkbox" name="remember" id="remember" />
           <label for="remember" class="text-sm">Remember Me</label>
         </div>
         <div class="forgot-password-container">
-          <NuxtLink to="forgot-password" class="text-sm text-red-500 underline">Forgot Password</NuxtLink>
+          <NuxtLink to="forgot-password" class="text-sm text-red-500 underline"
+            >Forgot Password</NuxtLink
+          >
         </div>
       </div>
       <div class="form-submit my-4">
-        <button v-if="!authenticating" @click="loginAttempt"
-          class="shadow-xl px-8 py-3 text-sm min-w-full bg-orange-500 text-white rounded-xl">
+        <button
+          v-if="!authenticating"
+          @click="loginAttempt"
+          class="shadow-xl px-8 py-3 text-sm min-w-full bg-orange-500 text-white rounded-xl"
+        >
           Proceed to Login
         </button>
         <Loading v-else />
       </div>
       <div class="form-footer flex gap-2">
         <p class="text-sm">Wish to have an account ?</p>
-        <NuxtLink to="create-account" class="text-sm text-red-500 underline">Register from Here</NuxtLink>
+        <NuxtLink to="create-account" class="text-sm text-red-500 underline"
+          >Register from Here</NuxtLink
+        >
       </div>
     </div>
   </section>
