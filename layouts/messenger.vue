@@ -1,34 +1,78 @@
 <script setup lang="ts">
 import { Ref } from "vue";
 import { useSocketIO } from "~~/composables/sockets";
-
-const socket = useSocketIO()
+const socket = useSocketIO();
 const receiverCont = useState("receiverContact");
+
 const theRoomId = useState("idCreate")
 
 // const roomId = ref();
+
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
 const createdGroupRoom = useState("createdGroupId");
 const adminNumber = useState("adminId");
 const passedGroup = useState("groupData");
+const showAddContact = useState<boolean>("showToAddContact", () => false);
+const addContactButton = ref(false);
 const roomList = ref([]) as Ref<any[]>;
+const roomListAdd = ref([]) as Ref<any[]>;
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
 const selected = ref(false);
-const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
 const searchData = ref("");
-const selectedContact = ref();
 const filteredGroups = ref([]) as Ref<any[]>;
 const filteredRooms = ref([]) as Ref<any[]>;
-
-const directThreads = ref({});
 const allContacts: Ref<any> = ref([]);
+const groupId = ref();
+function startConversation() {
+  showGroups.value = false;
+  createGroups.value = !createGroups.value;
+}
+function showContactToSelect() {
+  createGroups.value = false;
+  selectContact.value = !selectContact.value;
+}
 
+function goBackToConversation() {
+  createGroups.value = false;
+  showGroups.value = !showGroups.value;
+}
+function goBackToStartConv() {
+  selectContact.value = false;
+  createGroups.value = !createGroups.value;
+}
+function goBackToSelectContact() {
+  groupNameScreen.value = false;
+  selectContact.value = !selectContact.value;
+}
+function sendContactdata(detail) {
+  receiverCont.value = detail;
+}
+function showNameInput() {
+  selectContact.value = !selectContact.value;
+  enterGroupName.value = true;
+}
+function goBackToContacts() {
+  enterGroupName.value = false;
+  addContactButton.value = false;
+  selectContact.value = !selectContact.value;
+}
+function sendAdmin(admin) {
+  adminNumber.value = admin;
+}
+function goBackToMessages() {
+  showGroups.value = true;
+  showAddContact.value = false;
+}
+function showAddContactButton() {
+  addContactButton.value = true;
+  showAddContact.value = false;
+}
 const {
   public: { MESSAGING_SERVICE },
 } = useRuntimeConfig();
@@ -36,7 +80,7 @@ const {
 const token = useCookie("mks-token");
 //TODO: a better way to handle the deprecated `atob`
 const id = JSON.parse(atob(token.value.split(".")[1])).id;
-const loader = ref(false)
+const loader = ref(false);
 const {
   data: rooms,
   error,
@@ -48,6 +92,14 @@ const {
 });
 filteredRooms.value = rooms.value;
 // console.log(rooms.value, "marroms");
+
+async function getLastMessage(room) {
+  const { data: LastMessage } = await useFetch<any[]>(
+    `${MESSAGING_SERVICE}/messages/messages/last-last?roomId=${room}`,
+    { method: "GET" }
+  );
+  return LastMessage;
+}
 
 let { data: contacts } = await useFetch<any>(
   `${MESSAGING_SERVICE}/contacts/old/list`,
@@ -79,48 +131,13 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
 >(`${MESSAGING_SERVICE}/rooms/groups`, {
   body: { tel: userTel },
   method: "POST",
-   key: `${id}-groups`
+  key: `${id}-groups`,
 });
 filteredGroups.value = groupRooms.value;
 
 
 // console.log("groups", groupRooms.value);
 
-function startConversation() {
-  showGroups.value = false;
-  createGroups.value = !createGroups.value;
-}
-function showContactToSelect() {
-  createGroups.value = false;
-  selectContact.value = !selectContact.value;
-}
-
-function goBackToConversation() {
-  createGroups.value = false;
-  showGroups.value = !showGroups.value;
-}
-function goBackToStartConv() {
-  selectContact.value = false;
-  createGroups.value = !createGroups.value;
-}
-function goBackToSelectContact() {
-  groupNameScreen.value = false;
-  selectContact.value = !selectContact.value;
-}
-function sendContactdata(detail) {
-  receiverCont.value = detail;
-}
-function showNameInput() {
-  selectContact.value = !selectContact.value;
-  enterGroupName.value = true;
-}
-function goBackToContacts() {
-  enterGroupName.value = false;
-  selectContact.value = !selectContact.value;
-}
-function sendAdmin(admin) {
-  adminNumber.value = admin;
-}
 function changeName(valueGiven) {
   let converted = valueGiven.toUpperCase();
   let newName = converted.split(" ");
@@ -145,7 +162,7 @@ function selectContactToJoinGroup(contact) {
   }
 }
 function createNewGroup() {
-  loader.value = true
+  loader.value = true;
   let obj = {
     groupName: groupName.value,
     groupParticipants: roomList.value,
@@ -156,14 +173,15 @@ function createNewGroup() {
     showGroups.value = true;
     // createGroups.value = !createGroups.value;
     createdGroupRoom.value = groupRmCreated.id;
-    await refreshGroupRooms;
+    // await refreshGroupRooms;
     navigateTo(`/dashboard/messenger/groups/${groupRmCreated.id}`);
   });
   socket.on("r-createRoom", (data) => {
-    roomId.value = data.split(" ").slice(-1)[0];
+    filteredGroups.value.unshift(data);
+    roomId.value = data.id 
   });
   selected.value = true;
-  groupName.value = ''
+  groupName.value = "";
 }
 // create room if there is no existing room
 function createRoom(receiverId, name) {
@@ -178,12 +196,14 @@ function createRoom(receiverId, name) {
     socket.emit("createRoom", participants, async (rmCreated) => {
       showGroups.value = true;
       createGroups.value = !createGroups.value;
-      await refreshRooms();
+      // await refreshRooms();
       chatName.value = name;
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-      roomId.value = data.split(" ").slice(-1)[0];
+        console.log('new private chat', data);
+      filteredRooms.value.unshift(data);
+      roomId.value = data.id 
     });
     socket.on(`${receiverId}`, (data) => {
       socket.emit("joinRoom", data);
@@ -192,13 +212,29 @@ function createRoom(receiverId, name) {
 }
 function checkReceiverName(receiverName, id, isGroup) {
   chatName.value = receiverName;
+
   theRoomId.value = id
+
+  groupId.value = id;
+
   if (isGroup) {
     navigateTo(`/dashboard/messenger/groups/${id}`);
   } else navigateTo(`/dashboard/messenger/dm/${id}`);
 }
 function sendGroup(group) {
   passedGroup.value = group;
+}
+async function addNewContact() {
+  const { data: response } = await useFetch<group[]>(
+    `${MESSAGING_SERVICE}/rooms/participants/add`,
+    {
+      body: { participants: roomList },
+      params: { roomId: groupId.value },
+      method: "POST",
+      key: `${id}-groupsAdd`,
+    }
+  );
+  console.log("redss", response);
 }
 watch(searchData, (data) => {
   // if (searchData.value != "") {
@@ -225,7 +261,10 @@ watch(searchData, (data) => {
 <template>
   <div class="w-full px-2 md:flex h-screen">
     <div class="bg-gray-50 md:w-1/3 overflow-y-hidden relative">
-      <div class="md:relative container w-full h-[94%] py-2" v-if="showGroups">
+      <div
+        class="md:relative container w-full h-[94%] py-2"
+        v-if="showGroups && !showAddContact && !addContactButton"
+      >
         <!-- messeges screen -->
         <div class="px-4">
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
@@ -269,14 +308,14 @@ watch(searchData, (data) => {
                     <p class="text-[12px] text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    Hello, can you check whether everything is ..
+                    {{ getLastMessage(item.id) }}
                   </p>
                 </div>
               </a>
             </div>
           </div>
           <div v-else>
-            <Loading/>
+            <Loading />
           </div>
 
           <div class="my-1 text-sm">
@@ -310,12 +349,12 @@ watch(searchData, (data) => {
                     <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    Hello, can you check whether everything is...
+                    {{ getLastMessage(group.id) }}
                   </p>
                 </div>
               </NuxtLink>
             </div>
-            <Loading v-else/>
+            <Loading v-else />
           </div>
         </div>
       </div>
@@ -340,9 +379,7 @@ watch(searchData, (data) => {
         <span class="my-4 text-gray-400 font-bold text-sm"
           >Send Direct Message</span
         >
-        <!-- starting a conversation screen -->
-        <!-- contact list  -->
-        <div class="">
+        <div class="overflow-y-auto">
           <div
             class="flex flex-col"
             v-for="contact in allContacts"
@@ -392,7 +429,7 @@ watch(searchData, (data) => {
           <div class="mt-2">
             <div class="text-sm">
               Creating with
-              <span class="font-bold">{{ roomList.length }} </span>
+              <span class="font-bold">{{ roomList.length - 1 }} </span>
               selected Members
             </div>
           </div>
@@ -407,25 +444,67 @@ watch(searchData, (data) => {
           </div>
           <div class="">
             <button
-            v-if="!loader"
+              v-if="!loader"
               class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
               @click="createNewGroup()"
             >
               Save Group Info
             </button>
-            <Loading v-else/>
+            <Loading v-else />
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 mr-4 max-w-1/3 p-4" v-if="addContactButton">
+        <div class="flex-col">
+          <button
+            class="cursor:pointer font-semibold flex gap-2 items-center"
+            @click="goBackToContacts()"
+          >
+            <img src="@/assets/img/ArrowLeft.svg" alt="" />
+
+            Go Back
+          </button>
+          <div class="mt-2">
+            <div class="text-sm">
+              You are about to Add
+              <span class="font-bold">{{ roomList.length - 1 }} </span>
+              members in the group
+            </div>
+          </div>
+
+          <div class="">
+            <button
+              v-if="!loader"
+              class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
+              @click="addNewContact()"
+            >
+              Add {{ roomList.length - 1 }} Members
+            </button>
+            <Loading v-else />
           </div>
         </div>
       </div>
       <!-- contact screen -->
       <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-      <div class="my-4 gap-4 flex flex-col w-3/4" v-if="selectContact">
+      <div
+        class="my-4 gap-4 flex flex-col w-3/4"
+        v-if="selectContact || showAddContact"
+      >
         <button
           class="flex gap-6 items-center outline-none"
           @click="goBackToStartConv()"
+          v-if="selectContact"
         >
           <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
           <span class="text-md font-bold">Start a new Conversation</span>
+        </button>
+        <button
+          v-if="showAddContact"
+          class="flex gap-6 items-center outline-none"
+          @click="goBackToMessages()"
+        >
+          <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
+          <span class="text-md font-bold">Go Back</span>
         </button>
 
         <SearchInput placeholder="search contact" />
@@ -486,8 +565,17 @@ watch(searchData, (data) => {
           </div>
         </div>
         <button
+          v-if="selectContact"
           class="text-red-500 font-semibold flex gap-2 content-center items-center"
           @click="showNameInput()"
+        >
+          Next
+          <img src="@/assets/img/ArrowRight.svg" alt="" />
+        </button>
+        <button
+          v-if="showAddContact"
+          class="text-red-500 font-semibold flex gap-2 content-center items-center"
+          @click="showAddContactButton()"
         >
           Next
           <img src="@/assets/img/ArrowRight.svg" alt="" />
