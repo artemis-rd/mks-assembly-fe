@@ -282,7 +282,7 @@ watch(searchData, (data) => {
               v-for="item of filteredRooms"
               :key="item.id"
             >
-              <a
+              <NuxtLink
                 :to="`/dashboard/messenger/dm/${item.id}`"
                 class="flex gap-2 p-[15px] cursor-pointer"
                 @click.prevent="
@@ -311,7 +311,7 @@ watch(searchData, (data) => {
                     {{ getLastMessage(item.id) }}
                   </p>
                 </div>
-              </a>
+              </NuxtLink>
             </div>
           </div>
           <div v-else>
