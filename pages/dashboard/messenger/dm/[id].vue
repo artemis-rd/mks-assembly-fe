@@ -34,7 +34,7 @@ async function sendMessage() {
   const tosend = messageData.value.trim();
   if (tosend.length > 0) {
     let msg = {
-      timeStamp: Date.now().toString(),
+      timeStamp: Date.now(),
       message: messageData.value,
       sender: senderId.value,
       roomId: rooomId,
@@ -127,6 +127,7 @@ function editTime(theDate) {
               }"
             >
               {{ editTime(sendMsg.timeStamp) }}
+              {{ sendMsg.timeStamp }}
             </div>
           </div>
         </div>

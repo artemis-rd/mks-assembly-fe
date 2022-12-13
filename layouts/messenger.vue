@@ -230,12 +230,13 @@ async function addNewContact() {
   const { data: response } = await useFetch<group[]>(
     `${MESSAGING_SERVICE}/rooms/participants/add`,
     {
-      body: { participants: roomList },
+      body: { participants: roomList.value },
       params: { roomId: groupId.value },
       method: "POST",
       key: `${id}-groupsAdd`,
     }
   );
+  console.log("add cont man", response.value);
 }
 watch(searchData, (data) => {
   // if (searchData.value != "") {
@@ -257,6 +258,7 @@ watch(searchData, (data) => {
   // console.log(filteredRooms.value, "filtered ");
   // }
 });
+function sliceMessage() {}
 // Group chats mock data
 </script>
 <template>
@@ -309,7 +311,11 @@ watch(searchData, (data) => {
                     <p class="text-[12px] text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    {{ item.lastMessage }}
+                    {{
+                      item.lastMessage == undefined
+                        ? ""
+                        : item.lastMessage.slice(0, 25) + "..."
+                    }}
                   </p>
                 </div>
               </a>
@@ -350,7 +356,11 @@ watch(searchData, (data) => {
                     <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    {{ group.lastMessage }}
+                    {{
+                      group.lastMessage == undefined
+                        ? ""
+                        : group.lastMessage.slice(0, 25) + "..."
+                    }}
                   </p>
                 </div>
               </a>
@@ -489,7 +499,7 @@ watch(searchData, (data) => {
       <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
       <div
         class="my-4 gap-4 flex flex-col w-3/4"
-        v-if="selectContact || showAddContact"
+        v-if="selectContact || (showAddContact && !showGroups)"
       >
         <button
           class="flex gap-6 items-center outline-none"
