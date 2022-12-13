@@ -41,7 +41,9 @@ const {
   method: "GET",
   key: rooomId.toString(),
 });
-
+// get login user details
+const {data:userDetails} = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list/${senderId.value}`)
+const logedUser = userDetails.value.name
 onMounted(() => {
   const route = useRoute();
   const messages = db.userMessages.filter(
@@ -131,7 +133,7 @@ const { data: groupContacts } = await useFetch<any[]>(
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="chatName" lastLogin="4.22pm" :user="logedUser" />
     <Transition name="fade-top">
       <div
         v-if="showToggleContact"
