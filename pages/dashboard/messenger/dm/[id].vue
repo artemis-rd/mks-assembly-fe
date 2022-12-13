@@ -15,6 +15,11 @@ const socket = useSocketIO();
 let brokenToken = token.split(".")[1];
 senderId.value = JSON.parse(atob(brokenToken)).id;
 const { MESSAGING_SERVICE } = useRuntimeConfig();
+// const userProfile = await getUserProfile()
+// console.log(userProfile, "user pf");
+const {data:userDetails} = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list/${senderId.value}`)
+const logedUser = userDetails.value.name
+
 
 if (rooomId != undefined) {
   socket.emit("joinRoom", { roomId: rooomId });
@@ -99,7 +104,7 @@ function editTime(theDate) {
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="receiverName" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="receiverName" lastLogin="4.22pm" :user="logedUser" />
     <div class="p-4 h-[87%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
