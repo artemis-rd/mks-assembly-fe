@@ -287,7 +287,7 @@ watch(searchData, (data) => {
               Direct Messages
             </p>
             <div
-              class="hover:bg-gray-100 my-4 py-[0.5px]"
+              class="hover:bg-gray-100  py-[0.5px]"
               v-for="item of filteredRooms"
               :key="item.id"
             >
@@ -334,7 +334,7 @@ watch(searchData, (data) => {
 
             <div
               v-if="!pending"
-              class="hover:bg-gray-100 py-[0.5px] my-4"
+              class="hover:bg-gray-100 py-[0.5px]"
               v-for="group of filteredGroups"
               :key="group.id"
             >
@@ -607,7 +607,6 @@ watch(searchData, (data) => {
 </template>
 <style scoped>
   .router-link-active {
-  padding: 1em 0.8em;
   background-color: #F0F0F0;
 }
 
