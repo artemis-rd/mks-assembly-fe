@@ -92,13 +92,23 @@ const {
 });
 filteredRooms.value = rooms.value;
 // console.log(rooms.value, "marroms");
+for (let i = 0; i < filteredRooms.value.length; i++) {
+  let lastMessage = await getLastMessage(filteredRooms.value[i].id);
+
+  filteredRooms.value[i].lastMessage = lastMessage;
+}
+type LastMessageResponse = {
+  id: string;
+  message: string;
+  timestamp: Date;
+};
 
 async function getLastMessage(room) {
-  const { data: LastMessage } = await useFetch<any[]>(
-    `${MESSAGING_SERVICE}/messages/messages/last-last?roomId=${room}`,
-    { method: "GET" }
+  const { data: LastMessage } = await useFetch<LastMessageResponse>(
+    `${MESSAGING_SERVICE}/messages/last-last?roomId=${room}`,
+    { method: "GET", key: room + "mks-sms" }
   );
-  return LastMessage;
+  return LastMessage.value.message;
 }
 
 let { data: contacts } = await useFetch<any>(
@@ -124,7 +134,8 @@ type group = {
   groupSlug: string;
   id: string;
   name: string;
-  participants: [string];
+  participants: string[];
+  lastMessage: string;
 };
 const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
   group[]
@@ -134,10 +145,10 @@ const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
   key: `${id}-groups`,
 });
 filteredGroups.value = groupRooms.value;
-
-
-// console.log("groups", groupRooms.value);
-
+for (let i = 0; i < filteredGroups.value.length; i++) {
+  let lastMessage = await getLastMessage(filteredGroups.value[i].id);
+  filteredGroups.value[i].lastMessage = lastMessage;
+}
 function changeName(valueGiven) {
   let converted = valueGiven.toUpperCase();
   let newName = converted.split(" ");
@@ -178,7 +189,7 @@ function createNewGroup() {
   });
   socket.on("r-createRoom", (data) => {
     filteredGroups.value.unshift(data);
-    roomId.value = data.id 
+    roomId.value = data.id;
   });
   selected.value = true;
   groupName.value = "";
@@ -201,9 +212,8 @@ function createRoom(receiverId, name) {
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-        console.log('new private chat', data);
       filteredRooms.value.unshift(data);
-      roomId.value = data.id 
+      roomId.value = data.id;
     });
     socket.on(`${receiverId}`, (data) => {
       socket.emit("joinRoom", data);
@@ -234,7 +244,6 @@ async function addNewContact() {
       key: `${id}-groupsAdd`,
     }
   );
-  console.log("redss", response);
 }
 watch(searchData, (data) => {
   // if (searchData.value != "") {
@@ -308,7 +317,7 @@ watch(searchData, (data) => {
                     <p class="text-[12px] text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    {{ getLastMessage(item.id) }}
+                    {{ item.lastMessage }}
                   </p>
                 </div>
               </NuxtLink>
@@ -349,7 +358,7 @@ watch(searchData, (data) => {
                     <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    {{ getLastMessage(group.id) }}
+                    {{ group.lastMessage }}
                   </p>
                 </div>
               </NuxtLink>
@@ -485,7 +494,6 @@ watch(searchData, (data) => {
         </div>
       </div>
       <!-- contact screen -->
-      <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
       <div
         class="my-4 gap-4 flex flex-col w-3/4"
         v-if="selectContact || showAddContact"

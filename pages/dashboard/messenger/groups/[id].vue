@@ -112,9 +112,9 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
   if (data.sender != senderId.value) {
     const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
-      message: messageData.value.trim(),
+      message: data.message,
       sender: senderId.value,
-      roomId: parseInt(rooomId.toString()),
+      roomId: rooomId.toString(),
     });
     messages.value.push(data);
   } else {
