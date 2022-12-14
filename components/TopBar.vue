@@ -9,11 +9,21 @@ defineProps({
   lastLogin: String,
   user: String,
 });
+function capitalizeName(user: any) {
+  if (user) {
+    let givenName = user.split(" ");
+    for (let i = 0; i < givenName.length; i++) {
+      givenName[i] =
+        givenName[i].charAt(0).toUpperCase() + givenName[i].slice(1);
+    }
+    return givenName.join(" ");
+  }
+}
 </script>
 <template>
   <div class="flex justify-between py-4 border-b border-neutral-100 px-4">
     <div class="">
-      <h6 class="font-bold text-xs">{{ name }}</h6>
+      <h6 class="font-bold text-xs">{{ capitalizeName(name) }}</h6>
       <div class="text-xs">{{ lastLogin }}</div>
     </div>
     <div class="flex justify-between items-center gap-8 pr-4">

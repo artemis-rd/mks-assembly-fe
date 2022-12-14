@@ -95,7 +95,6 @@ filteredRooms.value = rooms.value;
 // console.log(rooms.value, "marroms");
 for (let i = 0; i < filteredRooms.value.length; i++) {
   let lastMessage = await getLastMessage(filteredRooms.value[i].id);
-
   filteredRooms.value[i].lastMessage = lastMessage.message;
   filteredRooms.value[i].timestamp = new Date(lastMessage.timeStamp);
 }
@@ -124,12 +123,9 @@ let { data: contacts } = await useFetch<any>(
   }
 );
 allContacts.value = contacts.value;
-// console.log("gana", allContacts.value);
-
 let foundUser = allContacts.value.find((x: any) => x.id == id);
 let userTel = foundUser.tel;
 roomList.value.push(foundUser.tel);
-// console.log(userTel, "my number");
 type group = {
   createdAt: string;
   groupAdmin: string;
@@ -164,7 +160,16 @@ function changeName(valueGiven) {
   }
   return firstWord[0];
 }
-
+function capitalizeName(user: any) {
+  if (user) {
+    let givenName = user.split(" ");
+    for (let i = 0; i < givenName.length; i++) {
+      givenName[i] =
+        givenName[i].charAt(0).toUpperCase() + givenName[i].slice(1);
+    }
+    return givenName.join(" ");
+  }
+}
 function selectContactToJoinGroup(contact) {
   if (roomList.value.includes(contact)) {
     const index = roomList.value.indexOf(contact);
@@ -225,17 +230,11 @@ function createRoom(receiverId, name) {
 }
 function checkReceiverName(receiverName, id, isGroup) {
   chatName.value = receiverName;
-
   theRoomId.value = id;
-
   groupId.value = id;
-
   if (isGroup) {
     navigateTo(`/dashboard/messenger/groups/${id}`);
   } else navigateTo(`/dashboard/messenger/dm/${id}`);
-}
-function sendGroup(group) {
-  passedGroup.value = group;
 }
 async function addNewContact() {
   const { data: response } = await useFetch<group[]>(
@@ -247,15 +246,11 @@ async function addNewContact() {
       key: `${id}-groupsAdd`,
     }
   );
-  console.log("add cont man", response.value);
 }
 watch(searchData, (data) => {
-  // if (searchData.value != "") {
   filteredGroups.value = groupRooms.value.filter((x: any) =>
     x.name.toLocaleLowerCase().includes(searchData.value.toLocaleLowerCase())
   );
-
-  // console.log("filtered groups", filteredGroups.value);
   let searchedRooms = rooms.value.filter(
     (x: any) =>
       x.participants.sender.name
@@ -266,11 +261,7 @@ watch(searchData, (data) => {
         .includes(searchData.value.toLocaleLowerCase())
   );
   filteredRooms.value = searchedRooms;
-  // console.log(filteredRooms.value, "filtered ");
-  // }
 });
-function sliceMessage() { }
-// Group chats mock data
 </script>
 <template>
   <div class="w-full px-2 md:flex h-screen">
@@ -311,9 +302,11 @@ function sliceMessage() { }
                   <div class="flex justify-between">
                     <p class="font-semibold text-gray-700">
                       {{
+                        capitalizeName(
                           item.participants.sender.id == id
                             ? item.participants.receiver.name
                             : item.participants.sender.name
+                        )
                       }}
                     </p>
                     
@@ -354,8 +347,12 @@ function sliceMessage() { }
 
                 <div class="flex-col flex-1">
                   <div class="flex justify-between">
-                    <p class="text-gray-700 font-semibold">{{ group.name }}</p>
-                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+                    <p class="text-gray-700 font-semibold">
+                      {{ capitalizeName(group.name) }}
+                    </p>
+                    <p class="text-sm font-medium text-gray-700">
+                      {{ moment(group.timestamp).format("h:mm a") }}
+                    </p>
                   </div>
                   <p class="text-xs text-gray-400">
                     {{
