@@ -29,3 +29,13 @@ export const getContacts = async () => {
     });
   });
 };
+export function capitalizeName(user: any) {
+  if (user) {
+    let givenName = user.split(" ");
+    for (let i = 0; i < givenName.length; i++) {
+      givenName[i] =
+        givenName[i].charAt(0).toUpperCase() + givenName[i].slice(1);
+    }
+    return givenName.join(" ");
+  }
+}
