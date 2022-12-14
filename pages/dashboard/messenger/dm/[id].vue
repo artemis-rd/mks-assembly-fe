@@ -17,9 +17,6 @@ senderId.value = JSON.parse(atob(brokenToken)).id;
 const { MESSAGING_SERVICE } = useRuntimeConfig();
 // const userProfile = await getUserProfile()
 // console.log(userProfile, "user pf");
-const { data: userDetails } = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list/${senderId.value}`)
-const logedUser = userDetails.value.name
-
 
 if (rooomId != undefined) {
   socket.emit("joinRoom", { roomId: rooomId });
@@ -105,28 +102,37 @@ function editTime(theDate) {
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="receiverName" lastLogin="4.22pm" :user="logedUser" />
+    <TopBar :name="receiverName" lastLogin="4.22pm" />
     <div class="p-4 h-[87%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
       </span>
       <div class="cont">
-        <div class="flex-col flex mx-2 gap-2 my-2 max-w-2lg" v-for="sendMsg in messages" :key="sendMsg.timestamp">
+        <div
+          class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
+          v-for="sendMsg in messages"
+          :key="sendMsg.timestamp"
+        >
           <div class="flex flex-col">
-            <div class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4" :class="{
-              'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
-                sendMsg.sender == senderId,
-              'rounded-tl-none bg-orange-50 self-start':
-                sendMsg.sender != senderId,
-            }">
+            <div
+              class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
+              :class="{
+                'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
+                  sendMsg.sender == senderId,
+                'rounded-tl-none bg-orange-50 self-start':
+                  sendMsg.sender != senderId,
+              }"
+            >
               <p>{{ sendMsg.message }}</p>
             </div>
-            <div :class="{
-              'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
-                sendMsg.sender == senderId,
-              'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
-                sendMsg.sender != senderId,
-            }">
+            <div
+              :class="{
+                'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
+                  sendMsg.sender == senderId,
+                'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
+                  sendMsg.sender != senderId,
+              }"
+            >
               {{ editTime(sendMsg.timeStamp) }}
             </div>
           </div>
@@ -134,10 +140,15 @@ function editTime(theDate) {
       </div>
     </div>
     <div
-      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300">
-      <textarea rows="2" placeholder="Type something here ...."
+      class="bg-white flex p-3 mt-3 gap-2 fixed md:absolute justify-between w-full bottom-0 border-t border-gray-300"
+    >
+      <textarea
+        rows="2"
+        placeholder="Type something here ...."
         class="w-full mt-0 outline-none text-xs resize-none overflow-y-auto scrollbar-track-blue-lighter scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-w-1 scrolling-touch"
-        v-model="messageData" @keyup.enter="sendMessage()" />
+        v-model="messageData"
+        @keyup.enter="sendMessage()"
+      />
       <button @click="sendMessage()">
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
