@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import moment from "moment";
 import { db } from "~~/data/db";
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
 import { use } from "h3";
 const cookie = useCookie("mks-token");
 const adminNumber = useState("adminId");
-const storedRoomId = useState("storeRoomId")
+const storedRoomId = useState("storeRoomId");
 
 const token = cookie.value;
 const senderId = ref();
@@ -29,7 +30,7 @@ const createdGroupRoom = useState("createdGroupRoomId");
 // const group = ref("House Business Commitee ");
 let brokenToken = token.split(".")[1];
 senderId.value = JSON.parse(atob(brokenToken)).id;
-storedRoomId.value = senderId.value 
+storedRoomId.value = senderId.value;
 
 const { MESSAGING_SERVICE } = useRuntimeConfig();
 
@@ -60,8 +61,11 @@ if (rooomId != undefined) {
   });
 }
 function editTime(theDate) {
-  let newDate = new Date(theDate);
-  return newDate.toLocaleTimeString();
+  const nw = new Date(Date.now()).getDay();
+  const msgDay = new Date(theDate).getDay();
+  if (nw == msgDay) return moment(theDate).format("h:mm a");
+
+  return moment(theDate).format("MMM Do YYYY, h:mm a");
 }
 
 watch(createdGroupRoom, (room) => {
