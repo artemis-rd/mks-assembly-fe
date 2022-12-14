@@ -86,7 +86,8 @@ function toggleContactsFalse() {
   showContacts.value = false;
 }
 async function sendGroupMessage() {
-  if (messageData.value != "") {
+  const tosend = messageData.value.trim();
+  if (tosend.length > 0) {
     let msg = {
       timeStamp: Date.now().toString(),
       message: messageData.value,
