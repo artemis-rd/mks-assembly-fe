@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { dataToEsm } from "@rollup/pluginutils";
-import { io, Socket } from "socket.io-client";
+import moment from "moment";
+import { useSocketIO } from "~~/composables/sockets";
 import { Ref } from "vue";
 import { db } from "~~/data/db";
 const createdRoom = useState("createdRoomId");
@@ -9,21 +9,14 @@ const route = useRoute();
 const cookie = useCookie("mks-token");
 const token = cookie.value;
 const messageData = ref("");
-const participantData = ref();
-const existingRoom = ref([]) as Ref<any[]>;
 const rooomId = route.params.id;
 const senderId = ref();
-const messageList = ref([]) as Ref<any[]>;
-
-const {
-  public: { MESSAGING_SOCKET_URL },
-} = useRuntimeConfig();
-const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
-
-// async function getCreatedRooms() {
+const socket = useSocketIO();
 let brokenToken = token.split(".")[1];
 senderId.value = JSON.parse(atob(brokenToken)).id;
 const { MESSAGING_SERVICE } = useRuntimeConfig();
+// const userProfile = await getUserProfile()
+// console.log(userProfile, "user pf");
 
 if (rooomId != undefined) {
   socket.emit("joinRoom", { roomId: rooomId });
@@ -44,7 +37,7 @@ async function sendMessage() {
   const tosend = messageData.value.trim();
   if (tosend.length > 0) {
     let msg = {
-      timeStamp: Date.now().toString(),
+      timeStamp: Date.now(),
       message: messageData.value,
       sender: senderId.value,
       roomId: rooomId,
@@ -99,39 +92,48 @@ onMounted(async () => {
   }
 });
 function editTime(theDate) {
-  let newDate = new Date(theDate);
-  return newDate.toLocaleTimeString();
+  const nw = new Date(Date.now()).getDay();
+  const msgDay = new Date(theDate).getDay();
+
+  if (nw == msgDay) return moment(theDate).format("h:mm a");
+
+  return moment(theDate).format("MMM Do YYYY, h:mm a");
 }
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="receiverName" lastLogin="4.22pm" user="Angel Mwende" />
+    <TopBar :name="receiverName" lastLogin="4.22pm" />
     <div class="p-4 h-[87%] flex flex-col-reverse overflow-y-scroll">
       <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
         The start of your conversation with Paul
       </span>
       <div class="cont">
-        <!-- <p class="text-gray-200 text-center flex-1 font-semibold my-5 text-sm">
-          The start of your conversation with John
-        </p> -->
         <div
           class="flex-col flex mx-2 gap-2 my-2 max-w-2lg"
           v-for="sendMsg in messages"
           :key="sendMsg.timestamp"
         >
-          <div class="">
+          <div class="flex flex-col">
             <div
               class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
               :class="{
-                'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
                   sendMsg.sender == senderId,
-                'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+                'rounded-tl-none bg-orange-50 self-start':
+                  sendMsg.sender != senderId,
               }"
             >
               <p>{{ sendMsg.message }}</p>
-              <div class="mt-2 max-w-xs flex float-right">
-                {{ editTime(sendMsg.timeStamp) }}
-              </div>
+            </div>
+            <div
+              :class="{
+                'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
+                  sendMsg.sender == senderId,
+                'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
+                  sendMsg.sender != senderId,
+              }"
+            >
+              {{ editTime(sendMsg.timeStamp) }}
             </div>
           </div>
         </div>
@@ -148,7 +150,6 @@ function editTime(theDate) {
         @keyup.enter="sendMessage()"
       />
       <button @click="sendMessage()">
-        <!-- <p class="text-red-500 text-xs font-medium">Send Message</p> -->
         <img class="w-4" src="@/assets/img/sent.svg" alt="loading" />
       </button>
     </div>

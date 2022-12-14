@@ -1,76 +1,35 @@
 <script setup lang="ts">
+import moment from "moment";
 import { Ref } from "vue";
-import { io, Socket } from "socket.io-client";
-
-const {
-  public: { MESSAGING_SOCKET_URL },
-} = useRuntimeConfig();
+import { useSocketIO } from "~~/composables/sockets";
+const socket = useSocketIO();
 const receiverCont = useState("receiverContact");
-const socket: Socket = io(`${MESSAGING_SOCKET_URL}`);
+
+const theRoomId = useState("idCreate");
+
 // const roomId = ref();
+
 const roomId = useState("createdRoomId");
 const chatName = useState("createdChatName");
 const createdGroupRoom = useState("createdGroupId");
 const adminNumber = useState("adminId");
 const passedGroup = useState("groupData");
+const showAddContact = useState<boolean>("showToAddContact", () => false);
+const addContactButton = ref(false);
 const roomList = ref([]) as Ref<any[]>;
+const roomListAdd = ref([]) as Ref<any[]>;
 const showGroups = ref(true);
 const createGroups = ref(false);
 const selectContact = ref(false);
 const selected = ref(false);
-const contactSelected = ref([]);
 const groupNameScreen = ref(false);
 const enterGroupName = ref(false);
 const groupName = ref();
-const selectedContact = ref();
-
-const directThreads = ref({});
+const searchData = ref("");
+const filteredGroups = ref([]) as Ref<any[]>;
+const filteredRooms = ref([]) as Ref<any[]>;
 const allContacts: Ref<any> = ref([]);
-
-const {
-  public: { MESSAGING_SERVICE },
-} = useRuntimeConfig();
-
-const token = useCookie("mks-token");
-//TODO: a better way to handle the deprecated `atob`
-const id = JSON.parse(atob(token.value.split(".")[1])).id;
-
-const {
-  data: rooms,
-  error,
-  pending,
-  refresh: refreshRooms,
-} = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
-  method: "GET",
-  key: id.toString(),
-});
-
-let { data: contacts } = await useFetch<any>(
-  `${MESSAGING_SERVICE}/contacts/old/list`,
-  {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token.value}`,
-    },
-  }
-);
-allContacts.value = contacts.value;
-// console.log("gana", allContacts.value);
-let foundUser = allContacts.value.find((x: any) => x.id == id);
-let userTel = foundUser.tel;
-roomList.value.push(foundUser.tel);
-// console.log(userTel, "my number");
-const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<any[]>(
-  `${MESSAGING_SERVICE}/rooms/groups`,
-  {
-    body: { tel: userTel },
-    method: "POST",
-    key: Math.floor(Math.random() * 1000).toString(),
-  }
-);
-console.log("mshanyeshewwa", groupRooms.value);
-groupRooms.value.filter((x: any) => x.groupAdmin == id);
+const groupId = ref();
 function startConversation() {
   showGroups.value = false;
   createGroups.value = !createGroups.value;
@@ -101,10 +60,93 @@ function showNameInput() {
 }
 function goBackToContacts() {
   enterGroupName.value = false;
+  addContactButton.value = false;
   selectContact.value = !selectContact.value;
 }
 function sendAdmin(admin) {
   adminNumber.value = admin;
+}
+function goBackToMessages() {
+  showGroups.value = true;
+  showAddContact.value = false;
+}
+function showAddContactButton() {
+  addContactButton.value = true;
+  showAddContact.value = false;
+}
+const {
+  public: { MESSAGING_SERVICE },
+} = useRuntimeConfig();
+
+const token = useCookie("mks-token");
+//TODO: a better way to handle the deprecated `atob`
+const id = JSON.parse(atob(token.value.split(".")[1])).id;
+const loader = ref(false);
+const {
+  data: rooms,
+  error,
+  pending,
+  refresh: refreshRooms,
+} = await useFetch<any[]>(`${MESSAGING_SERVICE}/rooms/list?userId=${id}`, {
+  method: "GET",
+  key: id.toString(),
+});
+filteredRooms.value = rooms.value;
+// console.log(rooms.value, "marroms");
+for (let i = 0; i < filteredRooms.value.length; i++) {
+  let lastMessage = await getLastMessage(filteredRooms.value[i].id);
+  filteredRooms.value[i].lastMessage = lastMessage.message;
+  filteredRooms.value[i].timestamp = new Date(lastMessage.timeStamp);
+}
+type LastMessageResponse = {
+  id: string;
+  message: string;
+  timeStamp: Date;
+};
+
+async function getLastMessage(room) {
+  const { data: LastMessage } = await useFetch<LastMessageResponse>(
+    `${MESSAGING_SERVICE}/messages/last-last?roomId=${room}`,
+    { method: "GET", key: room + "mks-sms" }
+  );
+  return LastMessage.value;
+}
+
+let { data: contacts } = await useFetch<any>(
+  `${MESSAGING_SERVICE}/contacts/old/list`,
+  {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token.value}`,
+    },
+  }
+);
+allContacts.value = contacts.value;
+let foundUser = allContacts.value.find((x: any) => x.id == id);
+let userTel = foundUser.tel;
+roomList.value.push(foundUser.tel);
+type group = {
+  createdAt: string;
+  groupAdmin: string;
+  groupSlug: string;
+  id: string;
+  name: string;
+  participants: string[];
+  lastMessage: string;
+};
+const { data: groupRooms, refresh: refreshGroupRooms } = await useFetch<
+  group[]
+>(`${MESSAGING_SERVICE}/rooms/groups`, {
+  body: { tel: userTel },
+  method: "POST",
+  key: `${id}-groups`,
+});
+filteredGroups.value = groupRooms.value;
+for (let i = 0; i < filteredGroups.value.length; i++) {
+  let lastMessage = await getLastMessage(filteredGroups.value[i].id);
+  filteredGroups.value[i].lastMessage = lastMessage.message;
+  filteredGroups.value[i].timestamp = new Date(lastMessage.timeStamp);
 }
 function changeName(valueGiven) {
   let converted = valueGiven.toUpperCase();
@@ -118,7 +160,16 @@ function changeName(valueGiven) {
   }
   return firstWord[0];
 }
-
+function capitalizeName(user: any) {
+  if (user) {
+    let givenName = user.split(" ");
+    for (let i = 0; i < givenName.length; i++) {
+      givenName[i] =
+        givenName[i].charAt(0).toUpperCase() + givenName[i].slice(1);
+    }
+    return givenName.join(" ");
+  }
+}
 function selectContactToJoinGroup(contact) {
   if (roomList.value.includes(contact)) {
     const index = roomList.value.indexOf(contact);
@@ -130,6 +181,7 @@ function selectContactToJoinGroup(contact) {
   }
 }
 function createNewGroup() {
+  loader.value = true;
   let obj = {
     groupName: groupName.value,
     groupParticipants: roomList.value,
@@ -140,13 +192,15 @@ function createNewGroup() {
     showGroups.value = true;
     // createGroups.value = !createGroups.value;
     createdGroupRoom.value = groupRmCreated.id;
-    await refreshGroupRooms;
+    // await refreshGroupRooms;
     navigateTo(`/dashboard/messenger/groups/${groupRmCreated.id}`);
   });
   socket.on("r-createRoom", (data) => {
-    roomId.value = data.split(" ").slice(-1)[0];
+    filteredGroups.value.unshift(data);
+    roomId.value = data.id;
   });
   selected.value = true;
+  groupName.value = "";
 }
 // create room if there is no existing room
 function createRoom(receiverId, name) {
@@ -161,12 +215,13 @@ function createRoom(receiverId, name) {
     socket.emit("createRoom", participants, async (rmCreated) => {
       showGroups.value = true;
       createGroups.value = !createGroups.value;
-      await refreshRooms();
+      // await refreshRooms();
       chatName.value = name;
       navigateTo(`/dashboard/messenger/dm/${rmCreated.id}`);
     });
     socket.on("r-createRoom", (data) => {
-      roomId.value = data.split(" ").slice(-1)[0];
+      filteredRooms.value.unshift(data);
+      roomId.value = data.id;
     });
     socket.on(`${receiverId}`, (data) => {
       socket.emit("joinRoom", data);
@@ -175,23 +230,50 @@ function createRoom(receiverId, name) {
 }
 function checkReceiverName(receiverName, id, isGroup) {
   chatName.value = receiverName;
+  theRoomId.value = id;
+  groupId.value = id;
   if (isGroup) {
     navigateTo(`/dashboard/messenger/groups/${id}`);
   } else navigateTo(`/dashboard/messenger/dm/${id}`);
 }
-function sendGroup(group) {
-  passedGroup.value = group;
+async function addNewContact() {
+  const { data: response } = await useFetch<group[]>(
+    `${MESSAGING_SERVICE}/rooms/participants/add`,
+    {
+      body: { participants: roomList.value },
+      params: { roomId: groupId.value },
+      method: "POST",
+      key: `${id}-groupsAdd`,
+    }
+  );
 }
-// Group chats mock data
+watch(searchData, (data) => {
+  filteredGroups.value = groupRooms.value.filter((x: any) =>
+    x.name.toLocaleLowerCase().includes(searchData.value.toLocaleLowerCase())
+  );
+  let searchedRooms = rooms.value.filter(
+    (x: any) =>
+      x.participants.sender.name
+        .toLocaleLowerCase()
+        .includes(searchData.value.toLocaleLowerCase()) ||
+      x.participants.receiver.name
+        .toLocaleLowerCase()
+        .includes(searchData.value.toLocaleLowerCase())
+  );
+  filteredRooms.value = searchedRooms;
+});
 </script>
 <template>
   <div class="w-full px-2 md:flex h-screen">
     <div class="bg-gray-50 md:w-1/3 overflow-y-hidden relative">
-      <div class="md:relative container w-full h-[94%] py-2" v-if="showGroups">
+      <div
+        class="md:relative container w-full h-[94%] py-2"
+        v-if="showGroups && !showAddContact && !addContactButton"
+      >
         <!-- messeges screen -->
         <div class="px-4">
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
-          <SearchInput placeholder="Search Messages" />
+          <SearchInput placeholder="Search Messages" v-model="searchData" />
         </div>
         <!-- direct messages -->
         <div class="overflow-y-auto h-[90%] md:absolute pb-4 w-full">
@@ -199,14 +281,15 @@ function sendGroup(group) {
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
             </p>
+
             <div
-              class="hover:bg-gray-100 px-[15px] py-[0.5px]"
-              v-for="item of rooms"
+              class="hover:bg-gray-100 py-[0.5px]"
+              v-for="item of filteredRooms"
               :key="item.id"
             >
-              <a
+              <NuxtLink
                 :to="`/dashboard/messenger/dm/${item.id}`"
-                class="flex gap-2 px-1 my-4 cursor-pointer"
+                class="flex gap-2 p-[15px] cursor-pointer"
                 @click.prevent="
                   checkReceiverName(
                     item.participants.sender.id == id
@@ -217,41 +300,62 @@ function sendGroup(group) {
                   )
                 "
               >
-                <img class="" src="@/assets/img/profile.png" alt="loading" />
+                <div
+                  class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
+                >
+                  {{
+                    changeName(
+                      item.participants.sender.id == id
+                        ? item.participants.receiver.name
+                        : item.participants.sender.name
+                    )
+                  }}
+                </div>
                 <div class="flex-col flex-1">
                   <div class="flex justify-between">
                     <p class="font-semibold text-gray-700">
                       {{
-                        item.participants.sender.id == id
-                          ? item.participants.receiver.name
-                          : item.participants.sender.name
+                        capitalizeName(
+                          item.participants.sender.id == id
+                            ? item.participants.receiver.name
+                            : item.participants.sender.name
+                        )
                       }}
                     </p>
-                    <p class="text-[12px] text-gray-700">4.14 p.m</p>
+
+                    <p class="text-[12px] text-gray-700">
+                      {{ moment(item.timestamp).format("h:mm a") }}
+                    </p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    Hello, can you check whether everything is ..
+                    {{
+                      item.lastMessage == undefined
+                        ? ""
+                        : item.lastMessage.slice(0, 25) + "..."
+                    }}
                   </p>
                 </div>
-              </a>
+              </NuxtLink>
             </div>
           </div>
           <div v-else>
-            <div class="loader">Retrieving chats...</div>
+            <Loading />
           </div>
 
           <div class="my-1 text-sm">
             <p class="my-5 font-bold text-sm text-gray-700 px-3 py-3">
               Group Messages
             </p>
+
             <div
-              class="hover:bg-gray-100 px-[15px] py-[0.5px]"
-              v-for="group in groupRooms"
+              v-if="!pending"
+              class="hover:bg-gray-100 py-[0.5px]"
+              v-for="group of filteredGroups"
               :key="group.id"
             >
-              <a
+              <NuxtLink
                 :to="`/dashboard/messenger/groups/${group.id}`"
-                class="flex gap-2 px-1 my-4 cursor-pointer"
+                class="flex gap-2 p-[15px] cursor-pointer link-active"
                 @click.prevent="
                   checkReceiverName(group.name, group.id, true),
                     sendAdmin(group.groupAdmin)
@@ -260,20 +364,29 @@ function sendGroup(group) {
                 <div
                   class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
                 >
-                  {{ changeName(group.name) }}
+                  {{ changeName(group.name.toString()) }}
                 </div>
 
                 <div class="flex-col flex-1">
                   <div class="flex justify-between">
-                    <p class="text-gray-700 font-semibold">{{ group.name }}</p>
-                    <p class="text-sm font-medium text-gray-700">4.14 p.m</p>
+                    <p class="text-gray-700 font-semibold">
+                      {{ capitalizeName(group.name) }}
+                    </p>
+                    <p class="text-sm font-medium text-gray-700">
+                      {{ moment(group.timestamp).format("h:mm a") }}
+                    </p>
                   </div>
                   <p class="text-xs text-gray-400">
-                    Hello, can you check whether everything is...
+                    {{
+                      group.lastMessage == undefined
+                        ? ""
+                        : group.lastMessage.slice(0, 25) + "..."
+                    }}
                   </p>
                 </div>
-              </a>
+              </NuxtLink>
             </div>
+            <Loading v-else />
           </div>
         </div>
       </div>
@@ -298,9 +411,7 @@ function sendGroup(group) {
         <span class="my-4 text-gray-400 font-bold text-sm"
           >Send Direct Message</span
         >
-        <!-- starting a conversation screen -->
-        <!-- contact list  -->
-        <div class="">
+        <div class="overflow-y-auto">
           <div
             class="flex flex-col"
             v-for="contact in allContacts"
@@ -350,7 +461,7 @@ function sendGroup(group) {
           <div class="mt-2">
             <div class="text-sm">
               Creating with
-              <span class="font-bold">{{ roomList.length }} </span>
+              <span class="font-bold">{{ roomList.length - 1 }} </span>
               selected Members
             </div>
           </div>
@@ -365,23 +476,66 @@ function sendGroup(group) {
           </div>
           <div class="">
             <button
+              v-if="!loader"
               class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
               @click="createNewGroup()"
             >
               Save Group Info
             </button>
+            <Loading v-else />
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 mr-4 max-w-1/3 p-4" v-if="addContactButton">
+        <div class="flex-col">
+          <button
+            class="cursor:pointer font-semibold flex gap-2 items-center"
+            @click="goBackToContacts()"
+          >
+            <img src="@/assets/img/ArrowLeft.svg" alt="" />
+
+            Go Back
+          </button>
+          <div class="mt-2">
+            <div class="text-sm">
+              You are about to Add
+              <span class="font-bold">{{ roomList.length - 1 }} </span>
+              members in the group
+            </div>
+          </div>
+
+          <div class="">
+            <button
+              v-if="!loader"
+              class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
+              @click="addNewContact()"
+            >
+              Add {{ roomList.length - 1 }} Members
+            </button>
+            <Loading v-else />
           </div>
         </div>
       </div>
       <!-- contact screen -->
-      <!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-      <div class="my-4 gap-4 flex flex-col w-3/4" v-if="selectContact">
+      <div
+        class="my-4 gap-4 flex flex-col w-3/4"
+        v-if="selectContact || (showAddContact && !showGroups)"
+      >
         <button
           class="flex gap-6 items-center outline-none"
           @click="goBackToStartConv()"
+          v-if="selectContact"
         >
           <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
           <span class="text-md font-bold">Start a new Conversation</span>
+        </button>
+        <button
+          v-if="showAddContact"
+          class="flex gap-6 items-center outline-none"
+          @click="goBackToMessages()"
+        >
+          <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
+          <span class="text-md font-bold">Go Back</span>
         </button>
 
         <SearchInput placeholder="search contact" />
@@ -392,7 +546,7 @@ function sendGroup(group) {
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
-        <div class="flex flex-col gap-2 overflow-y-auto h-[20%] ">
+        <div class="flex flex-col gap-2 overflow-y-auto h-[20%]">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
               <div
@@ -442,8 +596,17 @@ function sendGroup(group) {
           </div>
         </div>
         <button
+          v-if="selectContact"
           class="text-red-500 font-semibold flex gap-2 content-center items-center"
           @click="showNameInput()"
+        >
+          Next
+          <img src="@/assets/img/ArrowRight.svg" alt="" />
+        </button>
+        <button
+          v-if="showAddContact"
+          class="text-red-500 font-semibold flex gap-2 content-center items-center"
+          @click="showAddContactButton()"
         >
           Next
           <img src="@/assets/img/ArrowRight.svg" alt="" />
@@ -465,4 +628,8 @@ function sendGroup(group) {
     <slot></slot>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.router-link-active {
+  background-color: #e4e4e4;
+}
+</style>

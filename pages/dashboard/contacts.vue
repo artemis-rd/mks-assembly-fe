@@ -12,6 +12,7 @@ const firstName = ref();
 const currentPage = ref();
 const filteredContacts = ref([]) as Ref<any[]>;
 const allContacts: Ref<any> = ref([]);
+const contactsFiltered = ref([]) as Ref<any[]>;
 
 const alphabets = ref([
   "A",
@@ -42,37 +43,7 @@ const alphabets = ref([
   "Z",
 ]) as Ref<any[]>;
 
-const allContact = ref([
-  { id: 1, fName: "john", lName: "jacoo" },
-  { id: 1, fName: "Edwin", lName: "jacoo" },
-  { id: 1, fName: "Lydiah", lName: "jacoo" },
-  { id: 1, fName: "Zabron", lName: "jacoo" },
-  { id: 1, fName: "Faburous", lName: "jacoo" },
-  { id: 1, fName: "Nameless", lName: "jacoo" },
-  { id: 1, fName: "Jimmy", lName: "jacoo" },
-  { id: 1, fName: "Samson", lName: "jacoo" },
-  { id: 1, fName: "Mwende", lName: "jacoo" },
-  { id: 1, fName: "Alvaro", lName: "jacoo" },
-  { id: 1, fName: "Amed", lName: "jacoo" },
-  { id: 1, fName: "Ascaad", lName: "jacoo" },
-  { id: 1, fName: "Afred", lName: "jacoo" },
-]) as Ref<any[]>;
 const filteredList = ref([]) as Ref<any[]>;
-
-function validatePhoneNumber(value: any) {
-  let pattern = /^[0-9{6,20}]$/;
-  // console.log(pattern.test(value));
-}
-function countyCode(myCode: any) {
-  countryCode.value = myCode;
-}
-function inputValidate(e: any) {
-  if (e.valid) {
-    userPhoneNumber.value = e.number;
-  } else {
-    console.log("invalid phone number");
-  }
-}
 function changeToggle() {
   addNumber.value = !addNumber.value;
 }
@@ -90,12 +61,21 @@ function sortContacts() {
     filteredContacts.value.push(obj);
   }
 }
+contactsFiltered.value = filteredContacts.value;
 function findContact(e: any) {
-  console.log(e.target.value, "logo");
-  filteredList.value = allContacts.value.filter(
-    (x: any) =>
-      x.fName.includes(e.target.value) || x.lName.includes(e.target.value)
-  );
+  let filters = filteredContacts.value.filter((x: any) => {
+    const s = x.value.filter((cat: any) =>
+      cat.name.toUpperCase().includes(e.target.value.toUpperCase())
+    );
+    let r = false;
+    s.forEach((element: any) => {
+      r = x.value.some(
+        (c: any) => c.name.toUpperCase() == element.name.toUpperCase()
+      );
+    });
+    return r;
+  });
+  contactsFiltered.value = filters;
 }
 async function createNewContact() {
   let contData = {
@@ -127,7 +107,7 @@ async function getContacts() {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response.data.value, "dtaa");
+
   allContacts.value = response.data.value;
 }
 onMounted(async () => {
@@ -138,96 +118,91 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="">
-    <TopBar />
-    <Transition name="slide-fade">
-      <div
-        v-if="addNumber == false"
-        class="flex absolute flex-1 w-10/12 h-full"
-      >
+  <div class="h-screen overflow-y-auto">
+    <div class="sticky top-0 bg-white">
+      <TopBar />
+      <Transition name="slide-fade">
         <div
-          @click="changeToggle()"
-          class="bg-slate-500 h-full bg-opacity-10 flex-1"
-        ></div>
-        <div class="bg-white h-full px-10 w-2/6 gap-5 column">
-          <div class="font-bold pt-5">Add a New Contact</div>
-          <div class="">
-            <LabelInput
-              placeholder="johndoe@gmail.com"
-              label="Firstname"
-              v-model="firstName"
-            />
-          </div>
-          <div class="">
-            <LabelInput
-              placeholder="rainbow"
-              label="Last Name"
-              v-model="lastName"
-            />
-          </div>
-          <div class="">
-            <LabelInput
-              v-model="phone"
-              placeholder="0715565381"
-              label="Phone Number"
-              type="Number"
-            />
-          </div>
-          <div class="">
-            <LabelInput
-              placeholder="johndoe"
-              label="Operator's Email Address"
-              v-model="operatorEmail"
-            />
-          </div>
-          <!-- <div class="">
-            <vue-tel-input
-              v-model="phone"
-              @country-changed="countyCode($event.dialCode)"
-              @input="validatePhoneNumber($event.target.value)"
-              @validate="inputValidate($event)"
-            >
-            </vue-tel-input>
-          </div> -->
-          <div class="flex gap-10">
-            <button
-              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
-              @click="createNewContact()"
-            >
-              Save Changes
-            </button>
-            <button
-              @click="changeToggle()"
-              class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-white"
-            >
-              Cancel
-            </button>
+          v-if="addNumber == false"
+          class="flex absolute flex-1 w-10/12 h-full"
+        >
+          <div
+            @click="changeToggle()"
+            class="bg-slate-500 h-full bg-opacity-10 flex-1"
+          ></div>
+          <div class="bg-white h-full px-10 w-2/6 gap-5 column">
+            <div class="font-bold pt-5">Add a New Contact</div>
+            <div class="">
+              <LabelInput
+                placeholder="johndoe@gmail.com"
+                label="Firstname"
+                v-model="firstName"
+              />
+            </div>
+            <div class="">
+              <LabelInput
+                placeholder="rainbow"
+                label="Last Name"
+                v-model="lastName"
+              />
+            </div>
+            <div class="">
+              <LabelInput
+                v-model="phone"
+                placeholder="0715565381"
+                label="Phone Number"
+                type="Number"
+              />
+            </div>
+            <div class="">
+              <LabelInput
+                placeholder="johndoe"
+                label="Operator's Email Address"
+                v-model="operatorEmail"
+              />
+            </div>
+            <div class="flex gap-10">
+              <button
+                class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
+                @click="createNewContact()"
+              >
+                Save Changes
+              </button>
+              <button
+                @click="changeToggle()"
+                class="flex items-center justify-center font-medium rounded-md py-2 px-4 text-orange-500 text-sm bg-white"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
 
-    <div class="pt-5 px-4 ml-6">
-      <div class="flex justify-between items-center">
-        <div
-          class="flex w-8/12 justify-between border rounded-lg outline-none py-2 px-2"
-        >
-          <input
-            class="outline-none text-sm w-full"
-            type="text"
-            placeholder="Search Contacts By either Name or Phone Number"
-          />
-          <img class="" src="@/assets/img/Search.svg" />
+      <div class="pt-5 px-4 ml-6">
+        <div class="flex justify-between items-center">
+          <div
+            class="flex w-8/12 justify-between border rounded-lg outline-none py-2 px-2"
+          >
+            <input
+              @input="findContact($event)"
+              class="outline-none text-sm w-full"
+              type="text"
+              placeholder="Search Contacts By either Name or Phone Number"
+            />
+            <img class="" src="@/assets/img/Search.svg" />
+          </div>
+          <button
+            @click="changeToggle()"
+            class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
+          >
+            <img src="@/assets/img/AddUser.svg" alt="" /> Add a New Contact
+          </button>
         </div>
-        <button
-          @click="changeToggle()"
-          class="flex items-center justify-center gap-2 font-medium rounded-md py-2 px-4 text-white text-sm bg-orange-500"
-        >
-          <img src="@/assets/img/AddUser.svg" alt="" /> Add a New Contact
-        </button>
       </div>
     </div>
-    <div class="" v-for="group in filteredContacts">
+
+    <div class="ml-8" v-for="group in contactsFiltered">
       <div class="py-3 contact-group" v-if="group.value.length > 0">
         <div class="p-2 font-bold text-xs">{{ group.header }}</div>
         <div class="grid grid-styling gap-3">

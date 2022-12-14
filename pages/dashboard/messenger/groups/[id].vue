@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import moment from "moment";
 import { db } from "~~/data/db";
 import { io, Socket } from "socket.io-client";
 import { Ref } from "vue";
+import { use } from "h3";
 const cookie = useCookie("mks-token");
 const adminNumber = useState("adminId");
+const storedRoomId = useState("storeRoomId");
 
 const token = cookie.value;
 const senderId = ref();
+
 const messageData = ref();
 const route = useRoute();
 const showContacts = ref(false);
@@ -14,9 +18,9 @@ const rooomId = route.params.id;
 // const showToggleContact = ref(false);
 const chatName: Ref<string> = useState("createdChatName");
 const passedGroup = useState("groupData");
-console.log(passedGroup.value, "data man");
 
 const showToggleContact = useState("toggleShow");
+const showAddContact = useState("showToAddContact");
 
 const {
   public: { MESSAGING_SOCKET_URL },
@@ -26,6 +30,8 @@ const createdGroupRoom = useState("createdGroupRoomId");
 // const group = ref("House Business Commitee ");
 let brokenToken = token.split(".")[1];
 senderId.value = JSON.parse(atob(brokenToken)).id;
+storedRoomId.value = senderId.value;
+
 const { MESSAGING_SERVICE } = useRuntimeConfig();
 
 const {
@@ -36,8 +42,9 @@ const {
   method: "GET",
   key: rooomId.toString(),
 });
-// console.log(messages.value, "totala");
-
+// get login user details
+const {data:userDetails} = await useFetch<any>(`${MESSAGING_SERVICE}/contacts/old/list/${senderId.value}`)
+const logedUser = userDetails.value.name
 onMounted(() => {
   const route = useRoute();
   const messages = db.userMessages.filter(
@@ -56,8 +63,11 @@ if (rooomId != undefined) {
   });
 }
 function editTime(theDate) {
-  let newDate = new Date(theDate);
-  return newDate.toLocaleTimeString();
+  const nw = new Date(Date.now()).getDay();
+  const msgDay = new Date(theDate).getDay();
+  if (nw == msgDay) return moment(theDate).format("h:mm a");
+
+  return moment(theDate).format("MMM Do YYYY, h:mm a");
 }
 
 watch(createdGroupRoom, (room) => {
@@ -72,11 +82,16 @@ function toggleContacts() {
   showContacts.value = true;
   showToggleContact.value = !showToggleContact.value;
 }
+function toggleShowAddContact() {
+  showAddContact.value = !showAddContact.value;
+  showToggleContact.value = false;
+}
 function toggleContactsFalse() {
   showContacts.value = false;
 }
 async function sendGroupMessage() {
-  if (messageData.value != "") {
+  const tosend = messageData.value.trim();
+  if (tosend.length > 0) {
     let msg = {
       timeStamp: Date.now().toString(),
       message: messageData.value,
@@ -104,9 +119,9 @@ socket.on(`r-newMessage-${rooomId}`, async (data) => {
   if (data.sender != senderId.value) {
     const id = await db.userMessages.add({
       timeStamp: Date.now().toString(),
-      message: messageData.value.trim(),
+      message: data.message,
       sender: senderId.value,
-      roomId: parseInt(rooomId.toString()),
+      roomId: rooomId.toString(),
     });
     messages.value.push(data);
   } else {
@@ -123,14 +138,26 @@ const { data: groupContacts } = await useFetch<any[]>(
 </script>
 <template>
   <div class="ml-2 relative h-screen md:w-full">
-    <TopBar :name="chatName" lastLogin="4.22pm" user="Angel Mwende" />
-    <div
-      v-if="showToggleContact"
-      class="right-0 flex w-52 bg-orange-200 mr-4 absolute p-2 rounded z-30 cursor-pointer"
-      @click="toggleContacts()"
-    >
-      <div class="text-red-500 font-bold">show contacts</div>
-    </div>
+    <TopBar :name="chatName" lastLogin="4.22pm" :user="logedUser" />
+    <Transition name="fade-top">
+      <div
+        v-if="showToggleContact"
+        class="right-0 flex w-52 bg-orange-200 mr-2 absolute rounded z-30 flex-col"
+      >
+        <div
+          class="text-red-500 font-bold text-xs p-1 px-2 hover:bg-red-300 cursor-pointer"
+          @click="toggleContacts()"
+        >
+          Show contacts
+        </div>
+        <div
+          class="text-red-500 font-bold text-xs p-1 mt-2 px-2 hover:bg-red-300 cursor-pointer items-center content-center flex"
+          @click="toggleShowAddContact()"
+        >
+          Add Contact <span class="font-extrabold ml-2">+</span>
+        </div>
+      </div>
+    </Transition>
     <div class="flex">
       <div class="p-4 h-[90%] flex flex-col-reverse overflow-auto flex-1">
         <span class="text-white text-center flex-1 font-semibold my-1 text-sm">
@@ -145,19 +172,27 @@ const { data: groupContacts } = await useFetch<any[]>(
             v-for="sendMsg in messages"
             :key="sendMsg.timestamp"
           >
-            <div class="">
+            <div class="flex flex-col">
               <div
                 class="inline-block p-3 rounded-2xl text-xs font-semibold max-w-md max-w-3/4"
                 :class="{
-                  'float-right bg-orange-500 text-cyan-50 rounded-br-none':
+                  'float-right bg-orange-500 text-cyan-50 rounded-br-none self-end':
                     sendMsg.sender == senderId,
-                  'rounded-tl-none bg-orange-50': sendMsg.sender != senderId,
+                  'rounded-tl-none bg-orange-50 self-start':
+                    sendMsg.sender != senderId,
                 }"
               >
                 <p>{{ sendMsg.message }}</p>
-                <div class="mt-2 max-w-xs flex float-right">
-                  {{ editTime(sendMsg.timeStamp) }}
-                </div>
+              </div>
+              <div
+                :class="{
+                  'float-right  rounded-br-none text-[9px] self-end text-gray-400 mt-1':
+                    sendMsg.sender == senderId,
+                  'rounded-tl-none text-[9px] self-start text-gray-400 mt-1':
+                    sendMsg.sender != senderId,
+                }"
+              >
+                {{ editTime(sendMsg.timeStamp) }}
               </div>
             </div>
           </div>
@@ -225,6 +260,21 @@ const { data: groupContacts } = await useFetch<any[]>(
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateX(20px);
+  opacity: 0;
+}
+/* transitions  */
+
+.fade-top-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.fade-top-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.fade-top-enter-from,
+.fade-top-leave-to {
+  transform: translateY(-20px);
   opacity: 0;
 }
 </style>
