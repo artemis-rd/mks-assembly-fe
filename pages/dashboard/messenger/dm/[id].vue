@@ -96,10 +96,10 @@ onMounted(async () => {
 });
 function editTime(theDate) {
   const nw = new Date(Date.now()).getDay();
-  const msgDay= new Date(theDate).getDay();
-  if (nw == msgDay) return moment(theDate).format('h:mm a');
+  const msgDay = new Date(theDate).getDay();
+  if (nw == msgDay) return moment(theDate).format("h:mm a");
 
-  return moment(theDate).format("MMM Do YYYY, h:mm a"); 
+  return moment(theDate).format("MMM Do YYYY, h:mm a");
 }
 </script>
 <template>
@@ -136,7 +136,6 @@ function editTime(theDate) {
               }"
             >
               {{ editTime(sendMsg.timeStamp) }}
-              {{ sendMsg.timeStamp }}
             </div>
           </div>
         </div>
