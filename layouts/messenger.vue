@@ -5,7 +5,7 @@ import { useSocketIO } from "~~/composables/sockets";
 const socket = useSocketIO();
 const receiverCont = useState("receiverContact");
 
-const theRoomId = useState("idCreate")
+const theRoomId = useState("idCreate");
 
 // const roomId = ref();
 
@@ -102,7 +102,7 @@ for (let i = 0; i < filteredRooms.value.length; i++) {
 type LastMessageResponse = {
   id: string;
   message: string;
-  timestamp: Date;
+  timeStamp: Date;
 };
 
 async function getLastMessage(room) {
@@ -226,7 +226,7 @@ function createRoom(receiverId, name) {
 function checkReceiverName(receiverName, id, isGroup) {
   chatName.value = receiverName;
 
-  theRoomId.value = id
+  theRoomId.value = id;
 
   groupId.value = id;
 
@@ -288,8 +288,15 @@ function sliceMessage() { }
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
             </p>
-            <div class="hover:bg-gray-100  py-[0.5px]" v-for="item of filteredRooms" :key="item.id">
-              <NuxtLink :to="`/dashboard/messenger/dm/${item.id}`" class="flex gap-2 p-[15px] cursor-pointer"
+
+            <div
+              class="hover:bg-gray-100 py-[0.5px]"
+              v-for="item of filteredRooms"
+              :key="item.id"
+            >
+              <NuxtLink
+                :to="`/dashboard/messenger/dm/${item.id}`"
+                class="flex gap-2 p-[15px] cursor-pointer"
                 @click.prevent="
                   checkReceiverName(
                     item.participants.sender.id == id
@@ -309,7 +316,10 @@ function sliceMessage() { }
                             : item.participants.sender.name
                       }}
                     </p>
-                    <p class="text-[12px] text-gray-700">{{ moment(item.timestamp).format("h:mm a") }}</p>
+                    
+                    <p class="text-[12px] text-gray-700">
+                      {{ moment(item.timestamp).format("h:mm a") }}
+                    </p>
                   </div>
                   <p class="text-xs text-gray-400">
                     {{
@@ -514,6 +524,6 @@ function sliceMessage() { }
 </template>
 <style scoped>
 .router-link-active {
-  background-color: #E4E4E4;
+  background-color: #e4e4e4;
 }
 </style>
