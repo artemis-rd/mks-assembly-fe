@@ -269,16 +269,13 @@ watch(searchData, (data) => {
   // console.log(filteredRooms.value, "filtered ");
   // }
 });
-function sliceMessage() {}
+function sliceMessage() { }
 // Group chats mock data
 </script>
 <template>
   <div class="w-full px-2 md:flex h-screen">
     <div class="bg-gray-50 md:w-1/3 overflow-y-hidden relative">
-      <div
-        class="md:relative container w-full h-[94%] py-2"
-        v-if="showGroups && !showAddContact && !addContactButton"
-      >
+      <div class="md:relative container w-full h-[94%] py-2" v-if="showGroups && !showAddContact && !addContactButton">
         <!-- messeges screen -->
         <div class="px-4">
           <h2 class="text-lg font-bold my-5 mb-2">Messenger</h2>
@@ -291,6 +288,7 @@ function sliceMessage() {}
             <p class="my-5 font-bold text-sm text-gray-700 px-4">
               Direct Messages
             </p>
+
             <div
               class="hover:bg-gray-100 py-[0.5px]"
               v-for="item of filteredRooms"
@@ -307,27 +305,27 @@ function sliceMessage() {}
                     item.id,
                     false
                   )
-                "
-              >
+                ">
                 <img class="" src="@/assets/img/profile.png" alt="loading" />
                 <div class="flex-col flex-1">
                   <div class="flex justify-between">
                     <p class="font-semibold text-gray-700">
                       {{
-                        item.participants.sender.id == id
-                          ? item.participants.receiver.name
-                          : item.participants.sender.name
+                          item.participants.sender.id == id
+                            ? item.participants.receiver.name
+                            : item.participants.sender.name
                       }}
                     </p>
+                    
                     <p class="text-[12px] text-gray-700">
                       {{ moment(item.timestamp).format("h:mm a") }}
                     </p>
                   </div>
                   <p class="text-xs text-gray-400">
                     {{
-                      item.lastMessage == undefined
-                        ? ""
-                        : item.lastMessage.slice(0, 25) + "..."
+                        item.lastMessage == undefined
+                          ? ""
+                          : item.lastMessage.slice(0, 25) + "..."
                     }}
                   </p>
                 </div>
@@ -343,23 +341,14 @@ function sliceMessage() {}
               Group Messages
             </p>
 
-            <div
-              v-if="!pending"
-              class="hover:bg-gray-100 py-[0.5px]"
-              v-for="group of filteredGroups"
-              :key="group.id"
-            >
-              <NuxtLink
-                :to="`/dashboard/messenger/groups/${group.id}`"
-                class="flex gap-2 p-[15px] cursor-pointer link-active"
-                @click.prevent="
+            <div v-if="!pending" class="hover:bg-gray-100 py-[0.5px]" v-for="group of filteredGroups" :key="group.id">
+              <NuxtLink :to="`/dashboard/messenger/groups/${group.id}`"
+                class="flex gap-2 p-[15px] cursor-pointer link-active" @click.prevent="
                   checkReceiverName(group.name, group.id, true),
-                    sendAdmin(group.groupAdmin)
-                "
-              >
+                  sendAdmin(group.groupAdmin)
+                ">
                 <div
-                  class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center"
-                >
+                  class="border-2 border-solid rounded-full border-orange-500 content-center align-center p-2 w-10 font-bold h-10 text-center">
                   {{ changeName(group.name.toString()) }}
                 </div>
 
@@ -370,9 +359,9 @@ function sliceMessage() {}
                   </div>
                   <p class="text-xs text-gray-400">
                     {{
-                      group.lastMessage == undefined
-                        ? ""
-                        : group.lastMessage.slice(0, 25) + "..."
+                        group.lastMessage == undefined
+                          ? ""
+                          : group.lastMessage.slice(0, 25) + "..."
                     }}
                   </p>
                 </div>
@@ -391,45 +380,22 @@ function sliceMessage() {}
 
         <SearchInput />
         <button class="flex gap-4 items-center" @click="showContactToSelect()">
-          <img
-            class="w-6"
-            src="@/assets/img/createContactIcon.svg"
-            alt="loading"
-          />
-          <span class="text-red-500 font-xs font-semibold"
-            >Create a new Group</span
-          >
+          <img class="w-6" src="@/assets/img/createContactIcon.svg" alt="loading" />
+          <span class="text-red-500 font-xs font-semibold">Create a new Group</span>
         </button>
-        <span class="my-4 text-gray-400 font-bold text-sm"
-          >Send Direct Message</span
-        >
+        <span class="my-4 text-gray-400 font-bold text-sm">Send Direct Message</span>
         <div class="overflow-y-auto">
-          <div
-            class="flex flex-col"
-            v-for="contact in allContacts"
-            :key="contact.id"
-          >
-            <div
-              class="flex flex-col gap-4 w-full pb-2"
-              v-if="contact.id != id"
-            >
-              <a
-                :to="`/dashboard/messenger/dm/${roomId}`"
-                class="flex gap-4 cursor-pointer"
-                event=""
-                @click.prevent="createRoom(contact.id, contact.name)"
-              >
-                <img
-                  class="w-10"
-                  src="@/assets/img/profile.png"
-                  alt="loading"
-                />
+          <div class="flex flex-col" v-for="contact in allContacts" :key="contact.id">
+            <div class="flex flex-col gap-4 w-full pb-2" v-if="contact.id != id">
+              <a :to="`/dashboard/messenger/dm/${roomId}`" class="flex gap-4 cursor-pointer" event=""
+                @click.prevent="createRoom(contact.id, contact.name)">
+                <img class="w-10" src="@/assets/img/profile.png" alt="loading" />
                 <div class="gap-2">
                   <p class="text-sm font-bold">
                     {{ contact.name }}
                   </p>
                   <span class="text-xs font-semibold text-gray-400">{{
-                    contact.tel
+                      contact.tel
                   }}</span>
                 </div>
               </a>
@@ -442,10 +408,7 @@ function sliceMessage() {}
       <!-- enter the group name  -->
       <div class="mt-6 mr-4 max-w-1/3 p-4" v-if="enterGroupName">
         <div class="flex-col">
-          <button
-            class="cursor:pointer font-semibold flex gap-2 items-center"
-            @click="goBackToContacts()"
-          >
+          <button class="cursor:pointer font-semibold flex gap-2 items-center" @click="goBackToContacts()">
             <img src="@/assets/img/ArrowLeft.svg" alt="" />
 
             Create a New Group
@@ -459,19 +422,12 @@ function sliceMessage() {}
           </div>
           <div class="mt-2 text-sm">
             <div class="text-sm">Enter the name of the group</div>
-            <input
-              class="border-solid outline-none border p-1 border-slate-300 rounded-md w-full px-3 py-2"
-              type="text"
-              v-model="groupName"
-              placeholder="Example: Marketing Department"
-            />
+            <input class="border-solid outline-none border p-1 border-slate-300 rounded-md w-full px-3 py-2" type="text"
+              v-model="groupName" placeholder="Example: Marketing Department" />
           </div>
           <div class="">
-            <button
-              v-if="!loader"
-              class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
-              @click="createNewGroup()"
-            >
+            <button v-if="!loader" class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
+              @click="createNewGroup()">
               Save Group Info
             </button>
             <Loading v-else />
@@ -480,10 +436,7 @@ function sliceMessage() {}
       </div>
       <div class="mt-6 mr-4 max-w-1/3 p-4" v-if="addContactButton">
         <div class="flex-col">
-          <button
-            class="cursor:pointer font-semibold flex gap-2 items-center"
-            @click="goBackToContacts()"
-          >
+          <button class="cursor:pointer font-semibold flex gap-2 items-center" @click="goBackToContacts()">
             <img src="@/assets/img/ArrowLeft.svg" alt="" />
 
             Go Back
@@ -497,11 +450,8 @@ function sliceMessage() {}
           </div>
 
           <div class="">
-            <button
-              v-if="!loader"
-              class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
-              @click="addNewContact()"
-            >
+            <button v-if="!loader" class="p-2 bg-red-100 text-xs font-semibold w-full mt-4 rounded-md text-red-500"
+              @click="addNewContact()">
               Add {{ roomList.length - 1 }} Members
             </button>
             <Loading v-else />
@@ -509,97 +459,53 @@ function sliceMessage() {}
         </div>
       </div>
       <!-- contact screen -->
-      <div
-        class="my-4 gap-4 flex flex-col w-3/4"
-        v-if="selectContact || (showAddContact && !showGroups)"
-      >
-        <button
-          class="flex gap-6 items-center outline-none"
-          @click="goBackToStartConv()"
-          v-if="selectContact"
-        >
+      <div class="my-4 gap-4 flex flex-col w-3/4" v-if="selectContact || (showAddContact && !showGroups)">
+        <button class="flex gap-6 items-center outline-none" @click="goBackToStartConv()" v-if="selectContact">
           <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
           <span class="text-md font-bold">Start a new Conversation</span>
         </button>
-        <button
-          v-if="showAddContact"
-          class="flex gap-6 items-center outline-none"
-          @click="goBackToMessages()"
-        >
+        <button v-if="showAddContact" class="flex gap-6 items-center outline-none" @click="goBackToMessages()">
           <img class="w-4" src="@/assets/img/startConvIcon.svg" alt="loading" />
           <span class="text-md font-bold">Go Back</span>
         </button>
 
         <SearchInput placeholder="search contact" />
 
-        <span class="my-2 text-gray-400 font-bold text-sm"
-          >Select Group Members</span
-        >
+        <span class="my-2 text-gray-400 font-bold text-sm">Select Group Members</span>
         <!-- starting a conversation screen -->
         <!-- contact list  -->
 
         <div class="flex flex-col gap-2 overflow-y-auto h-[20%]">
           <div class="" v-for="contact in allContacts" :key="contact.id">
             <div class="flex flex-col gap- w-full">
-              <div
-                v-if="id != contact.id"
-                class="flex gap-4 cursor-pointer"
-                @click="selectContactToJoinGroup(contact.tel)"
-              >
+              <div v-if="id != contact.id" class="flex gap-4 cursor-pointer"
+                @click="selectContactToJoinGroup(contact.tel)">
                 <div class="flex">
-                  <img
-                    class="w-10 z-20"
-                    src="@/assets/img/profile.png"
-                    alt="loading"
-                  />
+                  <img class="w-10 z-20" src="@/assets/img/profile.png" alt="loading" />
 
-                  <svg
-                    width="44"
-                    height="44"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    v-if="roomList.includes(contact.tel)"
-                    class="w-10 z-30 absolute"
-                  >
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="20"
-                      fill="#EC5237"
-                      fill-opacity="0.6"
-                    />
-                    <path
-                      d="M9 22.4898L16.0278 28L31 13"
-                      stroke="white"
-                      stroke-width="3"
-                      stroke-linejoin="round"
-                    />
+                  <svg width="44" height="44" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    v-if="roomList.includes(contact.tel)" class="w-10 z-30 absolute">
+                    <circle cx="20" cy="20" r="20" fill="#EC5237" fill-opacity="0.6" />
+                    <path d="M9 22.4898L16.0278 28L31 13" stroke="white" stroke-width="3" stroke-linejoin="round" />
                   </svg>
                 </div>
                 <div class="gap-2">
                   <p class="text-sm font-bold">{{ contact.name }}</p>
                   <span class="text-xs font-semibold text-gray-400">{{
-                    contact.tel
+                      contact.tel
                   }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <button
-          v-if="selectContact"
-          class="text-red-500 font-semibold flex gap-2 content-center items-center"
-          @click="showNameInput()"
-        >
+        <button v-if="selectContact" class="text-red-500 font-semibold flex gap-2 content-center items-center"
+          @click="showNameInput()">
           Next
           <img src="@/assets/img/ArrowRight.svg" alt="" />
         </button>
-        <button
-          v-if="showAddContact"
-          class="text-red-500 font-semibold flex gap-2 content-center items-center"
-          @click="showAddContactButton()"
-        >
+        <button v-if="showAddContact" class="text-red-500 font-semibold flex gap-2 content-center items-center"
+          @click="showAddContactButton()">
           Next
           <img src="@/assets/img/ArrowRight.svg" alt="" />
         </button>
@@ -607,11 +513,7 @@ function sliceMessage() {}
       </div>
 
       <!-- start conv  button -->
-      <button
-        class="md:absolute bottom-0 right-0 z-10"
-        @click="startConversation()"
-        v-if="showGroups"
-      >
+      <button class="md:absolute bottom-0 right-0 z-10" @click="startConversation()" v-if="showGroups">
         <img src="@/assets/img/chatIcon.svg" alt="" width="100" />
       </button>
     </div>
